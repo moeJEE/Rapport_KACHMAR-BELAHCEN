@@ -1,0 +1,125 @@
+\documentclass[a4paper,11pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% In main.tex — support both languages
+\usepackage[french]{babel}  % document language: français
+\usepackage{csquotes}
+\DeclareUnicodeCharacter{0301}{\hspace{-1ex}\'{ }}
+
+% Page layout
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2.5cm,right=2cm,marginparwidth=2cm]{geometry}
+\usepackage[myheadings]{fullpage}
+
+% Headers and footers
+\usepackage{fancyhdr}
+% Note: `lastpage` is loaded after `hyperref` below to ensure the
+% reference to the last page is written correctly by the PDF driver.
+\usepackage{etoolbox}
+
+% Typography
+\usepackage{XCharter}
+\usepackage[protrusion=true, expansion=true]{microtype}
+\usepackage[onehalfspacing]{setspace}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfgantt}
+
+% Math
+\usepackage{amsmath,amssymb}
+
+% Figures & tables
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage[font=small, labelfont=bf]{caption}
+\usepackage{enumitem}  
+\usepackage[most]{tcolorbox} 
+\usepackage{pgfgantt}
+
+% (babel already loaded above with french as main language)
+\usepackage{array}
+%\usepackage{hyperref}
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=blue]{hyperref}
+\usepackage{lastpage}
+\usepackage{xcolor}
+\usepackage{tabularx}
+
+% Misc
+\usepackage[colorinlistoftodos]{todonotes}
+%\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{biblatex}
+\addbibresource{references.bib}
+
+% ---- Custom commands ----
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+
+% ---- Depth ----
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+% ---- Main page style ----
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\renewcommand{\sectionmark}[1]{\markboth{\thesection.\ #1}{}}
+
+% Header: section name on outer edge, report label on inner edge
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{\small\textit{Rapport de stage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Footer: student name left, page right, rule above
+\fancyfoot[L]{\small Mohamed KACHMAR}
+\fancyfoot[R]{\small \thepage\ /\ \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---- Plain style (section-opening pages) ----
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[L]{\small Mohamed KACHMAR}
+  \fancyfoot[R]{\small \thepage\ /\ \pageref{LastPage}}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+}
+
+% ---- Force cleardoublepage before each top-level section ----
+\pretocmd{\section}{\cleardoublepage}{}{}
+
+% =====================================================================
+\begin{document}
+
+% ---- Title page ----
+\input{title_page}
+
+% =====================================================================
+\pagenumbering{roman}
+
+\input{src/00_acknowledgements}
+\input{src/01_abstract_en}
+\input{src/02_abstract_fr}
+
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\input{src/03_abbreviations}
+
+% =====================================================================
+\pagenumbering{arabic}
+
+\input{src/04_introduction}
+\input{src/05_context}
+\input{src/06_state_of_the_art}
+\input{src/07_methodology}
+\input{src/08_implementation}
+\input{src/09_results}
+\input{src/10_conclusions}
+
+\printbibliography[heading=bibintoc, title={Références}]
+
+\appendix
+\input{src/11_appendices}
+
+\end{document}

@@ -1,0 +1,23 @@
+{
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "pdflatex x3",
+      "tools": ["pdflatex", "pdflatex", "pdflatex"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "pdflatex x3",
+  "latex-workshop.latex.clean.method": "glob",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": [
+        "-interaction=nonstopmode",
+        "-synctex=1",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.view.pdf.viewer": "tab"
+}
