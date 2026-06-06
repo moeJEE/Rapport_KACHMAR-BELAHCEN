@@ -236,142 +236,189 @@ C'est dans ce contexte que la plateforme ADMP se positionne comme une réponse i
 \label{subsec:admp-actuel}
 
 % ---------------------------------------------------------------------
-\subsubsection{Philosophie et principes fondateurs}
-\label{subsubsec:admp-philosophie}
+\subsubsection{Envergure mondiale et chiffres clés}
+\label{subsubsec:admp-envergure}
 
-L'\textbf{Accenture Data Migration Platform (ADMP)} est une plateforme propriétaire développée par Accenture depuis plus de 25 ans, dédiée à l'accélération, l'automatisation et la sécurisation des projets de migration de données à grande échelle. Sa philosophie repose sur un constat fondamental : \og~\textit{Migration is not an investment priority: it is a cost that delivers few benefits in itself. However, Migration is highly risky and an essential part of the wider transformation project success}~\fg{}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/admp_worldwide.png}
+    \caption{Envergure mondiale de la plateforme ADMP : chiffres clés et 3 géographies}
+    \label{fig:admp-worldwide}
+\end{figure}
 
-Pour répondre à ce constat, ADMP s'articule autour de trois principes fondateurs :
+L'\textbf{Accenture Data Migration Platform (ADMP)} est une solution propriétaire d'Accenture dédiée à la migration de données d'entreprise à grande échelle. Forte de plus de \textbf{25 ans d'expérience}, la plateforme a accompagné plus de \textbf{200 projets de migration} à travers le monde, avec plus de \textbf{75 millions d'objets métier migrés} par une équipe de plus de \textbf{55 spécialistes} techniques et fonctionnels. La plateforme intervient dans \textbf{3 géographies} : North America, APAC et EMEA, positionnant ADMP comme \og~\textit{a powerhouse for data migration \& services}~\fg{}.
+
+% ---------------------------------------------------------------------
+\subsubsection{Quatre piliers de valeur}
+\label{subsubsec:admp-piliers}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/admp_pillars.png}
+    \caption{Les quatre piliers de valeur de la plateforme ADMP}
+    \label{fig:admp-pillars}
+\end{figure}
+
+La valeur d'ADMP repose sur quatre piliers complémentaires qui structurent l'offre de service :
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Smart Designs} : des documents structurés (Word/Excel) qui décrivent les règles de transformation, les mappings de champs, les relations entre tables et les contraintes métier. Ces documents sont à la fois lisibles par les équipes fonctionnelles et interprétables automatiquement par la plateforme.
-    
-    \item \textbf{No-Code / Low-Code} : \og~\textit{No ETL developer required. Smart designs are executed on ADMP platform with no manual action required}~\fg{}, ce qui élimine le fossé Design-Build identifié comme limitation majeure des solutions existantes.
-    
-    \item \textbf{Transparence totale} : \og~\textit{No black box effect}~\fg{}, les équipes fonctionnelles ont une visibilité et un contrôle complets sur le processus de migration, contrairement aux outils ETL traditionnels.
+    \item \textbf{Advanced Tooling} : une suite d'outils et d'accélérateurs permettant de rendre les activités de migration transparentes et efficaces, et d'en réduire la charge additionnelle.
+    \item \textbf{Skilled Resources} : la capacité à mobiliser rapidement une équipe d'experts en migration de données, capable d'interagir avec l'ensemble des parties prenantes tout au long du projet.
+    \item \textbf{Strong Methodology} : un ensemble de meilleures pratiques éprouvées et validées, de la phase de découverte jusqu'au déploiement, garantissant une livraison dans les délais avec un risque réduit. \og~\textit{Experience gained on transformation projects of various complexities}~\fg{}.
+    \item \textbf{Alignment with the Project Strategy} : la capacité à étendre l'expérience acquise sur la plateforme pour aider à mettre en \oe uvre un processus industrialisé de gestion de la qualité et de la migration des données.
 \end{itemize}
 
-L'ADMP fait partie de l'\textbf{Accenture Migration Suite}, un ensemble de composants de migration qui peuvent être utilisés individuellement ou combinés pour transformer, nettoyer, archiver, réactiver et rechercher des données, offrant ainsi une réponse complète à la décommission des systèmes legacy.
-
 % ---------------------------------------------------------------------
-\subsubsection{Architecture fonctionnelle existante}
-\label{subsubsec:admp-architecture}
-
-L'architecture actuelle d'ADMP se compose de quatre modules principaux, décrits dans le Tableau~\ref{tab:admp-modules}.
-
-\begin{table}[H]
-\centering
-\caption{Modules de la plateforme ADMP}
-\label{tab:admp-modules}
-\begin{tabularx}{\textwidth}{llX}
-\toprule
-\textbf{Module} & \textbf{Type} & \textbf{Fonction} \\
-\midrule
-ADMP Core Engine & Moteur de migration & Récupère les documents de design depuis Teams/SharePoint, se configure automatiquement, et exécute le cycle ETL complet \\
-\addlinespace
-ADMP Design Tools & Plugins VBA (Word/Excel) & Création structurée et standardisée des documents de design \\
-\addlinespace
-ADMP Portal & Interface web & Lancement des extractions/transformations/chargements, consultation des rapports, analyse des erreurs \\
-\addlinespace
-IDMF Explorer & Outil de versioning & Gestion de configuration des documents via SharePoint \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-L'hébergement de la plateforme est flexible : \textbf{SaaS} (datacenter sécurisé) ou \textbf{On-Premise} (installé dans l'environnement du client). Les transferts de données sont sécurisés via SFTP/VPN.
+\subsubsection{Un service de migration sur mesure}
+\label{subsubsec:admp-service}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{img/architecture_ADMP.png}
-    \caption{Architecture fonctionnelle de la plateforme ADMP}
-    \label{fig:admp-architecture}
+    \includegraphics[width=0.85\textwidth]{img/admp_service_dimensions.png}
+    \caption{Les neuf dimensions du service de migration sur mesure ADMP}
+    \label{fig:admp-service}
 \end{figure}
 
+ADMP propose un service de migration global articulé autour de neuf dimensions clés :
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Methodology} : méthodologie éprouvée et validée (de la découverte au déploiement), standardisée, s'appuyant sur des experts en migration.
+    \item \textbf{Agility} : compatible avec les méthodes Agile, avec des ressources ajustables et scalables.
+    \item \textbf{Data Load} : accélérateur de chargement vers des plateformes spécifiques (Duck Creek, Salesforce, Workday, SAP) avec validation du processus de chargement.
+    \item \textbf{Transparency} : \og~\textit{No black box effect}~\fg{}, avec versioning de tous les documents et exécutables.
+    \item \textbf{Experience} : +25 ans, +200 projets de migration, expertise fonctionnelle et technique.
+    \item \textbf{Data Reconciliation} : 2 niveaux de rapports de validation, multiples KPIs et monitoring.
+    \item \textbf{Data Quality} : audit technique des données source en amont, contrôles de non-régression continus, vérifications d'intégrité et gestion des exceptions.
+    \item \textbf{Infrastructure} : SaaS ou On-Premise, compatible avec de grands volumes de données, sans coût de licence.
+    \item \textbf{Data Security} : application des normes de sécurité des données les plus strictes d'Accenture.
+\end{itemize}
+
 % ---------------------------------------------------------------------
-\subsubsection{Méthodologie ADM for ADMP}
-\label{subsubsec:adm-admp}
-
-La méthodologie \textbf{ADM for ADMP} (Accenture Delivery Method for ADMP) structure le processus de migration en cinq phases :
-
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{Discovery} : Analyse initiale du périmètre, identification des systèmes source et cible, cadrage du projet.
-    
-    \item \textbf{Data Analysis (Design Phase 1)} : Phase itérative comprenant la création des Data Scopes (SDS, TDS), du Table Mapping et du Data Mapping. L'objectif est de \og~\textit{validate the scope of the Data Migration and identify most of the gaps between the source system and the target system}~\fg{}.
-    
-    \item \textbf{Detailed Design (Design Phase 2)} : Élaboration des spécifications fines : Migration Steps (MS), Data Structure (DS), Intermediary Data Scope (IDS), Record Creation (RC), Data Population (DP), et Transcodification Tables (TT).
-    
-    \item \textbf{Build \& Test} : Le Core Engine génère automatiquement les programmes de migration à partir des Smart Designs. Les données sont extraites, transformées et chargées, puis validées via des rapports automatiques.
-    
-    \item \textbf{Deploy} : Migration finale en production, réconciliation des volumes, et validation post-migration.
-\end{enumerate}
-
-L'ensemble de la méthodologie est enseigné dans la \textbf{Core ADMP Design School (CIDS)}, une formation intensive de \textbf{deux semaines (80 heures)} couvrant la théorie, la pratique et les exercices sur tous les livrables ADMP.
+\subsubsection{Architecture end-to-end : le flux ETL ADMP}
+\label{subsubsec:admp-etl}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/adm_cycle.png}
-    \caption{Les cinq phases de la méthodologie ADM for ADMP}
-    \label{fig:adm-cycle}
+    \includegraphics[width=\textwidth]{img/admp_etl_flow.png}
+    \caption{Architecture end-to-end du flux ETL ADMP (Extract → Transform → Load)}
+    \label{fig:admp-etl}
 \end{figure}
 
-% ---------------------------------------------------------------------
-\subsubsection{Les livrables structurés}
-\label{subsubsec:livrables}
+Pour comprendre la valeur réelle d'ADMP, il convient de suivre le parcours d'une donnée depuis son système source jusqu'au système cible, en traversant chaque composant de la plateforme. Cette architecture, illustrée par la Figure~\ref{fig:admp-etl}, s'inscrit dans le modèle classique \textbf{Extract-Transform-Load (ETL)}, mais chaque phase est enrichie de composants propriétaires ADMP qui automatisent et sécurisent le processus. Il est important de noter que la plateforme distingue deux catégories de composants : les \textbf{outils ADMP} (développés et maîtrisés par Accenture) qui constituent le c\oe ur de la valeur ajoutée, et les \textbf{outils non-ADMP} (spécifiques aux systèmes source et cible du client) qui assurent les interfaces d'entrée et de sortie.
 
-Chaque livrable ADMP répond à un besoin précis dans la chaîne de migration, comme le résume le Tableau~\ref{tab:admp-livrables}.
+\paragraph{Phase 1 : Extract --- La collecte sécurisée des données sources.}
+
+Le processus débute par l'extraction des données depuis les systèmes legacy du client. Ces données peuvent provenir de sources hétérogènes : bases de données relationnelles (Oracle, SQL Server, DB2, Mainframe), fichiers Excel fournis par les équipes métier, ou environnements Salesforce existants. À ce stade, les programmes d'\textit{unload} utilisés sont des outils \textbf{non-ADMP} : chaque système legacy dispose de son propre mécanisme d'export, que l'équipe adapte au contexte du projet.
+
+Une fois extraits, les fichiers (généralement au format TXT ou CSV) sont pris en charge par le composant \textbf{Data Ingestion}, premier composant \textbf{ADMP} du pipeline. Celui-ci ingère les données dans la plateforme via un protocole de transfert sécurisé (SFTP, VPN), garantissant la confidentialité et l'intégrité des données dès leur entrée dans le périmètre Accenture.
+
+\paragraph{Phase 2 : Transform --- Le c\oe ur de valeur d'ADMP.}
+
+La phase de transformation est celle où ADMP déploie l'essentiel de son intelligence. Elle s'articule en deux couches fonctionnelles complémentaires.
+
+La \textit{première couche} est dédiée à l'\textbf{audit et à la définition des règles}. Le composant \textbf{Source Data Audit} procède à un audit technique automatique et exhaustif de chaque table, enregistrement et champ source : il valide la complétude de l'extraction, détecte les anomalies de format et produit un état des lieux précis des données disponibles. C'est sur cette base que l'équipe de design commence son travail. Les \textbf{Business Rules} (règles métier fonctionnelles, correspondant aux documents RC --- \textit{Record Creation}) et les \textbf{Smart Designs} (l'ensemble des documents de spécification SDS, IDS, TDS, DS, DP, TT) constituent la \textit{source unique de vérité} du projet : le moteur ADMP lit ces documents et génère automatiquement les programmes de transformation, sans aucun développement ETL manuel. Chaque exécution produit un \textbf{Run Report}, rapport automatique de statistiques, d'erreurs et de volumétrie.
+
+La \textit{deuxième couche} assure le \textbf{nettoyage et le contrôle qualité}. Les \textbf{Technical Rules} appliquent les transformations techniques (formats, longueurs, types de données). Le composant \textbf{Automated Cleansing (TT)} exploite les Tables de Transcodification pour normaliser automatiquement les valeurs source vers les valeurs cibles (mappings de codes, constantes, règles de substitution). Enfin, les \textbf{Data Integrity Checks} vérifient la cohérence référentielle entre tables, l'absence de doublons et la complétude des relations, avant que les données ne soient présentées au chargement.
+
+\paragraph{Phase 3 : Load --- Le chargement encadré vers la cible.}
+
+La phase de chargement est délibérément encadrée par deux niveaux de validation. La \textbf{Pre-load Validation} constitue une ultime vérification de conformité, d'intégrité et de volumétrie avant que les données ne quittent la plateforme ADMP vers le système cible. Elle permet de détecter en amont tout écart susceptible de provoquer une erreur lors du chargement.
+
+Le chargement lui-même s'effectue via des composants \textbf{non-ADMP}, propres à chaque système cible : chargement vers des fichiers ou bases de données génériques (\textit{Target Data Load}), chargement spécifique vers Salesforce via Data Loader ou Bulk API, ou vers Guidewire via ses APIs d'import métier. Cette architecture intentionnellement ouverte permet à ADMP d'interfacer avec n'importe quelle plateforme cible du marché (Duck Creek, SAP, Vitech, Workday, etc.) sans dépendance technologique.
+
+Le cycle se clôt par la \textbf{Post-load Validation}, composant ADMP qui effectue la réconciliation entre les volumes de données sources et cibles, contrôle la complétude du chargement et produit les rapports de migration finaux. C'est ce dernier rapport qui constitue la preuve de bonne exécution présentée au client.
+
+\paragraph{Synthèse : quatre niveaux de validation intégrés.}
+
+L'une des forces distinctives de l'architecture ADMP réside dans l'intégration systématique de quatre niveaux de validation tout au long du pipeline : l'\textbf{audit source} (avant le design), les \textbf{contrôles d'intégrité} (durant la transformation), la \textbf{validation pré-chargement} et la \textbf{validation post-chargement}. Cette approche élimine l'\textit{effet boîte noire} des solutions ETL traditionnelles et garantit une traçabilité complète, de la donnée source jusqu'à la donnée migrée dans le système cible.
+
+% ---------------------------------------------------------------------
+\subsubsection{Smart Designs vs ETL standard}
+\label{subsubsec:admp-vs-etl}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/admp_smartdesigns_vs_etl.png}
+    \caption{Comparaison visuelle ADMP Smart Designs vs Standard ETL}
+    \label{fig:admp-vs-etl}
+\end{figure}
+
+La comparaison entre l'approche ADMP Smart Designs et l'approche ETL traditionnelle met en évidence des avantages structurels significatifs, synthétisés dans le Tableau~\ref{tab:admp-vs-etl}.
 
 \begin{table}[H]
 \centering
-\caption{Livrables structurés de la plateforme ADMP}
-\label{tab:admp-livrables}
-\begin{tabularx}{\textwidth}{llX}
-\toprule
-\textbf{Livrable} & \textbf{Phase} & \textbf{Rôle} \\
-\midrule
-SDS & Data Analysis & Dictionnaire des tables et champs sources \\
-TDS & Data Analysis & Dictionnaire des tables et champs cibles \\
-Table Mapping & Data Analysis & Correspondance tables source $\leftrightarrow$ cible \\
-Data Mapping & Data Analysis & Correspondance champs source $\leftrightarrow$ cible \\
-Key Decisions & Transversal & Suivi des écarts majeurs et décisions métier \\
-Q\&A & Transversal & Questions/réponses avec le client \\
-MS & Detailed Design & Workflows par domaine avec dépendances \\
-IDS & Detailed Design & Tables intermédiaires réutilisables \\
-DS & Detailed Design & Modèle hiérarchique des relations \\
-RC & Detailed Design & Règles de création d'enregistrements cibles \\
-DP & Detailed Design & Règles de peuplement des champs cibles \\
-TT & Detailed Design & Tables de correspondance de codes \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-% ---------------------------------------------------------------------
-\subsubsection{Bilan : forces et chiffres clés}
-\label{subsubsec:admp-bilan}
-
-Les chiffres clés d'ADMP ont déjà été présentés dans le Tableau~\ref{tab:admp-kpi} de l'introduction générale. La comparaison directe entre l'approche ADMP et l'approche ETL standard révèle des avantages structurels significatifs, synthétisés dans le Tableau~\ref{tab:admp-vs-etl}.
-
-\begin{table}[H]
-\centering
-\caption{Comparaison ADMP vs ETL standard}
+\caption{Comparaison ADMP Smart Designs vs ETL standard}
 \label{tab:admp-vs-etl}
 \begin{tabularx}{\textwidth}{lXX}
 \toprule
-\textbf{Critère} & \textbf{ETL Standard} & \textbf{ADMP Smart Designs} \\
+\textbf{Domaine} & \textbf{ETL Standard} & \textbf{ADMP Smart Designs} \\
 \midrule
-Build & Équipe technique requise & Aucun développeur ETL requis \\
+Build & Équipe technique requise (Talend, Informatica, BODS) & Aucun développeur ETL requis \\
 \addlinespace
-Traçabilité & Impossible de valider design vs implémentation & Une seule source de vérité \\
+Rapports & Développés en supplément de l'ETL & Générés automatiquement depuis les Smart Designs \\
 \addlinespace
-Rapports & Développés en supplément & Générés automatiquement \\
-\addlinespace
-Scalabilité & Contrainte par les outils/équipes & Gérée par design et templates \\
-\addlinespace
-Mises à jour & Nouvelle implémentation requise & Mise à jour du Smart Design uniquement \\
+Scalabilité & Contrainte par l'équipe technique et les outils & Gérée par design, templates hautement distribués \\
 \addlinespace
 Réutilisabilité & Compétences techniques avancées requises & Personnalisation facile (Word/Excel) \\
+\addlinespace
+Mises à jour des règles & Mise à jour simultanée des documents \textit{et} de l'ETL & Mise à jour du Smart Design uniquement \\
+\addlinespace
+Traçabilité & Impossible de valider design vs implémentation & Une seule source de vérité, traçabilité complète \\
+\addlinespace
+Licence & Coût de licence requis & Aucun coût de licence \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+% ---------------------------------------------------------------------
+\subsubsection{La méthodologie ADMP : notre approche détaillée}
+\label{subsubsec:admp-approche}
+
+La méthodologie ADMP structure la migration en quatre phases, chacune impliquant des rôles précis côté client et côté Accenture.
+
+\paragraph{Phase 1 --- Extraction des données.}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/admp_approach_extract.png}
+    \caption{Phase d'extraction -- Rôles et activités ADMP}
+    \label{fig:admp-extract}
+\end{figure}
+
+Cette phase comprend trois étapes : (1) la \textbf{définition du périmètre et chargement} des données source, incluant un dictionnaire de données détaillé (noms de champs, formats, descriptions, domaines et systèmes source) ; (2) l'\textbf{extraction} des données depuis le système source vers des fichiers TXT ou CSV, chiffrés et transmis via SFTP/VPN ; (3) l'\textbf{audit technique automatique} des données source par table, enregistrement et champ.
+
+\paragraph{Phase 2 --- Design (Analyse et Conception détaillée).}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/admp_approach_design.png}
+    \caption{Phase de design -- Analyse et conception détaillée ADMP}
+    \label{fig:admp-design}
+\end{figure}
+
+Organisée en deux volets : (1) l'\textbf{analyse de données} (Table Mapping, Data Mapping, Key Decisions pour les écarts majeurs), validée en workshops IT et Business ; (2) la \textbf{conception détaillée} comprenant les Migration Steps (workflows par domaine avec dépendances et stratégies de parallélisation), les Transcodification Tables, et les Data Migration Units (Data Structure, Record Creation, Data Population).
+
+\paragraph{Phase 3 --- Build.}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/admp_approach_build.png}
+    \caption{Phase de build -- Automatisation complète depuis les Smart Designs}
+    \label{fig:admp-build}
+\end{figure}
+
+ADMP automatise intégralement la création des programmes de migration depuis les documents de design : (1) \textbf{Full Build Automation} -- le moteur récupère et traite directement les documents depuis le dépôt de l'équipe design ; (2) \textbf{Assembly Test} -- tests rigoureux pour identifier et corriger les problèmes techniques avec un minimum d'intervention manuelle ; (3) \textbf{Stabilisation} -- raffinement continu du processus à l'aide des rapports, pour aligner les données migrées avec les standards métier et de conformité.
+
+\paragraph{Phase 4 --- Test et Déploiement.}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/admp_approach_test_deploy.png}
+    \caption{Phase de test et déploiement -- Cycle itératif ADMP}
+    \label{fig:admp-test-deploy}
+\end{figure}
+
+La phase suit un cycle itératif organisé autour de : (1) \textbf{Post-build issues reporting} -- identification des anomalies, distinguant les correctifs immédiats des sujets nécessitant l'input des équipes IT ou Business ; (2) \textbf{Livraisons itératives de releases test} -- une nouvelle version toutes les 2 à 4 semaines (refresh des données source, corrections, mises à jour des règles) ; (3) \textbf{Test support} -- analyse et support lors des tests, identification des causes de défauts et affinement des règles ; (4) \textbf{Rehearsal \& Rollout} -- gestion complète du processus lors des répétitions (\textit{rehearsals}) et exécution du plan de bascule (\textit{cutover}).
 
 % =====================================================================
 \subsection{Intelligence artificielle et intégration de données}

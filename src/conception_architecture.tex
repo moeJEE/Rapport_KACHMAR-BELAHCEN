@@ -1,0 +1,745 @@
+% =====================================================================
+% CHAPITRE 5 — CONCEPTION ET ARCHITECTURE DE LA SOLUTION
+% =====================================================================
+\chapter{Conception et Architecture de la Solution}
+\label{chap:conception}
+
+La conception d'une solution à vocation industrielle exige une démarche rigoureuse qui transforme des exigences métier en une architecture concrète, cohérente et maintenable. Fort du cadre méthodologique Agile décrit au chapitre~4 et des fondements posés dans l'état de l'art, ce chapitre présente l'architecture de la contribution développée dans le cadre de ce projet de fin d'études~: un \textbf{compilateur Databricks} intégré à la plateforme ADMP, capable de transformer automatiquement des spécifications de migration fonctionnelles en packages Python exécutables sur Databricks Runtime.
+
+Cette contribution s'inscrit dans une vision plus large de modernisation de la plateforme ADMP par l'intelligence artificielle, visant à combler le fossé \textit{design--build} identifié au chapitre~2, à accélérer les cycles de migration, et à exploiter la puissance de calcul distribuée de Databricks pour traiter des volumes de données à l'échelle du pétaoctet. La démarche de conception adoptée s'appuie sur les principes de l'\textbf{architecture orientée composants}, garantissant la séparation des responsabilités, l'extensibilité future, et l'intégration harmonieuse avec l'écosystème ADMP existant.
+
+% =====================================================================
+\section{Vue d'ensemble de la modernisation}
+\label{sec:vue-ensemble}
+
+% ---------------------------------------------------------------------
+\subsection{De ADMP classique à ADMP augmenté par l'IA}
+\label{subsec:avant-apres}
+
+La plateforme ADMP, dans son état classique, constitue déjà une avancée significative par rapport aux approches ETL traditionnelles en introduisant le paradigme \textit{Smart Design}~: les règles de migration sont rédigées dans un langage métier structuré, puis compilées automatiquement en programmes SQL. Cependant, la cible d'exécution historique -- le moteur ETL on-premise (SQL Server/SSIS) -- présente des limites structurelles en termes de scalabilité, de coûts d'infrastructure et d'intégration avec les architectures cloud modernes.
+
+La Figure~\ref{fig:avant-apres} illustre la transformation opérée par la modernisation~: de l'\textbf{ADMP Classique}, dont la compilation est semi-automatique et la cible d'exécution est un système transactionnel on-premise, à l'\textbf{ADMP + IA}, où l'intelligence artificielle enrichit la phase de conception et le moteur Databricks offre une exécution massivement parallèle et élastique.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex, thick,
+  hdr/.style={rectangle, rounded corners=4pt, minimum width=5.6cm,
+              minimum height=0.75cm, font=\bfseries\small, align=center,
+              text=white, inner sep=4pt},
+  row/.style={rectangle, rounded corners=2pt, minimum width=5.6cm,
+              minimum height=0.6cm, font=\scriptsize, align=left,
+              inner sep=5pt}
+]
+  %% ——— Panneau gauche : ADMP Classique ———
+  \node[hdr, fill=accenturedark] (lh) at (-3.5, 0) {ADMP Classique};
+
+  \node[row, fill=accenturegray,   text=accenturedark] at (-3.5,-0.72) {\textbf{Design}~: ADMP Studio (manuel)};
+  \node[row, fill=accenturegray,   text=accenturedark] at (-3.5,-1.38) {\textbf{Compilation}~: Semi-auto, jours};
+  \node[row, fill=accenturegray,   text=accenturedark] at (-3.5,-2.04) {\textbf{Exécution}~: ETL on-premise (SSIS)};
+  \node[row, fill=accenturegray,   text=accenturedark] at (-3.5,-2.70) {\textbf{Cible}~: Oracle / SQL Server};
+  \node[row, fill=accenturegray,   text=accenturedark] at (-3.5,-3.36) {\textbf{Scalabilité}~: Nœud unique (scale-up)};
+  \node[row, fill=accenturegray,   text=accenturedark] at (-3.5,-4.02) {\textbf{Validation}~: Rapports SQL manuels};
+  \node[row, fill=accenturegray,   text=accenturedark] at (-3.5,-4.68) {\textbf{IA}~: Aucune};
+
+  %% ——— Flèche de transformation ———
+  \node[circle, fill=accenturepurple, text=white,
+        font=\bfseries\scriptsize, align=center,
+        minimum size=1.1cm, inner sep=0pt] at (0,-2.4) {IA};
+  \draw[->, ultra thick, color=accenturepurple] (-0.55,-2.4) -- (0.55,-2.4);
+
+  %% ——— Panneau droit : ADMP + IA ———
+  \node[hdr, fill=accenturepurple] (rh) at (3.5, 0) {ADMP + IA};
+
+  \node[row, fill=accenturelightpurple, text=accenturedark] at (3.5,-0.72) {\textbf{Design}~: ADMP AI Studio (LLM)};
+  \node[row, fill=accenturelightpurple, text=accenturedark] at (3.5,-1.38) {\textbf{Compilation}~: Automatisée, secondes};
+  \node[row, fill=accenturelightpurple, text=accenturedark] at (3.5,-2.04) {\textbf{Exécution}~: Databricks / Apache Spark};
+  \node[row, fill=accenturelightpurple, text=accenturedark] at (3.5,-2.70) {\textbf{Cible}~: Delta Lake / Unity Catalog};
+  \node[row, fill=accenturelightpurple, text=accenturedark] at (3.5,-3.36) {\textbf{Scalabilité}~: Élastique cloud (scale-out)};
+  \node[row, fill=accenturelightpurple, text=accenturedark] at (3.5,-4.02) {\textbf{Validation}~: Rapports Excel automatisés};
+  \node[row, fill=accenturelightpurple, text=accenturedark] at (3.5,-4.68) {\textbf{IA}~: Claude API (Anthropic)};
+\end{tikzpicture}
+\caption{Modernisation de la plateforme ADMP~: état classique versus ADMP augmenté par l'IA}
+\label{fig:avant-apres}
+\end{figure}
+
+Ce basculement représente bien plus qu'un simple changement de moteur d'exécution~: il marque le passage d'une architecture centralisée et monolithique à une architecture distribuée, cloud-native, et \textit{data-lakehouse}, alignée avec les standards modernes de l'ingénierie des données \cite{databricks2023lakehouse}.
+
+% ---------------------------------------------------------------------
+\subsection{Périmètre de la contribution PFE}
+\label{subsec:perimetre}
+
+La contribution de ce projet de fin d'études se concentre sur un module stratégique de la chaîne de valeur ADMP~: le \textbf{compilateur Databricks} (\textit{Databricks Compiler}). Ce module constitue le pont entre les spécifications fonctionnelles de migration (documents RC, TDS, DP rédigés par les Data Analysts) et leur exécution sur l'infrastructure Databricks.
+
+\begin{table}[H]
+\centering
+\caption{Périmètre de la contribution PFE}
+\label{tab:perimetre}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Composant} & \textbf{Description de la contribution} \\
+\midrule
+\texttt{dbkSqlInstructionEmitter.ts} &
+  Compilateur principal~: parcourt l'AST des instructions RC et génère les branches UNION ALL en Spark SQL \\
+\addlinespace
+\texttt{dbkSqlExpression.ts} &
+  Traducteur d'expressions~: convertit les expressions ADMP en SQL valide Databricks (fonctions, transco, littéraux) \\
+\addlinespace
+\texttt{dbkFrameworkEmitter.ts} &
+  Générateur du framework Python~: produit \texttt{unit\_base.py}, \texttt{runner.py}, \texttt{validate.py} \\
+\addlinespace
+\texttt{dbkIntegrityEmitter.ts} &
+  Générateur de contrôles d'intégrité~: construit les vérifications d'intégrité référentielle et les rapports Excel \\
+\addlinespace
+Bundle Databricks complet &
+  Package Python (\texttt{.whl}) auto-contenu~: unités de migration PySpark, framework, DDL source, données de test \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Les corrections et améliorations apportées au cours du projet incluent notamment~: la résolution d'un défaut critique dans l'algorithme de reconstruction des clés de jointure transco (cas à deux clés), la correction d'un bug Python dans la génération des littéraux SQL vides, et l'introduction d'une heuristique de normalisation des littéraux de chaînes ADMP. L'ensemble de ces contributions a été livré sur la branche \texttt{dev} du dépôt \texttt{6445\_data\_migration\_studio} via des commits documentés.
+
+% =====================================================================
+\section{Analyse des exigences}
+\label{sec:exigences}
+
+% ---------------------------------------------------------------------
+\subsection{Exigences fonctionnelles}
+\label{subsec:ef}
+
+Les exigences fonctionnelles ont été élicitées à travers l'analyse des documents de design de référence (RC, TDS, DP), des retours des runs Databricks en environnement de test, et des échanges quotidiens avec l'équipe ADMP lors des Daily Stand-ups. Le Tableau~\ref{tab:ef} synthétise les exigences fonctionnelles critiques.
+
+\begin{table}[H]
+\centering
+\caption{Exigences fonctionnelles du compilateur Databricks}
+\label{tab:ef}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{ID} & \textbf{Priorité} & \textbf{Description} \\
+\midrule
+EF-01 & Critique &
+  Générer des unités PySpark (\texttt{mig\_*.py}) à partir des instructions RC (callWriteFile, callDataPopulate, IF/ELSE) \\
+\addlinespace
+EF-02 & Critique &
+  Traduire les expressions ADMP en Spark SQL valide~: CASE WHEN, SUBSTRING, fonctions de date, transcodifications \\
+\addlinespace
+EF-03 & Critique &
+  Gérer les jointures transco multi-clés~: reconstruire les clés de jointure même lorsqu'elles contiennent des variables de design Python \\
+\addlinespace
+EF-04 & Critique &
+  Générer les vues broadcast transco (\texttt{\_tv\_TT\_*}) pour l'optimisation des jointures de petite dimension \\
+\addlinespace
+EF-05 & Haute &
+  Produire les contrôles d'intégrité référentielle avec rapports Excel par unité et rapport consolidé global \\
+\addlinespace
+EF-06 & Haute &
+  Normaliser les littéraux de chaînes ADMP~: supprimer les espaces parasites autour des codes-valeurs sans affecter les libellés intentionnellement espacés \\
+\addlinespace
+EF-07 & Haute &
+  Générer le DDL source (\texttt{create\_tables.py}) et les données de test (\texttt{generate.py}) pour une exécution offline \\
+\addlinespace
+EF-08 & Moyenne &
+  Émettre des castings numériques défensifs (\texttt{safe\_int\_cast}, \texttt{TRY\_CAST}) pour les colonnes entières issues de sources STRING \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ---------------------------------------------------------------------
+\subsection{Exigences non fonctionnelles}
+\label{subsec:enf}
+
+\begin{table}[H]
+\centering
+\caption{Exigences non fonctionnelles}
+\label{tab:enf}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{ID} & \textbf{Catégorie} & \textbf{Description} \\
+\midrule
+ENF-01 & Performance &
+  Génération d'un bundle complet (10 unités, 500 branches SQL) en moins de 30 secondes sur le serveur de compilation \\
+\addlinespace
+ENF-02 & Déterminisme &
+  Deux compilations successives à partir des mêmes inputs produisent un output binaire identique (reproductibilité) \\
+\addlinespace
+ENF-03 & Scalabilité &
+  L'architecture du bundle généré doit supporter l'exécution sur des clusters Databricks de 1 à 100 nœuds sans modification \\
+\addlinespace
+ENF-04 & Maintenabilité &
+  Le compilateur est développé en TypeScript avec une couverture de typage stricte~; chaque émetteur est un module indépendant testable unitairement \\
+\addlinespace
+ENF-05 & Sécurité &
+  Aucune credential ni secret ne doit être embarqué dans le bundle généré~; les paramètres sensibles transitent via Databricks Secrets \\
+\addlinespace
+ENF-06 & Observabilité &
+  Chaque unité d'exécution journalise ses compteurs (lignes lues, écrites, rejetées) dans une table Delta de log pour traçabilité \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ---------------------------------------------------------------------
+\subsection{Contraintes techniques}
+\label{subsec:ct}
+
+\begin{table}[H]
+\centering
+\caption{Contraintes techniques imposées par l'environnement projet}
+\label{tab:ct}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{ID} & \textbf{Type} & \textbf{Contrainte} \\
+\midrule
+CT-01 & Langage &
+  Le compilateur doit être écrit en TypeScript~; il s'intègre au Core Engine ADMP existant (Node.js 18+) \\
+\addlinespace
+CT-02 & Runtime cible &
+  Le bundle généré doit être compatible Databricks Runtime 14.x (Python 3.11, PySpark 3.5, Delta Lake 3.x) \\
+\addlinespace
+CT-03 & Gouvernance &
+  Les tables Delta cibles sont gérées par Unity Catalog~; toute référence de table doit inclure les trois niveaux (\textit{catalog.schema.table}) \\
+\addlinespace
+CT-04 & Versioning &
+  Le code du compilateur est versionné sur Bitbucket~; les livraisons se font sur la branche \texttt{dev} via des commits atomiques et documentés \\
+\addlinespace
+CT-05 & Compatibilité &
+  Le compilateur ne doit pas modifier l'interface d'entrée existante (API du Core Engine)~; seule la sortie (bundle) change \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =====================================================================
+\section{Architecture de la solution IA}
+\label{sec:architecture}
+
+% ---------------------------------------------------------------------
+\subsection{Architecture globale cible}
+\label{subsec:archi-globale}
+
+L'architecture cible de la solution ADMP + IA suit un modèle en \textbf{cinq couches} (Figure~\ref{fig:archi-globale}), inspiré des architectures Data Lakehouse modernes \cite{databricks2023lakehouse}. Chaque couche encapsule une responsabilité claire et communique avec ses voisines via des interfaces bien définies, garantissant la séparation des préoccupations.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex, thick]
+
+  %% ——— Couche 1 (bas) : Données Sources ———
+  \fill[accenturedark!15, rounded corners=5pt] (-7.2,-0.5) rectangle (7.2, 0.9);
+  \node[font=\bfseries\small, text=accenturedark] at (0, 0.55) {Couche Sources de Données};
+  \node[font=\scriptsize, text=accenturedark!80] at (0, 0.05)
+    {Oracle~\textbullet~SQL Server~\textbullet~Fichiers CSV / TXT~\textbullet~Systèmes Legacy (VSAM, IMS)};
+
+  %% ——— Couche 2 : Stockage Lakehouse ———
+  \fill[accenturedark!30, rounded corners=5pt] (-7.2, 1.2) rectangle (7.2, 2.6);
+  \node[font=\bfseries\small, text=white] at (0, 2.25) {Couche Stockage --- Lakehouse};
+  \node[font=\scriptsize, text=white!90] at (0, 1.75)
+    {Apache Delta Lake~\textbullet~Unity Catalog~\textbullet~Hive Metastore~\textbullet~Azure ADLS Gen2};
+
+  %% ——— Couche 3 : Exécution Distribuée ———
+  \fill[accenturedark!55, rounded corners=5pt] (-7.2, 2.9) rectangle (7.2, 4.3);
+  \node[font=\bfseries\small, text=white] at (0, 3.95) {Couche Exécution Distribuée};
+  \node[font=\scriptsize, text=white!90] at (0, 3.45)
+    {Databricks Runtime 14+~\textbullet~Apache Spark 3.5~\textbullet~PySpark~\textbullet~Photon Engine};
+
+  %% ——— Couche 4 : Compilation (CONTRIBUTION) — bordure vive ———
+  \fill[accenturepurple, rounded corners=5pt] (-7.2, 4.6) rectangle (7.2, 6.5);
+  \draw[white, line width=2pt, rounded corners=5pt, dashed]
+    (-7.1, 4.7) rectangle (7.1, 6.4);
+  \node[font=\bfseries\small, text=white] at (0, 6.1)
+    {Couche Compilation --- Data Migration Studio Engine \quad {\normalfont\scriptsize[\,CONTRIBUTION PFE\,]}};
+  %% Sub-modules
+  \node[rectangle, rounded corners=2pt, fill=white, fill opacity=0.15,
+        text=white, font=\scriptsize, minimum width=3.2cm, minimum height=0.5cm,
+        inner sep=3pt, align=center] at (-4.5, 5.3)
+    {\texttt{dbkSqlInstructionEmitter}};
+  \node[rectangle, rounded corners=2pt, fill=white, fill opacity=0.15,
+        text=white, font=\scriptsize, minimum width=3.0cm, minimum height=0.5cm,
+        inner sep=3pt, align=center] at (-1.0, 5.3)
+    {\texttt{dbkSqlExpression}};
+  \node[rectangle, rounded corners=2pt, fill=white, fill opacity=0.15,
+        text=white, font=\scriptsize, minimum width=3.2cm, minimum height=0.5cm,
+        inner sep=3pt, align=center] at (2.5, 5.3)
+    {\texttt{dbkFrameworkEmitter}};
+  \node[rectangle, rounded corners=2pt, fill=white, fill opacity=0.15,
+        text=white, font=\scriptsize, minimum width=2.8cm, minimum height=0.5cm,
+        inner sep=3pt, align=center] at (5.7, 5.3)
+    {\texttt{dbkIntegrityEmitter}};
+
+  %% ——— Couche 5 (haut) : Présentation / IA ———
+  \fill[accenturedark, rounded corners=5pt] (-7.2, 6.8) rectangle (7.2, 8.2);
+  \node[font=\bfseries\small, text=white] at (0, 7.85) {Couche Présentation \& Intelligence Artificielle};
+  \node[font=\scriptsize, text=white!90] at (0, 7.35)
+    {ADMP AI Studio~\textbullet~ADMP Portal~\textbullet~Claude API (Anthropic)~\textbullet~RAG Knowledge Base};
+
+  %% ——— Flèches inter-couches ———
+  \foreach \y in {0.9, 2.6, 4.3, 6.5} {
+    \draw[->, white, line width=1.2pt] (0,\y) -- (0,\y+0.3);
+  }
+
+  %% ——— Légende ———
+  \fill[accenturepurple, rounded corners=2pt] (4.8, 0.05) rectangle (7.1, 0.55);
+  \node[font=\tiny, text=white, align=center] at (5.95, 0.3)
+    {Contribution PFE};
+
+\end{tikzpicture}
+\caption{Architecture globale cible de la solution ADMP + IA (5 couches)}
+\label{fig:archi-globale}
+\end{figure}
+
+La couche de \textbf{Compilation} (mise en évidence en violet) constitue le cœur de la contribution de ce PFE. Elle reçoit en entrée les documents de spécification ADMP produits par l'IA Studio ou rédigés manuellement, les transforme en un package Python exécutable (\textit{bundle}), et l'achemine vers le moteur d'exécution Databricks. Cette position centrale dans la chaîne de valeur confère à ce module un rôle d'\textbf{intégrateur universel}~: il absorbe la complexité des règles de migration fonctionnelles et produit un code industriellement robuste, optimisé pour Spark.
+
+% ---------------------------------------------------------------------
+\subsection{Module de génération du bundle Databricks}
+\label{subsec:module-databricks}
+
+Ce module constitue la \textbf{contribution principale} du projet. Il est architecturé autour de quatre émetteurs TypeScript spécialisés qui forment un pipeline de compilation en cascade.
+
+\subsubsection{Pipeline de compilation}
+\label{subsubsec:pipeline}
+
+La Figure~\ref{fig:pipeline} illustre les étapes successives du pipeline, depuis les documents de design ADMP jusqu'au bundle Python déployable sur Databricks.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex, thick,
+  stage/.style={rectangle, rounded corners=4pt, minimum width=2.6cm,
+                minimum height=1.1cm, fill=accenturepurple, text=white,
+                font=\bfseries\scriptsize, align=center, inner sep=4pt},
+  io/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+             minimum width=2.0cm, minimum height=0.9cm, fill=accenturelightpurple,
+             text=accenturedark, font=\scriptsize\bfseries, align=center, inner sep=3pt},
+  lbl/.style={font=\tiny, text=accenturedark, align=center, text width=2.4cm}
+]
+  %% Inputs
+  \node[io] (rc)  at (0, 0)    {RC / TDS\\DP / TT};
+
+  %% Stage 1 : Parser
+  \node[stage] (parser) at (3.0, 0) {Parser\\ADMP\\(AST)};
+  \draw[->] (rc) -- (parser);
+
+  %% Stage 2 : extractPaths
+  \node[stage] (ext) at (6.0, 0) {extract\\Paths()};
+  \draw[->] (parser) -- (ext);
+
+  %% Stage 3 : generateSelectBlock
+  \node[stage] (gen) at (9.0, 0) {generate\\SelectBlock()};
+  \draw[->] (ext) -- (gen);
+
+  %% Stage 4 : Bundle Assembler
+  \node[stage, fill=accenturedark] (asm) at (12.0, 0) {Bundle\\Assembler};
+  \draw[->] (gen) -- (asm);
+
+  %% Output
+  \node[io] (out) at (14.8, 0) {.whl\\Bundle};
+  \draw[->] (asm) -- (out);
+
+  %% Labels sous chaque étape
+  \node[lbl] at (3.0,-1.05)  {Lecture \& validation\\des instructions RC};
+  \node[lbl] at (6.0,-1.05)  {Extraction des\\chemins SqlPath};
+  \node[lbl] at (9.0,-1.05)  {Génération SQL\\UNION ALL};
+  \node[lbl] at (12.0,-1.05) {Assemblage\\package Python};
+
+  %% Brace du bas : moteur TypeScript
+  \draw[decorate, decoration={brace, mirror, amplitude=5pt}, color=accenturepurple, thick]
+    ([yshift=-20pt]parser.south west) -- ([yshift=-20pt]asm.south east)
+    node[midway, below=7pt, font=\small, text=accenturepurple]
+         {Data Migration Studio Engine --- TypeScript};
+
+\end{tikzpicture}
+\caption{Pipeline de compilation~: des spécifications ADMP au bundle Databricks}
+\label{fig:pipeline}
+\end{figure}
+
+\subsubsection{Structure de données \texttt{SqlPath}}
+\label{subsubsec:sqlpath}
+
+L'unité fondamentale du compilateur est la structure \texttt{SqlPath}. Chaque instance représente une branche d'exécution indépendante -- correspondant à un nœud feuille dans l'arbre conditionnel des instructions RC -- et encapsule toutes les informations nécessaires à la génération du bloc SQL \texttt{SELECT} correspondant. Le Tableau~\ref{tab:sqlpath} décrit les champs principaux.
+
+\begin{table}[H]
+\centering
+\caption{Structure \texttt{SqlPath}~: champs principaux}
+\label{tab:sqlpath}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Champ} & \textbf{Type} & \textbf{Rôle} \\
+\midrule
+\texttt{tables}        & \texttt{TableEntry[]} &
+  Relations SQL de la branche (FROM + JOINs), ordonnées topologiquement pour garantir que chaque \texttt{ON} ne référence que des tables déjà définies \\
+\addlinespace
+\texttt{conditions}    & \texttt{string[]}     &
+  Prédicats de filtrage de la branche~; les références à des variables Python de design (\texttt{v\_*}) sont éliminées avant injection SQL \\
+\addlinespace
+\texttt{assignments}   & \texttt{Assignment[]} &
+  Colonnes cibles avec leur expression source, après expansion des variables de design \\
+\addlinespace
+\texttt{writeTargets}  & \texttt{WriteTarget[]} &
+  Tables Delta cibles de la branche (\texttt{INSERT INTO catalog.schema.table}) \\
+\addlinespace
+\texttt{joinKeys}      & \texttt{string[]}     &
+  Clés de jointure transco reconstructées lors de la phase de guérison post-expansion \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Algorithme \texttt{extractPaths}}
+\label{subsubsec:extract}
+
+La fonction \texttt{extractPaths} est le cœur du compilateur~: elle parcourt l'arbre syntaxique abstrait (AST) des instructions RC selon un algorithme de type \textbf{DFS avec accumulation de contexte}. À chaque nœud conditionnel (\texttt{IF}/\texttt{ELSE}), l'algorithme duplique le contexte courant, ajoutant la condition de la branche vraie dans l'un et sa négation dans l'autre. Les instructions \texttt{callWriteFile} et \texttt{callDataPopulate} constituent les nœuds feuilles~: elles cristallisent le contexte accumulé en un objet \texttt{SqlPath} poussé dans le tableau de résultats.
+
+Cette approche garantit que chaque \texttt{SqlPath} est \textbf{auto-suffisant}~: il contient l'ensemble des conditions qui mènent à son exécution, sans dépendance à l'état d'autres branches. La génération d'un \texttt{UNION ALL} à partir de plusieurs \texttt{SqlPath} partageant la même table cible est ainsi triviale.
+
+\subsubsection{Algorithme \texttt{generateSelectBlock} et guérison des jointures transco}
+\label{subsubsec:generate}
+
+La génération du bloc \texttt{SELECT} suit une séquence en six étapes~:
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}]
+  \item \textbf{Résolution des variables de design}~: les variables Python de type \texttt{v\_x\_*} (paramètres contextuels) sont résolues via la table \texttt{expandedVars} construite à partir des affectations précédentes.
+  \item \textbf{Injection des jointures transco}~: les vues broadcast \texttt{\_tv\_TT\_*} sont injectées comme \texttt{LEFT JOIN}, avec filtrage des clés contenant des références Python non résolues.
+  \item \textbf{Guérison des clés de jointure}~: après résolution des variables, une passe de reconstruction (\textit{healing}) ré-évalue les clés de jointure précédemment filtrées. L'algorithme fusionne les clés nouvellement résolues avec celles déjà présentes, évitant les doublons~; cette passe traite \textit{toutes} les tables transco (pas uniquement celles sans clé), corrigeant le cas des jointures à clés multiples partiellement résolues.
+  \item \textbf{Tri topologique des tables}~: les tables de la branche sont réordonnées de façon à ce que chaque condition \texttt{JOIN ON} ne référence que des tables apparaissant antérieurement dans la clause \texttt{FROM}.
+  \item \textbf{Génération des colonnes}~: les assignations de la branche sont converties en expressions SQL, avec application des castings défensifs (\texttt{TRY\_CAST}, \texttt{NULLIF}) pour les colonnes numériques.
+  \item \textbf{Émission du bloc final}~: le bloc \texttt{SELECT ... FROM ... JOIN ... WHERE ...} est sérialisé en texte Python dans le fichier d'unité.
+\end{enumerate}
+
+\subsubsection{Structure du bundle généré}
+\label{subsubsec:bundle}
+
+Le résultat de la compilation est un \textbf{package Python autonome} (Figure~\ref{fig:bundle}), packagé en \texttt{.whl} et déployable directement comme librairie Databricks.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex,
+  dir/.style={rectangle, rounded corners=2pt, fill=accenturepurple,
+              text=white, font=\bfseries\scriptsize, align=left,
+              minimum width=4.0cm, minimum height=0.55cm, inner sep=4pt},
+  file/.style={rectangle, rounded corners=2pt, fill=accenturelightpurple,
+               text=accenturedark, font=\scriptsize, align=left,
+               minimum width=3.5cm, minimum height=0.48cm, inner sep=4pt},
+  ln/.style={color=accenturedark!50, thick}
+]
+  %% Root
+  \node[dir, minimum width=5.5cm] (root) at (0, 0)
+    {\texttt{poc\_*\_YYYYMMDD/}};
+
+  %% Top-level files
+  \node[file] (runner)   at (2.5,-0.75)  {\texttt{runner.py}};
+  \node[file] (validate) at (2.5,-1.35)  {\texttt{validate.py}};
+
+  %% Dossier units
+  \node[dir] (units) at (2.5,-2.05) {\texttt{units/}};
+  \node[file] at (5.5,-2.65) {\texttt{mig\_cus00.py}};
+  \node[file] at (5.5,-3.20) {\texttt{mig\_acc00.py}};
+  \node[file] at (5.5,-3.75) {\texttt{mig\_*.py  \ldots}};
+
+  %% Dossier framework
+  \node[dir] (fw) at (2.5,-4.45) {\texttt{framework/}};
+  \node[file] at (5.5,-5.05) {\texttt{unit\_base.py}};
+
+  %% Dossier config
+  \node[dir] (cfg) at (2.5,-5.75) {\texttt{config/}};
+  \node[file] at (5.5,-6.35) {\texttt{parameters.py}};
+  \node[file] at (5.5,-6.90) {\texttt{transco.py}};
+
+  %% Dossier source\_ddl
+  \node[dir] (ddl) at (2.5,-7.60) {\texttt{source\_ddl/}};
+  \node[file] at (5.5,-8.20) {\texttt{create\_tables.py}};
+
+  %% Dossier reports
+  \node[dir] (rpt) at (2.5,-8.90) {\texttt{reports/}};
+  \node[file] at (5.5,-9.50) {\texttt{generate\_reports.py}};
+
+  %% Edges
+  \draw[ln] (root.south) -- ++(0,-0.15) -| (runner.west);
+  \draw[ln] (root.south) -- ++(0,-0.15) -| (validate.west);
+  \draw[ln] (root.south) -- ++(0,-0.15) -| (units.west);
+  \draw[ln] (root.south) -- ++(0,-0.15) -| (fw.west);
+  \draw[ln] (root.south) -- ++(0,-0.15) -| (cfg.west);
+  \draw[ln] (root.south) -- ++(0,-0.15) -| (ddl.west);
+  \draw[ln] (root.south) -- ++(0,-0.15) -| (rpt.west);
+
+  \draw[ln] (units.east) -- ++(0.3,0) |- (5.5,-2.65);
+  \draw[ln] (units.east) -- ++(0.3,0) |- (5.5,-3.20);
+  \draw[ln] (units.east) -- ++(0.3,0) |- (5.5,-3.75);
+  \draw[ln] (fw.east)    -- ++(0.3,0) |- (5.5,-5.05);
+  \draw[ln] (cfg.east)   -- ++(0.3,0) |- (5.5,-6.35);
+  \draw[ln] (cfg.east)   -- ++(0.3,0) |- (5.5,-6.90);
+  \draw[ln] (ddl.east)   -- ++(0.3,0) |- (5.5,-8.20);
+  \draw[ln] (rpt.east)   -- ++(0.3,0) |- (5.5,-9.50);
+\end{tikzpicture}
+\caption{Structure du bundle Databricks généré}
+\label{fig:bundle}
+\end{figure}
+
+Chaque fichier d'unité (\texttt{mig\_*.py}) est autonome~: il importe uniquement le framework interne (\texttt{unit\_base.py}) et peut être exécuté de manière indépendante sur n'importe quel cluster Databricks disposant de la librairie installée. Le \texttt{runner.py} orchestre l'exécution séquentielle des unités et transmet les paramètres de run (catalog, schéma, paramètres métier) via un dictionnaire typé.
+
+% ---------------------------------------------------------------------
+\subsection{Intégration avec le Core Engine existant}
+\label{subsec:integration}
+
+Le compilateur Databricks s'intègre au Core Engine ADMP comme un \textbf{backend de compilation additionnel}~: il respecte scrupuleusement l'interface d'entrée existante (structures AST des instructions RC, API de résolution des paramètres et des transcos) et produit une nouvelle sortie sans altérer les backends existants (SQL Server, Oracle).
+
+Cette approche d'\textbf{extension sans modification} (\textit{Open/Closed Principle}) garantit que les projets de migration existants continuent de fonctionner normalement, tandis que les nouveaux projets peuvent opter pour le backend Databricks. La coexistence des backends est rendue possible par l'injection de dépendances~: le Core Engine instancie le bon émetteur selon la configuration du projet.
+
+\begin{table}[H]
+\centering
+\caption{Points d'intégration entre le compilateur Databricks et le Core Engine}
+\label{tab:integration}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Point d'intégration} & \textbf{Mécanisme} \\
+\midrule
+Entrée RC/AST &
+  Le compilateur reçoit la même représentation AST que les backends existants~; aucun prétraitement spécifique n'est requis \\
+\addlinespace
+Résolution des paramètres &
+  L'API \texttt{resolveParameter()} du Core Engine est utilisée telle quelle pour substituer les valeurs run-time dans les expressions \\
+\addlinespace
+Métadonnées transco &
+  Les tables de transcodification sont lues depuis le référentiel ADMP via l'API \texttt{getTranscoTable()} existante \\
+\addlinespace
+Sortie bundle &
+  Le compilateur écrit le bundle dans un répertoire temporaire~; le Core Engine le packague en \texttt{.whl} et le transmet à l'API Databricks REST \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ---------------------------------------------------------------------
+\subsection{Diagrammes d'architecture}
+\label{subsec:diagrammes}
+
+La Figure~\ref{fig:sequence} présente le diagramme de séquence d'une compilation complète, depuis la requête de génération jusqu'à la disponibilité du bundle sur Databricks.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex, thick,
+  actor/.style={rectangle, rounded corners=3pt, fill=accenturedark, text=white,
+                font=\bfseries\scriptsize, minimum width=2.5cm,
+                minimum height=0.7cm, align=center},
+  msg/.style={font=\scriptsize, text=accenturedark, align=center},
+  ret/.style={font=\scriptsize, text=accenturedark!70, align=center}
+]
+  %% Acteurs (lifelines)
+  \node[actor] (portal)  at (0,    0) {ADMP Portal};
+  \node[actor] (engine)  at (3.5,  0) {Core Engine};
+  \node[actor] (dbkcomp) at (7.0,  0) {Databricks\\Compiler};
+  \node[actor] (dbk)     at (10.5, 0) {Databricks\\Runtime};
+
+  %% Lignes de vie
+  \foreach \x in {0, 3.5, 7.0, 10.5} {
+    \draw[color=accenturedark!30, dashed] (\x,-0.35) -- (\x,-8.5);
+  }
+
+  %% Messages
+  % 1
+  \draw[->] (0,-0.9)  -- (3.5,-0.9)
+    node[midway, above, msg] {1. compile(projectId)};
+  % 2
+  \draw[->] (3.5,-1.6) -- (7.0,-1.6)
+    node[midway, above, msg] {2. emit(rcAst, params, transcos)};
+  % 3
+  \draw[->] (7.0,-2.3) -- (7.0,-2.3)
+    node[right, msg] {};
+  \draw[->, accenturepurple] (6.8,-2.3) arc[start angle=0, end angle=-180, radius=0.25cm];
+  \node[msg, text=accenturepurple] at (7.0,-2.7) {3. extractPaths(ast)};
+  % 4
+  \draw[->, accenturepurple] (6.8,-3.4) arc[start angle=0, end angle=-180, radius=0.25cm];
+  \node[msg, text=accenturepurple] at (7.0,-3.8) {4. generateSelectBlock(path)\\×N branches};
+  % 5
+  \draw[->] (7.0,-4.8) -- (7.0,-4.8);
+  \draw[->, accenturepurple] (6.8,-4.8) arc[start angle=0, end angle=-180, radius=0.25cm];
+  \node[msg, text=accenturepurple] at (7.0,-5.2) {5. emitFramework()};
+  % 6 Return bundle
+  \draw[->] (7.0,-6.1) -- (3.5,-6.1)
+    node[midway, above, ret] {6. bundle (.whl)};
+  % 7 Deploy
+  \draw[->] (3.5,-6.8) -- (10.5,-6.8)
+    node[midway, above, msg] {7. deployLibrary(bundle)};
+  % 8 Run
+  \draw[->] (0,-7.5) -- (10.5,-7.5)
+    node[midway, above, msg] {8. triggerJob(unitName, params)};
+  % 9 Result
+  \draw[<-] (0,-8.2) -- (10.5,-8.2)
+    node[midway, above, ret] {9. jobResult (count, reports)};
+\end{tikzpicture}
+\caption{Diagramme de séquence~: génération et exécution d'un bundle Databricks}
+\label{fig:sequence}
+\end{figure}
+
+% =====================================================================
+\section{Choix technologiques et justification}
+\label{sec:choix-techno}
+
+% ---------------------------------------------------------------------
+\subsection{Pourquoi Databricks / Apache Spark}
+\label{subsec:pourquoi-databricks}
+
+Le choix de Databricks comme plateforme d'exécution cible est le résultat d'une analyse comparative rigoureuse des alternatives disponibles, présentée dans le Tableau~\ref{tab:databricks-vs}.
+
+\begin{table}[H]
+\centering
+\caption{Comparaison des plateformes d'exécution pour la migration de données}
+\label{tab:databricks-vs}
+\begin{tabularx}{\textwidth}{lXXX}
+\toprule
+\textbf{Critère} & \textbf{SSIS / on-premise} & \textbf{Azure Data Factory} & \textbf{Databricks (retenu)} \\
+\midrule
+Scalabilité &
+  Nœud unique~; scale-up limité &
+  Scale-out managé, mais coût élevé &
+  Scale-out élastique (1--100+ nœuds) \\
+\addlinespace
+Volumétrie &
+  Téra-octets max &
+  Multi-téra, latence élevée &
+  Péta-octets, Photon Engine optimisé \\
+\addlinespace
+Modèle données &
+  Tables SQL Server &
+  Blob / ADF datasets &
+  Delta Lake ACID + Time Travel \\
+\addlinespace
+Gouvernance &
+  Manuelle &
+  Azure Purview (externe) &
+  Unity Catalog natif \\
+\addlinespace
+Débogage &
+  SSDT / Visual Studio &
+  Monitoring ADF pipeline &
+  Notebooks interactifs, Spark UI \\
+\addlinespace
+Coût idle &
+  Infrastructure fixe &
+  Facturation à l'activité &
+  Serverless compute (zéro si inactif) \\
+\addlinespace
+Code generation &
+  Packages DTSX (XML) &
+  Pipelines JSON &
+  Python / PySpark (lisible, testable) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Apache Spark, le moteur sous-jacent de Databricks, est le framework de traitement de données distribué le plus utilisé au monde avec plus de \textbf{10 millions de téléchargements mensuels} et une adoption dans 80\,\% des entreprises du Fortune~500 \cite{databricks2024report}. Son modèle d'exécution par \textit{Resilient Distributed Datasets} (RDD) / DataFrames garantit la tolérance aux pannes et l'élasticité naturelle, des propriétés critiques pour des migrations de données en production.
+
+Le format de stockage \textbf{Delta Lake} apporte trois garanties essentielles pour la migration~: l'atomicité transactionnelle (une migration échoue sans laisser de données partielles), le \textit{Time Travel} (audit et rollback de l'état des données), et le Z-Ordering pour des lectures analytiques performantes post-migration.
+
+% ---------------------------------------------------------------------
+\subsection{Choix du modèle IA}
+\label{subsec:choix-ia}
+
+La composante intelligence artificielle de la plateforme ADMP + IA s'appuie sur l'API \textbf{Claude} d'Anthropic, intégrée dans l'ADMP AI Studio pour assister les Data Analysts dans la rédaction des spécifications de migration. Le Tableau~\ref{tab:choix-ia} justifie ce choix face aux alternatives.
+
+\begin{table}[H]
+\centering
+\caption{Critères de sélection du modèle IA}
+\label{tab:choix-ia}
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{Critère} & \textbf{Justification} & \textbf{Avantage Claude} \\
+\midrule
+Fenêtre de contexte &
+  Les RC peuvent dépasser 100 pages~; le modèle doit ingérer l'intégralité du document &
+  200\,000 tokens (Claude 3.x), le plus large du marché \\
+\addlinespace
+Génération de code &
+  Production de blocs SQL, d'expressions ADMP, de mappings de champs &
+  Benchmark HumanEval top~3, fort en TypeScript/Python/SQL \\
+\addlinespace
+Raisonnement structuré &
+  Identification des règles métier implicites, gestion des cas limites &
+  Raisonnement multi-étapes (Chain-of-Thought natif) \\
+\addlinespace
+Output structuré &
+  Les réponses doivent être parsables (JSON, ADMP syntax) &
+  Function calling / tool use stable \\
+\addlinespace
+Sécurité \& conformité &
+  Données de migration potentiellement sensibles (PII, données financières) &
+  Politique de confidentialité Anthropic, RGPD compliant \\
+\addlinespace
+RAG integration &
+  Récupération de patterns similaires dans la base de connaissances migration &
+  Compatible LangChain, LlamaIndex, embeddings Voyage AI \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+L'architecture IA adoptée est de type \textbf{RAG} (\textit{Retrieval-Augmented Generation})~: les spécifications de projets de migration passés sont indexées dans une base vectorielle, et les passages pertinents sont injectés dans le contexte du LLM avant chaque génération. Cette approche réduit les hallucinations et ancre les suggestions dans les conventions ADMP établies \cite{lewis2020rag}.
+
+% ---------------------------------------------------------------------
+\subsection{Patterns de conception adoptés}
+\label{subsec:patterns}
+
+La conception du compilateur s'appuie sur des patterns éprouvés de l'ingénierie logicielle, listés dans le Tableau~\ref{tab:patterns}.
+
+\begin{table}[H]
+\centering
+\caption{Patterns de conception appliqués dans le compilateur Databricks}
+\label{tab:patterns}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Pattern} & \textbf{Famille} & \textbf{Application dans le compilateur} \\
+\midrule
+\textbf{Visitor} & Comportemental &
+  Parcours de l'AST des instructions RC~; chaque type de nœud (IF, callWriteFile, assignation) est visité par un handler dédié \\
+\addlinespace
+\textbf{Builder} & Créationnel &
+  Construction incrémentale des objets \texttt{SqlPath}~; le builder accumule tables, conditions et assignations au fil du parcours de l'arbre \\
+\addlinespace
+\textbf{Strategy} & Comportemental &
+  Choix du backend d'émission (SQL Server vs.\ Databricks) via injection d'une interface \texttt{IEmitter} dans le Core Engine \\
+\addlinespace
+\textbf{Template Method} & Comportemental &
+  \texttt{generateSelectBlock} définit le squelette algorithmique de génération SQL~; les étapes spécifiques (casting, transco, conditions) sont des méthodes surchargées \\
+\addlinespace
+\textbf{Factory} & Créationnel &
+  \texttt{dbkIntegrityEmitter} instancie le bon type de vérification d'intégrité (clé primaire, clé étrangère, unicité) selon le type de la table cible \\
+\addlinespace
+\textbf{Pipeline} & Architectural &
+  Les quatre émetteurs s'enchaînent de manière linéaire~; la sortie de chacun est l'entrée du suivant, facilitant les tests unitaires par étape \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ---------------------------------------------------------------------
+\subsection{Alternatives écartées et trade-offs}
+\label{subsec:alternatives}
+
+Plusieurs approches architecturales ont été envisagées et analysées avant d'arrêter les choix décrits dans ce chapitre. Le Tableau~\ref{tab:tradeoffs} présente les principales alternatives et les raisons de leur rejet.
+
+\begin{table}[H]
+\centering
+\caption{Alternatives architecturales analysées et trade-offs}
+\label{tab:tradeoffs}
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{Alternative} & \textbf{Avantage apparent} & \textbf{Raison du rejet} \\
+\midrule
+Génération de notebooks Databricks (.ipynb) au lieu de packages .whl &
+  Facilité de débogage interactif &
+  Impossibilité de versionner, tester unitairement et déployer de manière reproductible~; pas de CI/CD natif \\
+\addlinespace
+Génération dbt au lieu de PySpark &
+  Syntaxe SQL pure, plus proche du design ADMP &
+  Modèle ELT inadapté~: ADMP produit des règles de création conditionnelle (IF/ELSE/UNION ALL) non exprimables en \texttt{SELECT} dbt \\
+\addlinespace
+Utilisation d'un ORM SQLAlchemy &
+  Abstraction de la cible SQL &
+  Sur-abstraction inutile~: les expressions ADMP doivent rester en Spark SQL natif pour exploiter Photon et les optimisations de plan \\
+\addlinespace
+Compilation JVM (Scala Spark) &
+  Performance maximale sur Spark &
+  Coût d'intégration prohibitif~: le Core Engine est entièrement TypeScript~; une frontière JVM/JS aurait introduit une complexité opérationnelle inacceptable \\
+\addlinespace
+\texttt{makePathsExclusive} &
+  Éliminer les doublons dans les branches UNION ALL &
+  Après trois itérations, l'approche générique provoquait des régressions sur d'autres tables~; la correction ciblée dans le design de référence est préférable \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Le rejet de l'approche \texttt{makePathsExclusive} mérite une mention particulière~: cette tentative d'automatiser l'exclusivité des branches \texttt{UNION ALL} (en ajoutant des conditions \texttt{NOT(extra conditions)}) s'est avérée trop générique. Après trois itérations de correctifs, des régressions apparaissaient sur d'autres tables (\texttt{APD\_AR\_CD\_RLTNP}, \texttt{CUS01}), révélant que la distinction entre branches d'intentions différentes ne peut être inférée mécaniquement sans connaissance sémantique du domaine métier. Cette expérience illustre un principe fondamental~: \textbf{la complexité métier ne doit pas être résolue dans le compilateur, mais dans la spécification de migration}.
+
+\bigskip
+
+La conception présentée dans ce chapitre constitue le socle sur lequel repose l'implémentation concrète. L'architecture en couches, la structure modulaire des émetteurs, et les patterns adoptés garantissent une base solide pour les évolutions futures de la plateforme. Le chapitre suivant décrit la réalisation technique de cette conception~: les défis d'implémentation rencontrés, les solutions apportées, et les résultats obtenus en environnement de production Databricks.
