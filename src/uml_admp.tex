@@ -1,0 +1,684 @@
+% =====================================================================
+% MODÉLISATION UML — ADMP AI STUDIO
+% Inclus dans conception_architecture.tex (section 5.1 → 5.1.3)
+% =====================================================================
+
+\subsection{Modélisation UML de la plateforme ADMP~AI~Studio}
+\label{subsec:uml-admp}
+
+Les tableaux de synthèse de la section~\ref{subsec:avant-apres} décrivent la plateforme sur le plan fonctionnel. Cette section formalise l'analyse par une modélisation UML conforme aux bonnes pratiques du génie logiciel~: vue fonctionnelle (cas d'utilisation), vue comportementale (séquences) et vue structurelle (classes).
+
+% =====================================================================
+\subsubsection{Diagrammes de cas d'utilisation}
+\label{subsubsec:uc-diagrammes}
+
+% ---- Styles UML locaux ----
+\tikzset{
+  ucact/.style={rectangle, rounded corners=3pt,
+                fill=accenturedark, text=white, font=\scriptsize\bfseries,
+                minimum width=2.1cm, minimum height=0.55cm,
+                align=center, inner sep=4pt},
+  ucuse/.style={ellipse, draw=accenturepurple, line width=0.9pt,
+                fill=accenturelightpurple!50, text=accenturedark,
+                font=\tiny\bfseries, align=center,
+                minimum width=2.8cm, minimum height=0.72cm, inner sep=2pt},
+  uclin/.style={draw=accenturedark!55, line width=0.7pt},
+  uczone/.style={fill=accenturedark!7, rounded corners=4pt},
+  umlch/.style={fill=accenturepurple, text=white, font=\scriptsize\bfseries,
+                minimum width=3.6cm, minimum height=0.6cm,
+                align=center, inner sep=3pt, draw=accenturedark},
+  umlcb/.style={fill=accenturegray!50, text=accenturedark, font=\tiny,
+                minimum width=3.6cm, align=left, inner sep=4pt,
+                draw=accenturedark, line width=0.5pt},
+  umlrel/.style={draw=accenturedark!70, ->, >=open triangle 45},
+  umlinher/.style={draw=accenturedark, ->, >=open triangle 60, line width=1pt},
+  umlcompo/.style={draw=accenturedark, ->, >=diamond, line width=0.8pt},
+  umlaggr/.style={draw=accenturedark, ->, >=open diamond, line width=0.8pt}
+}
+
+% =====================================================================
+\paragraph{Version~1 --- Vue globale de la plateforme ADMP~AI~Studio}
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=Latex]
+
+%---- Frontière système ----
+\fill[accenturegray!20, rounded corners=8pt] (0,0) rectangle (13,15.5);
+\draw[accenturedark!65, line width=1.8pt, rounded corners=8pt] (0,0) rectangle (13,15.5);
+\node[font=\small\bfseries, text=accenturedark] at (6.5,15.15)
+  {$\langle\langle$système$\rangle\rangle$~~ADMP~AI~Studio};
+
+%---- Zones internes ----
+\fill[uczone] (0.3,13.8) rectangle (12.7,14.9);
+\node[font=\tiny\bfseries, text=accenturedark!55, anchor=north west] at (0.4,14.85)
+  {Administration \& Configuration};
+
+\fill[uczone] (0.3,11.9) rectangle (12.7,13.5);
+\node[font=\tiny\bfseries, text=accenturedark!55, anchor=north west] at (0.4,13.45)
+  {Project Management \& Data Scope};
+
+\fill[uczone] (0.3,6.2) rectangle (12.7,11.6);
+\node[font=\tiny\bfseries, text=accenturedark!55, anchor=north west] at (0.4,11.55)
+  {Extract · Profiling · Transform};
+
+\fill[uczone] (0.3,3.5) rectangle (12.7,5.9);
+\node[font=\tiny\bfseries, text=accenturedark!55, anchor=north west] at (0.4,5.85)
+  {Validation \& Load};
+
+\fill[uczone] (0.3,0.3) rectangle (12.7,3.2);
+\node[font=\tiny\bfseries, text=accenturedark!55, anchor=north west] at (0.4,3.15)
+  {Cutover \& Livraison};
+
+%---- Cas d'utilisation ----
+% Administration
+\node[ucuse] (uc01) at (3.3,14.3)  {UC-01\\Gérer utilisateurs \& rôles};
+\node[ucuse] (uc02) at (9.7,14.3)  {UC-02\\Configurer la plateforme};
+
+% Project Management
+\node[ucuse] (uc03) at (3.3,12.7)  {UC-03\\Créer un projet\\de migration};
+\node[ucuse] (uc04) at (9.7,12.7)  {UC-04\\Définir le périmètre\\SDS / TDS / IDS};
+
+% Extract · Profiling · Transform
+\node[ucuse] (uc05) at (2.5,10.7)  {UC-05\\Importer \& profiler\\les données sources};
+\node[ucuse] (uc06) at (6.5,10.7)  {UC-06\\Rédiger les règles\\RC et DP};
+\node[ucuse] (uc07) at (10.5,10.7) {UC-07\\Configurer les\\transcodifications};
+\node[ucuse] (uc08) at (2.5, 8.5)  {UC-08\\Générer le bundle\\de migration};
+\node[ucuse] (uc09) at (6.5, 8.5)  {UC-09\\Réviser \& approuver\\les règles};
+\node[ucuse] (uc10) at (10.5, 8.5) {UC-10\\Consulter tableaux\\de bord \& rapports};
+\node[ucuse] (uc11) at (2.5, 6.7)  {UC-11\\Gérer les clés\\de décision (KD)};
+\node[ucuse] (uc12) at (9.7, 6.7)  {UC-12\\Piloter les questions\\et réponses};
+
+% Validation & Load
+\node[ucuse] (uc13) at (3.3, 4.7)  {UC-13\\Exécuter les contrôles\\d'intégrité};
+\node[ucuse] (uc14) at (9.7, 4.7)  {UC-14\\Réconcilier\\les données};
+
+% Cutover
+\node[ucuse] (uc15) at (3.3, 1.9)  {UC-15\\Planifier le\\basculement};
+\node[ucuse] (uc16) at (9.7, 1.9)  {UC-16\\Exécuter le cutover\\et Go-Live};
+
+%---- Acteurs (gauche) ----
+\node[ucact] (adm) at (-2.8, 14.3) {Administrator};
+\node[ucact] (md)  at (-2.8, 10.0) {Migration\\Designer};
+\node[ucact] (da)  at (-2.8,  7.0) {Data Analyst};
+
+%---- Acteurs (droite) ----
+\node[ucact] (te)  at (15.8, 11.5) {Test Engineer};
+\node[ucact] (br)  at (15.8,  8.5) {Business\\Reviewer};
+\node[ucact] (cm)  at (15.8,  2.5) {Cutover\\Manager};
+\node[ucact] (cl)  at (15.8,  0.0) {Client};
+
+%---- Associations ----
+\draw[uclin] (adm) -- (uc01);
+\draw[uclin] (adm) -- (uc02);
+\draw[uclin] (md)  -- (uc03);
+\draw[uclin] (md)  -- (uc04);
+\draw[uclin] (md)  -- (uc08);
+\draw[uclin] (md)  -- (uc10);
+\draw[uclin] (da)  -- (uc05);
+\draw[uclin] (da)  -- (uc06);
+\draw[uclin] (da)  -- (uc07);
+\draw[uclin] (da)  -- (uc11);
+\draw[uclin] (da)  -- (uc12);
+\draw[uclin] (te)  -- (uc13);
+\draw[uclin] (te)  -- (uc14);
+\draw[uclin] (te)  -- (uc10);
+\draw[uclin] (br)  -- (uc09);
+\draw[uclin] (br)  -- (uc12);
+\draw[uclin] (br)  -- (uc14);
+\draw[uclin] (cm)  -- (uc15);
+\draw[uclin] (cm)  -- (uc16);
+\draw[uclin] (cl)  -- (uc10);
+\draw[uclin] (cl)  -- (uc16);
+
+\end{tikzpicture}%
+}
+\caption{Diagramme de cas d'utilisation --- Vue globale de la plateforme ADMP~AI~Studio}
+\label{fig:uc-global}
+\end{figure}
+
+% =====================================================================
+\paragraph{Version~2 --- Module de génération Databricks (contribution PFE)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex]
+
+%---- Frontière module ----
+\fill[accenturelightpurple!30, rounded corners=8pt] (0,0) rectangle (10,9.5);
+\draw[accenturepurple, line width=1.8pt, rounded corners=8pt] (0,0) rectangle (10,9.5);
+\node[font=\small\bfseries, text=accenturepurple] at (5, 9.15)
+  {$\langle\langle$module$\rangle\rangle$~~Package Generation --- Databricks};
+
+%---- Zones internes ----
+\fill[accenturepurple!10, rounded corners=3pt] (0.3,7.0) rectangle (9.7,8.7);
+\node[font=\tiny\bfseries, text=accenturepurple!70, anchor=north west] at (0.4,8.65)
+  {Configuration \& Compilation};
+
+\fill[accenturepurple!10, rounded corners=3pt] (0.3,3.8) rectangle (9.7,6.7);
+\node[font=\tiny\bfseries, text=accenturepurple!70, anchor=north west] at (0.4,6.65)
+  {Déploiement \& Exécution};
+
+\fill[accenturepurple!10, rounded corners=3pt] (0.3,0.3) rectangle (9.7,3.5);
+\node[font=\tiny\bfseries, text=accenturepurple!70, anchor=north west] at (0.4,3.45)
+  {Validation \& Reporting};
+
+%---- Cas d'utilisation ----
+\node[ucuse] (ucd01) at (2.8,7.85) {UC-DB01\\Configurer le format\\Databricks};
+\node[ucuse] (ucd02) at (7.2,7.85) {UC-DB02\\Lancer la compilation\\du bundle};
+\node[ucuse] (ucd03) at (2.8,5.35) {UC-DB03\\Visualiser le code\\PySpark généré};
+\node[ucuse] (ucd04) at (7.2,5.35) {UC-DB04\\Déployer et exécuter\\les unités PySpark};
+\node[ucuse] (ucd05) at (2.8,2.0)  {UC-DB05\\Consulter les rapports\\d'exécution Excel};
+\node[ucuse] (ucd06) at (7.2,2.0)  {UC-DB06\\Diagnostiquer et corriger\\les erreurs SQL};
+
+%---- Acteurs ----
+\node[ucact] (dbt-md)  at (-2.6,7.85) {Migration\\Designer};
+\node[ucact] (dbt-da)  at (-2.6,4.35) {Data Analyst};
+\node[ucact] (dbt-te)  at (12.6, 3.0) {Test Engineer};
+
+%---- Associations ----
+\draw[uclin] (dbt-md) -- (ucd01);
+\draw[uclin] (dbt-md) -- (ucd02);
+\draw[uclin] (dbt-da) -- (ucd03);
+\draw[uclin] (dbt-da) -- (ucd04);
+\draw[uclin] (dbt-da) -- (ucd06);
+\draw[uclin] (dbt-te) -- (ucd05);
+\draw[uclin] (dbt-te) -- (ucd06);
+
+%---- Relation include ----
+\draw[draw=accenturepurple!70, dashed, ->, >=Stealth]
+  (ucd02) -- (ucd03) node[midway, right, font=\tiny\itshape, text=accenturepurple!70]
+  {$\langle\langle$include$\rangle\rangle$};
+
+\end{tikzpicture}
+\caption{Diagramme de cas d'utilisation --- Module de génération Databricks (contribution PFE)}
+\label{fig:uc-databricks}
+\end{figure}
+
+% =====================================================================
+\subsubsection{Tableau récapitulatif des cas d'utilisation}
+\label{subsubsec:uc-table}
+
+\begin{table}[H]
+\centering
+\caption{Récapitulatif des cas d'utilisation de la plateforme ADMP~AI~Studio}
+\label{tab:uc-recap}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Acteur(s)} & \textbf{Cas d'utilisation} & \textbf{Description} \\
+\midrule
+Administrator &
+  UC-01 Gérer utilisateurs \& rôles &
+  Créer, modifier, désactiver des comptes utilisateurs~; assigner des rôles et des permissions par projet \\
+\addlinespace
+Administrator &
+  UC-02 Configurer la plateforme &
+  Paramétrer les providers LLM (\texttt{llm\_credentials}), les préférences système et les invites contextuelles \\
+\addlinespace
+Migration Designer &
+  UC-03 Créer un projet de migration &
+  Initialiser un nouveau projet~: Industry, Target, Source, phase courante, membres (\texttt{projects}, \texttt{project\_members}) \\
+\addlinespace
+Migration Designer, Data Analyst &
+  UC-04 Définir le périmètre &
+  Rédiger et publier les documents SDS, TDS et IDS (\texttt{datascope\_documents}, \texttt{datascope\_tables}) \\
+\addlinespace
+Data Analyst &
+  UC-05 Importer \& profiler les sources &
+  Importer les fichiers plats~; exécuter le profilage des champs (\texttt{data\_extractions}, \texttt{source\_audit\_*}) \\
+\addlinespace
+Data Analyst &
+  UC-06 Rédiger les règles RC / DP &
+  Rédiger les instructions Record Creation et Data Population avec checkout/check-in (\texttt{migration\_units}) \\
+\addlinespace
+Data Analyst &
+  UC-07 Configurer les transcodifications &
+  Créer et versionner les tables de transco~; définir colonnes et mappings (\texttt{transform\_transco\_*}) \\
+\addlinespace
+Migration Designer &
+  UC-08 Générer le bundle &
+  Déclencher la compilation et récupérer le package \texttt{.whl} pour Databricks (\texttt{configuration\_requests}) \\
+\addlinespace
+Business Reviewer &
+  UC-09 Réviser \& approuver &
+  Valider les règles de transformation et data mapping~; approuver les versions publiées \\
+\addlinespace
+Migration Designer, Test Engineer, Client &
+  UC-10 Consulter tableaux \& rapports &
+  Accéder aux tableaux de bord de progression, rapports de management hebdomadaires (\texttt{management\_reports}) \\
+\addlinespace
+Data Analyst &
+  UC-11 Gérer les clés de décision &
+  Enregistrer, commenter et clore les décisions de conception (\texttt{key\_decisions}) \\
+\addlinespace
+Data Analyst, Business Reviewer &
+  UC-12 Piloter les questions/réponses &
+  Poser et répondre aux questions inter-équipes (\texttt{questions}, \texttt{question\_comments}) \\
+\addlinespace
+Test Engineer &
+  UC-13 Exécuter les contrôles d'intégrité &
+  Lancer les vérifications référentielles et consulter les résultats (\texttt{integrity\_checks}, \texttt{validation\_reports}) \\
+\addlinespace
+Test Engineer, Business Reviewer &
+  UC-14 Réconcilier les données &
+  Comparer source et cible aux niveaux L1 (comptage), L2 (champ), L3 (règles métier) (\texttt{reconciliation\_*}) \\
+\addlinespace
+Cutover Manager &
+  UC-15 Planifier le basculement &
+  Créer le plan de cutover, définir tâches, jalons et approbateurs (\texttt{cutover\_plans}, \texttt{cutover\_tasks}) \\
+\addlinespace
+Cutover Manager, Client &
+  UC-16 Exécuter le cutover \& Go-Live &
+  Démarrer l'exécution, suivre les tâches, gérer les incidents (\texttt{cutover\_executions}, \texttt{cutover\_issues}) \\
+\addlinespace
+Migration Designer &
+  UC-DB01 Configurer format Databricks &
+  Sélectionner Databricks parmi les 8 formats disponibles et paramétrer catalog / schema \\
+\addlinespace
+Migration Designer &
+  UC-DB02 Lancer la compilation &
+  Soumettre la requête de compilation~; le compilateur génère le bundle \texttt{.whl} \\
+\addlinespace
+Data Analyst &
+  UC-DB03 Visualiser le code PySpark &
+  Inspecter les scripts \texttt{mig\_*.py}, les requêtes SQL et le framework généré \\
+\addlinespace
+Data Analyst &
+  UC-DB04 Déployer et exécuter &
+  Déployer la librairie sur le cluster Databricks~; déclencher les jobs PySpark \\
+\addlinespace
+Test Engineer &
+  UC-DB05 Consulter les rapports Excel &
+  Récupérer et analyser les rapports d'intégrité exportés depuis le volume Unity Catalog \\
+\addlinespace
+Data Analyst, Test Engineer &
+  UC-DB06 Diagnostiquer les erreurs &
+  Analyser les erreurs SQL Spark~; corriger les règles RC/DP puis regénérer \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =====================================================================
+\subsubsection{Description détaillée des cas d'utilisation principaux}
+\label{subsubsec:uc-details}
+
+\newcommand{\ficheuc}[7]{%
+\begin{tcolorbox}[
+  colback=accenturegray!40, colframe=accenturepurple,
+  title={\textbf{#1}}, fonttitle=\small\bfseries,
+  boxrule=0.8pt, arc=4pt, left=6pt, right=6pt, top=4pt, bottom=4pt
+]
+\begin{tabularx}{\linewidth}{lX}
+\textbf{Acteur(s)} & #2 \\
+\textbf{Objectif}  & #3 \\
+\textbf{Pré-conditions} & #4 \\
+\textbf{Post-conditions} & #5 \\
+\end{tabularx}
+\medskip\par
+\textbf{Scénario nominal~:}\vspace{2pt}
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}, nosep]
+#6
+\end{enumerate}
+\ifx&#7&\else
+\medskip\par\textbf{Scénarios alternatifs / extensions~:}\par#7
+\fi
+\end{tcolorbox}
+\vspace{6pt}
+}
+
+% ---- UC-03 ----
+\ficheuc{UC-03 --- Créer un projet de migration}%
+{Migration Designer}%
+{Ouvrir un nouveau projet ADMP sur la plateforme ADMP~AI~Studio en définissant ses métadonnées, son équipe et son périmètre initial.}%
+{L'utilisateur est authentifié et possède le rôle \textit{Migration Designer}. Au moins un système source et un système cible sont configurés dans la plateforme.}%
+{Un enregistrement est créé dans \texttt{projects} (statut \texttt{active}). L'utilisateur est ajouté comme membre dans \texttt{project\_members} avec le rôle \textit{owner}. La phase \texttt{project\_management} est initialisée dans \texttt{project\_phases}.}%
+{%
+\item L'utilisateur clique sur « Nouveau projet » depuis le tableau de bord.
+\item Il renseigne les métadonnées~: nom, client, Industry, système source, système cible, dates prévisionnelles.
+\item Il définit le Data Scope initial en indiquant les périmètres SDS, TDS, IDS concernés.
+\item Il ajoute les membres de l'équipe et leur attribue un rôle (\textit{Migration Designer}, \textit{Data Analyst}, etc.).
+\item Il soumet le formulaire~; la plateforme crée le projet et redirige vers le tableau de bord projet.
+\item Les huit phases de migration apparaissent avec le statut \texttt{not\_started}.
+}%
+{2a. Les champs obligatoires sont manquants~: la plateforme affiche les erreurs de validation et empêche la soumission. / 3a. Le système source n'est pas encore référencé~: l'utilisateur peut le créer à la volée depuis le formulaire.}
+
+% ---- UC-06 ----
+\ficheuc{UC-06 --- Rédiger les règles RC et DP}%
+{Data Analyst}%
+{Rédiger ou modifier les instructions Record Creation et Data Population d'une unité de migration, avec verrouillage de section pour éviter les conflits d'édition concurrents.}%
+{Le projet est en phase \textit{Transform}. L'unité de migration (\texttt{migration\_units}) existe et sa section RC (ou DP) n'est pas actuellement verrouillée par un autre utilisateur (\texttt{*\_locked\_by IS NULL}).}%
+{Le contenu RC/DP est enregistré dans \texttt{migration\_units}. Une nouvelle entrée est créée dans \texttt{migration\_unit\_versions} (section = \texttt{record\_creation} ou \texttt{data\_population}, statut \texttt{draft}). La section est déverrouillée (\texttt{*\_locked\_by = NULL}).}%
+{%
+\item L'utilisateur sélectionne l'unité de migration dans la liste.
+\item Il clique sur « Checkout » pour la section RC (ou DP).
+\item La plateforme enregistre \texttt{*\_locked\_by = userId}, \texttt{*\_locked\_at = NOW()}, et un snapshot de l'état courant dans \texttt{*\_checkout\_baseline}.
+\item L'utilisateur rédige les instructions dans l'éditeur (IF/ELSE, callWriteFile, callDataPopulate, assignations).
+\item Il clique sur « Check-in »~; la plateforme valide la syntaxe et crée une version \texttt{draft}.
+\item Le verrou est libéré (\texttt{*\_locked\_by = NULL}).
+}%
+{4a. Un autre utilisateur tente un checkout pendant que la section est verrouillée~: la plateforme retourne une erreur 409 avec le nom de l'utilisateur propriétaire du verrou. / 5a. L'utilisateur clique sur « Discard » au lieu de « Check-in »~: le contenu est rétabli depuis \texttt{*\_checkout\_baseline}.}
+
+% ---- UC-08 ----
+\ficheuc{UC-08 --- Générer le bundle de migration}%
+{Migration Designer}%
+{Déclencher la compilation de l'ensemble des spécifications ADMP d'un projet en un bundle PySpark déployable sur Databricks.}%
+{Le projet est en phase \textit{Transform}. Au moins une unité de migration possède des versions publiées pour les sections DS, RC et DP. Le format de sortie \textit{Databricks} est sélectionné.}%
+{Un fichier \texttt{.whl} est généré et mis à disposition. Un enregistrement est créé dans \texttt{configuration\_requests} (statut \texttt{completed}). Les scripts \texttt{mig\_*.py}, \texttt{runner.py}, \texttt{validate.py}, \texttt{unit\_base.py} et \texttt{create\_tables.py} sont inclus dans le bundle.}%
+{%
+\item L'utilisateur navigue vers la section \textit{Package Generation} de la phase \textit{Transform}.
+\item Il sélectionne le format de sortie « Databricks » et renseigne les paramètres~: catalog cible, schéma, cluster.
+\item Il clique sur « Générer »~; la requête est envoyée au service de compilation (\texttt{configuration\_requests}).
+\item Le compilateur TypeScript parse les documents RC, DP, TT, DS et construit les objets \texttt{SqlPath}.
+\item La fonction \texttt{generateSelectBlock()} génère les blocs SQL \texttt{UNION ALL} pour chaque branche.
+\item Le Bundle Assembler produit les fichiers Python et les packague en \texttt{.whl}.
+\item La plateforme notifie l'utilisateur et propose le téléchargement du bundle.
+}%
+{4a. Un document RC contient une erreur de syntaxe~: le compilateur lève une exception~; la plateforme affiche l'erreur avec la ligne incriminée. / 6a. Aucune unité publiée n'est trouvée~: la plateforme affiche un avertissement et empêche la compilation.}
+
+% ---- UC-13 ----
+\ficheuc{UC-13 --- Exécuter les contrôles d'intégrité}%
+{Test Engineer}%
+{Lancer les vérifications d'intégrité référentielle sur les données migrées et produire un rapport Excel consolidé par unité.}%
+{Le bundle Databricks a été déployé et au moins un job d'exécution s'est terminé avec succès. Les règles d'intégrité sont définies dans \texttt{integrity\_checks}.}%
+{Les résultats sont enregistrés dans \texttt{validation\_reports}. Un fichier Excel est écrit dans le volume Unity Catalog \texttt{dbfs:/Volumes/\textit{catalog}/\textit{schema}/reports/\textit{runId}/}.}%
+{%
+\item L'utilisateur navigue vers la section \textit{Validation} du projet.
+\item Il sélectionne le run Databricks à analyser et clique sur « Lancer les contrôles ».
+\item Le job \texttt{validate.py} interroge les tables Delta cibles pour chaque contrainte définie.
+\item Les résultats (comptages, violations, taux de conformité) sont calculés par unité.
+\item Un rapport Excel \texttt{integrity\_report\_\textit{unitCode}.xlsx} est écrit dans le volume Unity Catalog.
+\item Un rapport consolidé \texttt{global\_report.xlsx} agrège toutes les unités.
+\item La plateforme affiche le tableau de résultats et met à disposition les fichiers Excel via le script \texttt{fetch\_reports.ps1}.
+}%
+{4a. Une violation d'intégrité critique est détectée~: le rapport la signale en rouge~; le Test Engineer ouvre un ticket dans \texttt{test\_tickets}. / 3a. Le volume Unity Catalog est inaccessible~: le job lève une exception~; le run est marqué \texttt{failed}.}
+
+% ---- UC-15 ----
+\ficheuc{UC-15 --- Planifier le basculement (Cutover)}%
+{Cutover Manager}%
+{Créer et structurer le plan de basculement définitif en production, incluant les tâches séquencées, les jalons, les approbateurs et le plan de rollback.}%
+{Le projet est en phase \textit{Cutover}. Les réconciliations L1, L2 et L3 ont été validées. Au moins un Cutover Manager est désigné dans \texttt{project\_members}.}%
+{Un enregistrement est créé dans \texttt{cutover\_plans} (statut \texttt{draft}). Les tâches sont créées dans \texttt{cutover\_tasks} avec leurs dépendances. Les jalons sont définis dans \texttt{cutover\_milestones}.}%
+{%
+\item Le Cutover Manager crée un nouveau plan depuis la section \textit{Cutover} du projet.
+\item Il renseigne les métadonnées~: date cible, durée estimée, environnement, plan de rollback, plan de communication.
+\item Il décompose le plan en tâches (import, arrêt des interfaces, chargement final, validation, bascule DNS, etc.) avec leurs durées et dépendances.
+\item Il marque les tâches sur le chemin critique (\texttt{critical\_path = true}).
+\item Il définit les jalons (\texttt{cutover\_milestones}) et les approbateurs (\texttt{cutover\_approvers}).
+\item Il soumet le plan pour approbation~; les approbateurs reçoivent une notification.
+\item Après approbation, le plan passe au statut \texttt{approved}.
+}%
+{6a. Un approbateur rejette le plan~: il ajoute un commentaire et le plan reste en statut \texttt{review}. / 3a. Un modèle de plan existe (\texttt{is\_template = true})~: le Cutover Manager peut partir du modèle et l'adapter.}
+
+% =====================================================================
+\subsubsection{Diagrammes de séquence}
+\label{subsubsec:sequence-diagrams}
+
+% =====================================================================
+\paragraph{SD-01 --- Génération du bundle Databricks}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex, thick,
+  sactor/.style={rectangle, rounded corners=3pt, fill=accenturedark, text=white,
+                 font=\bfseries\scriptsize, minimum width=2.4cm,
+                 minimum height=0.65cm, align=center},
+  smsg/.style={font=\scriptsize, text=accenturedark, align=center},
+  sret/.style={font=\scriptsize, text=accenturedark!65, align=center}
+]
+  %---- Acteurs ----
+  \node[sactor] (ui)   at (0,   0) {ADMP\\Studio UI};
+  \node[sactor] (api)  at (4,   0) {Compilation\\Service (API)};
+  \node[sactor] (comp) at (8,   0) {Databricks\\Compiler (TS)};
+  \node[sactor] (dbk)  at (12,  0) {Databricks\\Runtime};
+
+  %---- Lignes de vie ----
+  \foreach \x in {0, 4, 8, 12} {
+    \draw[accenturedark!25, dashed] (\x,-0.33) -- (\x,-11.5);
+  }
+
+  %---- Messages ----
+  \draw[->] (0,-0.9)  -- (4,-0.9)
+    node[midway, above, smsg] {1. POST /codegen/bundle (projectId, format=databricks)};
+  \draw[->] (4,-1.7)  -- (8,-1.7)
+    node[midway, above, smsg] {2. compile(units, transcos, params)};
+  \draw[->, accenturepurple] (7.7,-2.5) arc[start angle=0, end angle=-180, radius=0.25];
+  \node[smsg, text=accenturepurple] at (8,-2.9) {3. parseDocuments(RC, DP, TT, DS)};
+  \draw[->, accenturepurple] (7.7,-3.8) arc[start angle=0, end angle=-180, radius=0.25];
+  \node[smsg, text=accenturepurple] at (8,-4.2) {4. extractPaths(ast) × N unités};
+  \draw[->, accenturepurple] (7.7,-5.1) arc[start angle=0, end angle=-180, radius=0.25];
+  \node[smsg, text=accenturepurple] at (8,-5.5) {5. generateSelectBlock(path) × N branches};
+  \draw[->, accenturepurple] (7.7,-6.4) arc[start angle=0, end angle=-180, radius=0.25];
+  \node[smsg, text=accenturepurple] at (8,-6.8) {6. emitFramework() + emitIntegrityChecks()};
+  \draw[->] (8,-7.7) -- (4,-7.7)
+    node[midway, above, sret] {7. bundle (.whl)};
+  \draw[->] (4,-8.5) -- (12,-8.5)
+    node[midway, above, smsg] {8. deployLibrary(bundle) via Databricks REST API};
+  \draw[->] (4,-9.3) -- (0,-9.3)
+    node[midway, above, sret] {9. bundleUrl, runId};
+  \draw[->] (0,-10.2) -- (12,-10.2)
+    node[midway, above, smsg] {10. triggerJob(runner.py, catalog, schema)};
+  \draw[<-] (0,-11.0) -- (12,-11.0)
+    node[midway, above, sret] {11. jobResult (status, records, reportUrl)};
+\end{tikzpicture}
+\caption{Diagramme de séquence SD-01 --- Génération et exécution d'un bundle Databricks}
+\label{fig:sd-bundle}
+\end{figure}
+
+\noindent\textbf{Description~:} Le Migration Designer déclenche la compilation depuis l'interface ADMP~AI~Studio (étape~1). L'API de compilation invoque le compilateur TypeScript (étape~2) qui parse les documents de spécification, extrait les \texttt{SqlPath} et génère les blocs SQL \texttt{UNION ALL} (étapes~3--6). Le bundle \texttt{.whl} est retourné à l'API (étape~7), déployé sur le cluster Databricks via l'API REST (étape~8), puis le job \texttt{runner.py} est déclenché (étape~10). Le résultat est communiqué à l'interface (étape~11).
+
+% =====================================================================
+\paragraph{SD-02 --- Checkout / Check-in d'une section RC}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex, thick,
+  sactor/.style={rectangle, rounded corners=3pt, fill=accenturedark, text=white,
+                 font=\bfseries\scriptsize, minimum width=2.4cm,
+                 minimum height=0.65cm, align=center},
+  smsg/.style={font=\scriptsize, text=accenturedark, align=center},
+  sret/.style={font=\scriptsize, text=accenturedark!65, align=center},
+  sdb/.style={cylinder, shape border rotate=90, draw=accenturedark,
+              fill=accenturelightpurple!40, font=\scriptsize\bfseries,
+              minimum width=2cm, minimum height=0.65cm, align=center}
+]
+  \node[sactor]  (da)   at (0, 0)  {Data Analyst};
+  \node[sactor]  (ui)   at (4, 0)  {ADMP\\Studio UI};
+  \node[sactor]  (api)  at (8, 0)  {Unit Version\\Service (API)};
+  \node[sdb]     (db)   at (12, 0) {PostgreSQL\\(migration\_units)};
+
+  \foreach \x in {0, 4, 8, 12} {
+    \draw[accenturedark!25, dashed] (\x,-0.38) -- (\x,-10.5);
+  }
+
+  \draw[->] (0,-0.9) -- (4,-0.9) node[midway, above, smsg] {1. Clic « Checkout RC »};
+  \draw[->] (4,-1.7) -- (8,-1.7) node[midway, above, smsg] {2. POST /units/:id/checkout (section=rc)};
+  \draw[->] (8,-2.5) -- (12,-2.5) node[midway, above, smsg] {3. SELECT locked\_by, checkout\_baseline};
+  \draw[<-] (8,-3.3) -- (12,-3.3) node[midway, above, sret] {4. locked\_by = NULL → disponible};
+  \draw[->] (8,-4.1) -- (12,-4.1) node[midway, above, smsg] {5. UPDATE record\_creation\_locked\_by=userId,\\locked\_at=NOW(), checkout\_baseline=content};
+  \draw[<-] (4,-5.0) -- (8,-5.0) node[midway, above, sret] {6. 200 OK, éditeur déverrouillé};
+  \draw[->] (0,-5.8) -- (4,-5.8) node[midway, above, smsg] {7. Édition du RC (IF/ELSE, callWriteFile)};
+  \draw[->] (0,-6.6) -- (4,-6.6) node[midway, above, smsg] {8. Clic « Check-in »};
+  \draw[->] (4,-7.4) -- (8,-7.4) node[midway, above, smsg] {9. POST /units/:id/checkin (section=rc, content)};
+  \draw[->] (8,-8.2) -- (12,-8.2) node[midway, above, smsg] {10. INSERT migration\_unit\_versions\\(section=rc, version=N+1, status=draft)};
+  \draw[->] (8,-9.0) -- (12,-9.0) node[midway, above, smsg] {11. UPDATE locked\_by=NULL};
+  \draw[<-] (0,-9.8) -- (8,-9.8) node[midway, above, sret] {12. 200 OK, version N+1 créée};
+\end{tikzpicture}
+\caption{Diagramme de séquence SD-02 --- Checkout / Check-in d'une section RC}
+\label{fig:sd-checkout}
+\end{figure}
+
+\noindent\textbf{Description~:} Ce diagramme illustre le mécanisme de verrouillage optimiste par section. L'utilisateur demande un checkout (étape~1--2)~; l'API vérifie que le verrou est libre (étapes~3--4), pose le verrou et sauvegarde le snapshot de l'état courant (\texttt{checkout\_baseline}, étape~5). Après édition, le check-in crée une nouvelle version \textit{draft} (étape~10) et libère le verrou (étape~11). En cas de discard, le contenu est rétabli depuis le snapshot.
+
+% =====================================================================
+\paragraph{SD-03 --- Réconciliation des données (niveaux L1 / L2 / L3)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=Latex, thick,
+  sactor/.style={rectangle, rounded corners=3pt, fill=accenturedark, text=white,
+                 font=\bfseries\scriptsize, minimum width=2.4cm,
+                 minimum height=0.65cm, align=center},
+  smsg/.style={font=\scriptsize, text=accenturedark, align=center},
+  sret/.style={font=\scriptsize, text=accenturedark!65, align=center}
+]
+  \node[sactor] (te)   at (0, 0)   {Test\\Engineer};
+  \node[sactor] (ui)   at (4, 0)   {ADMP\\Studio UI};
+  \node[sactor] (recon) at (8, 0)  {Reconciliation\\Service};
+  \node[sactor] (data) at (12, 0)  {Databricks\\Delta Lake};
+
+  \foreach \x in {0, 4, 8, 12} {
+    \draw[accenturedark!25, dashed] (\x,-0.33) -- (\x,-11.0);
+  }
+
+  \draw[->] (0,-0.9)  -- (4,-0.9) node[midway, above, smsg] {1. Lancer réconciliation (config\_id)};
+  \draw[->] (4,-1.7)  -- (8,-1.7) node[midway, above, smsg] {2. POST /reconciliation/execute};
+  %-- L1
+  \draw[->, accenturepurple] (8,-2.5) -- (12,-2.5)
+    node[midway, above, smsg, text=accenturepurple] {3. COUNT(*) source vs cible (L1)};
+  \draw[<-, accenturepurple] (8,-3.3) -- (12,-3.3)
+    node[midway, above, sret, text=accenturepurple] {4. \{src: N, tgt: M, diff: N-M\}};
+  %-- L2
+  \draw[->, accenturepurple] (8,-4.1) -- (12,-4.1)
+    node[midway, above, smsg, text=accenturepurple] {5. Comparer champs clés (L2)};
+  \draw[<-, accenturepurple] (8,-4.9) -- (12,-4.9)
+    node[midway, above, sret, text=accenturepurple] {6. \{matched, mismatched, field\_comparisons\}};
+  %-- L3
+  \draw[->, accenturepurple] (8,-5.7) -- (12,-5.7)
+    node[midway, above, smsg, text=accenturepurple] {7. Vérifier KPI \& règles métier (L3)};
+  \draw[<-, accenturepurple] (8,-6.5) -- (12,-6.5)
+    node[midway, above, sret, text=accenturepurple] {8. \{kpi\_checks, overall\_score\}};
+  %-- Persist
+  \draw[->] (8,-7.3)  -- (8,-7.3);
+  \draw[->, accenturepurple] (7.7,-7.3) arc[start angle=0, end angle=-180, radius=0.25];
+  \node[smsg, text=accenturepurple] at (8,-7.7)
+    {9. INSERT level1/2/3\_reconciliations};
+  %-- Return
+  \draw[->] (8,-8.5) -- (4,-8.5)
+    node[midway, above, sret] {10. Résultats L1+L2+L3, overall\_score};
+  \draw[<-] (0,-9.3) -- (4,-9.3)
+    node[midway, above, sret] {11. Tableau de bord réconciliation};
+  \draw[->] (0,-10.2) -- (4,-10.2)
+    node[midway, above, smsg] {12. Ouvrir ticket si violation critique};
+\end{tikzpicture}
+\caption{Diagramme de séquence SD-03 --- Réconciliation des données (L1 / L2 / L3)}
+\label{fig:sd-recon}
+\end{figure}
+
+\noindent\textbf{Description~:} Le Test Engineer lance une réconciliation tripartite. Le niveau L1 vérifie les comptages (nombre de lignes source vs cible). Le niveau L2 compare les valeurs champ à champ sur les clés primaires. Le niveau L3 vérifie les KPI métier et les règles d'agrégation. Les résultats sont persistés dans les tables \texttt{level1/2/3\_reconciliations} et un score global est calculé. En cas de violation critique, le Test Engineer ouvre un ticket de défaut (\texttt{test\_tickets}).
+
+% =====================================================================
+\subsubsection{Diagramme de classes}
+\label{subsubsec:class-diagram}
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=Latex, node distance=0.5cm and 1.2cm]
+
+%---- Macros de classe ----
+\newcommand{\umlclass}[5]{% name, x, y, attributes, methods
+  \node[umlch, minimum width=3.6cm] (#1h) at (#2,#3) {#1};
+  \node[umlcb, minimum width=3.6cm, below=0pt of #1h, text width=3.4cm] (#1a) {#4};
+  \node[umlcb, minimum width=3.6cm, below=0pt of #1a, text width=3.4cm,
+        fill=white!80] (#1m) {#5};
+}
+
+%---- Classes ----
+% Project
+\umlclass{Project}{0}{0}%
+{+ id : UUID\\+ name : String\\+ status : String\\+ current\_phase : String\\+ source\_system : String\\+ target\_system : String}%
+{+ getMembers()\\+ getPhases()\\+ getUnits()}
+
+% User
+\umlclass{User}{6.5}{0}%
+{+ id : UUID\\+ email : String\\+ role : String\\+ is\_active : Boolean}%
+{+ getProjects()\\+ getRoles()}
+
+% ProjectMember
+\umlclass{ProjectMember}{3.2}{-5.2}%
+{+ id : UUID\\+ project\_id : UUID\\+ user\_id : UUID\\+ role : String\\+ permissions : JSONB}%
+{+ checkout()\\+ hasPermission()}
+
+% MigrationUnit
+\umlclass{MigrationUnit}{-5.5}{-5.2}%
+{+ id : UUID\\+ code : String\\+ rc\_locked\_by : String\\+ dp\_locked\_by : String\\+ rc\_checkout\_baseline : JSONB}%
+{+ checkout(section)\\+ checkin(section)\\+ discard(section)}
+
+% MigrationUnitVersion
+\umlclass{MigrationUnitVersion}{-5.5}{-11.0}%
+{+ id : UUID\\+ unit\_id : UUID\\+ version : String\\+ section : String\\+ status : String}%
+{+ publish()\\+ rollback()}
+
+% TranscoTable
+\umlclass{TranscoTable}{1.5}{-11.0}%
+{+ id : UUID\\+ name : String\\+ description : String\\+ is\_archived : Boolean}%
+{+ getColumns()\\+ getMappings()\\+ publish()}
+
+% Bundle
+\umlclass{Bundle}{8.0}{-5.2}%
+{+ run\_id : String\\+ format : String\\+ catalog : String\\+ schema : String\\+ status : String}%
+{+ compile()\\+ deploy()\\+ fetchReports()}
+
+% IntegrityCheck
+\umlclass{IntegrityCheck}{8.0}{-11.0}%
+{+ id : UUID\\+ constraint\_type : String\\+ table\_name : String\\+ key\_columns : String[]\\+ status : String}%
+{+ execute()\\+ generateReport()}
+
+% CutoverPlan
+\umlclass{CutoverPlan}{-5.5}{-17.5}%
+{+ id : UUID\\+ planned\_date : Date\\+ status : String\\+ rollback\_plan : Text\\+ critical\_path : Boolean}%
+{+ addTask()\\+ approve()\\+ execute()}
+
+% ExecutionRun
+\umlclass{ExecutionRun}{1.5}{-17.5}%
+{+ id : UUID\\+ run\_type : String\\+ status : String\\+ total\_records : Int\\+ failed\_records : Int}%
+{+ start()\\+ getStats()\\+ getLogs()}
+
+%---- Relations ----
+% Project --- ProjectMember
+\draw[umlaggr] (Projecta.south) |- ++(0,-0.5) -| (ProjectMemberh.north);
+\node[font=\tiny, text=accenturedark] at (-0.4,-2.5) {1};
+\node[font=\tiny, text=accenturedark] at (2.0,-2.5) {*};
+
+% User --- ProjectMember
+\draw[umlaggr] (Usera.south) |- ++(0,-0.5) -| (ProjectMemberh.north);
+\node[font=\tiny, text=accenturedark] at (6.4,-2.5) {1};
+\node[font=\tiny, text=accenturedark] at (4.5,-2.5) {*};
+
+% Project --- MigrationUnit
+\draw[umlcompo] (Projectm.south) -- ++(0,-0.8) -| (MigrationUnith.north);
+\node[font=\tiny, text=accenturedark] at (-3.5,-2.8) {1..*};
+
+% MigrationUnit --- MigrationUnitVersion
+\draw[umlcompo] (MigrationUnita.south) -- (MigrationUnitVersionh.north);
+\node[font=\tiny, text=accenturedark] at (-6.8,-8.0) {1};
+\node[font=\tiny, text=accenturedark] at (-6.8,-9.0) {*};
+
+% Project --- Bundle
+\draw[umlaggr] (Projectm.east) -| (Bundleh.north);
+\node[font=\tiny, text=accenturedark] at (5.5,-2.5) {*};
+
+% Bundle --- ExecutionRun
+\draw[umlcompo] (Bundlem.south) -- ++(0,-0.5) -| (ExecutionRunh.north);
+\node[font=\tiny, text=accenturedark] at (6.5,-14.5) {1..*};
+
+% MigrationUnit --- TranscoTable
+\draw[umlrel, dashed] (MigrationUnita.east) -| (TranscoTableh.north);
+\node[font=\tiny\itshape, text=accenturepurple] at (-1.5,-9.5) {utilise};
+
+% Bundle --- IntegrityCheck
+\draw[umlcompo] (Bundlem.south) -- ++(0,-0.3) -| (IntegrityCheckh.north);
+\node[font=\tiny, text=accenturedark] at (9.5,-8.0) {1..*};
+
+% Project --- CutoverPlan
+\draw[umlcompo] (MigrationUnita.south) -- ++(0,-0.3) -| (CutoverPlanh.north);
+\node[font=\tiny, text=accenturedark] at (-6.8,-14.5) {0..*};
+
+\end{tikzpicture}%
+}
+\caption{Diagramme de classes --- Entités principales de la plateforme ADMP~AI~Studio}
+\label{fig:class-diagram}
+\end{figure}
+
+\noindent Le diagramme de classes met en évidence les entités structurantes de la plateforme. La classe \textbf{Project} est le pivot central~: elle agrège les membres (\texttt{ProjectMember}), les unités de migration (\texttt{MigrationUnit}) et les bundles générés. La classe \textbf{MigrationUnit} porte le mécanisme de checkout/check-in~: trois paires d'attributs \texttt{*\_locked\_by} / \texttt{*\_checkout\_baseline} garantissent l'édition concurrente sans conflit sur les sections DS, RC et DP. La classe \textbf{Bundle} encapsule le cycle de compilation-déploiement-exécution et génère des \textbf{IntegrityCheck} utilisés pour la validation post-migration. Le \textbf{CutoverPlan} formalise le basculement final, constitué de tâches (\texttt{CutoverTask}), jalons (\texttt{CutoverMilestone}) et incidents (\texttt{CutoverIssue}) gérés à l'exécution.

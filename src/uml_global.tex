@@ -1,0 +1,777 @@
+% =====================================================================
+% UML GLOBAL — PLATEFORME ADMP AI Studio
+% Inclus depuis conception_architecture.tex, section 5.3
+% =====================================================================
+
+% Macro fiche UC sans numérotation (usage principal dans le texte)
+\newcommand{\ucfichephase}[7]{%
+  \begin{tcolorbox}[
+    colback=accenturegray!30, colframe=accenturepurple,
+    boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+    title={\textbf{#1}}, fonttitle=\small\bfseries
+  ]
+  \begin{tabular}{@{}p{3.2cm}p{10.5cm}@{}}
+  \textbf{Acteur(s)}       & #2 \\[2pt]
+  \textbf{Préconditions}   & #3 \\[2pt]
+  \textbf{Déclencheur}     & #4 \\[2pt]
+  \textbf{Scénario nominal}& #5 \\[2pt]
+  \textbf{Alt. / Erreurs}  & #6 \\[2pt]
+  \textbf{Postconditions}  & #7 \\
+  \end{tabular}
+  \end{tcolorbox}
+  \medskip
+}
+
+% Macro fiche UC avec numérotation (usage annexes)
+\newcommand{\ucfiche}[8]{%
+  \begin{tcolorbox}[
+    colback=accenturegray!30, colframe=accenturepurple,
+    boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+    title={\textbf{#1}~--- #2}, fonttitle=\small\bfseries
+  ]
+  \begin{tabular}{@{}p{3.2cm}p{10.5cm}@{}}
+  \textbf{Acteur(s)}       & #3 \\[2pt]
+  \textbf{Préconditions}   & #4 \\[2pt]
+  \textbf{Déclencheur}     & #5 \\[2pt]
+  \textbf{Scénario nominal}& #6 \\[2pt]
+  \textbf{Alt. / Erreurs}  & #7 \\[2pt]
+  \textbf{Postconditions}  & #8 \\
+  \end{tabular}
+  \end{tcolorbox}
+  \medskip
+}
+
+% ---------------------------------------------------------------------
+\subsection{Diagrammes de cas d'utilisation}
+\label{subsec:uc-global}
+
+La modélisation des cas d'utilisation est organisée en neuf diagrammes~: un diagramme de \textbf{configuration initiale du projet} (création et paramétrage), puis un diagramme par phase du cycle de migration. Chaque diagramme est suivi des fiches descriptives des cas d'utilisation dont la complexité fonctionnelle et la représentativité du cycle justifient une description détaillée. Les cas d'utilisation restants sont décrits en \hyperref[annexe:ucfiches]{Annexe~A}.
+
+% -----------------------------------------------------------------------
+\subsubsection*{Configuration initiale d'un projet}
+\label{subsubsec:uc-setup}
+
+La création d'un projet passe par un assistant en six étapes (\textit{wizard}) qui collecte toutes les informations nécessaires à l'initialisation du projet et de son périmètre de données.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturelightpurple!20]{Assistant de création de projet}
+    \umlusecase[x=0, y=0,    name=s01]{Sélectionner l'industrie et le secteur}
+    \umlusecase[x=0, y=-1.7, name=s02]{Choisir le système cible}
+    \umlusecase[x=0, y=-3.4, name=s03]{Spécifier le système source}
+    \umlusecase[x=0, y=-5.1, name=s04]{Renseigner les détails du projet}
+    \umlusecase[x=0, y=-6.8, name=s05]{Configurer le volume et l'infrastructure}
+    \umlusecase[x=0, y=-8.5, name=s06]{Initialiser le périmètre de données}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-4]{Administrator}
+  \umlassoc{Administrator}{s01}
+  \umlassoc{Administrator}{s02}
+  \umlassoc{Administrator}{s03}
+  \umlassoc{Administrator}{s04}
+  \umlassoc{Administrator}{s05}
+  \umlassoc{Administrator}{s06}
+  \umlinclude{s06}{s03}
+  \umlinclude{s06}{s02}
+\end{tikzpicture}
+\caption{Diagramme UC~: Configuration initiale d'un projet (assistant 6 étapes)}
+\label{fig:uc-setup}
+\end{figure}
+
+\ucfichephase{Créer un nouveau projet de migration}
+  {Administrator}
+  {Utilisateur authentifié avec le rôle Administrator~; référentiels d'industrie et de systèmes disponibles}
+  {L'administrateur clique sur \textit{New Project} depuis le tableau de bord global}
+  {\textbf{Étape 1~---} L'administrateur sélectionne l'industrie et le secteur d'activité dans la liste proposée.\newline
+   \textbf{Étape 2~---} Il choisit le système cible (ex.~Workday, SAP, Oracle Fusion) parmi les packages disponibles.\newline
+   \textbf{Étape 3~---} Il spécifie le système source (nom, type, version).\newline
+   \textbf{Étape 4~---} Il renseigne les détails du projet~: nom, nom du client, description, utilisateur administrateur.\newline
+   \textbf{Étape 5~---} Il configure le volume d'infrastructure~: taille de stockage, taille de base de données, spécifications techniques.\newline
+   \textbf{Étape 6~---} Il initialise le périmètre de données~: sélection des tables initiales et type de scope.\newline
+   \textbf{Fin~---} Le projet est créé~; les 8 phases sont initialisées~; l'administrateur est redirigé vers le tableau de bord du projet.}
+  {Système cible non disponible~: message d'invitation à contacter l'équipe ADMP. Champ obligatoire vide~: validation inline avant passage à l'étape suivante. Nom de projet déjà utilisé~: suggestion de nom disponible.}
+  {Projet créé avec les 8 phases initialisées~; l'administrateur dispose d'un accès complet~; Quick Start disponible pour un démarrage guidé}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 1~--- Project Management}
+\label{subsubsec:uc-phase1}
+
+La phase Project Management couvre le pilotage global du projet~: rapports hebdomadaires, gestion des parties prenantes, planification Gantt, organisation des workshops et suivi des prérequis.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 1~: Project Management}
+    \umlusecase[x=0, y=0,    name=p101]{Créer un rapport hebdomadaire}
+    \umlusecase[x=0, y=-1.7, name=p102]{Gérer les équipes et parties prenantes}
+    \umlusecase[x=0, y=-3.4, name=p103]{Planifier via Gantt et releases}
+    \umlusecase[x=0, y=-5.1, name=p104]{Organiser des workshops par phase}
+    \umlusecase[x=0, y=-6.8, name=p105]{Suivre les prérequis projet}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-2]{Migration Designer}
+  \umlactor[x=-4, y=-5]{Administrator}
+  \umlactor[x=10, y=-3]{Cutover Manager}
+  \umlassoc{Migration Designer}{p101}
+  \umlassoc{Migration Designer}{p103}
+  \umlassoc{Migration Designer}{p104}
+  \umlassoc{Administrator}{p102}
+  \umlassoc{Administrator}{p105}
+  \umlassoc{Cutover Manager}{p101}
+  \umlassoc{Cutover Manager}{p103}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 1 — Project Management}
+\label{fig:uc-phase1}
+\end{figure}
+
+\ucfichephase{Créer et publier un rapport hebdomadaire}
+  {Migration Designer, Cutover Manager}
+  {Projet actif~; semaine de référence écoulée}
+  {Le Migration Designer clique sur \textit{New Report} dans la section Weekly Reports}
+  {\textbf{1.}~Il sélectionne la semaine et l'année du rapport (versionnage v00.01).\newline
+   \textbf{2.}~Il renseigne les sections du rapport~: risques actifs, blocages, livrables, prochaines étapes.\newline
+   \textbf{3.}~Il ajoute les métriques de santé du projet (nombre de risques, tickets ouverts, avancement).\newline
+   \textbf{4.}~Il sauvegarde en brouillon~; le rapport est visible en mode \textit{Draft}.\newline
+   \textbf{5.}~Après validation interne, il publie le rapport~; il devient visible pour toutes les parties prenantes.\newline
+   \textbf{6.}~Il exporte le rapport publié en PowerPoint pour présentation au client.}
+  {Rapport déjà existant pour la semaine~: avertissement~; possibilité de créer une nouvelle version. Export PowerPoint échoué~: retry automatique.}
+  {Rapport publié~; archivé dans l'historique des versions~; disponible pour export et partage}
+
+\ucfichephase{Planifier via Gantt et jalons de livraison}
+  {Migration Designer}
+  {Projet initialisé~; équipe projet définie (parties prenantes)}
+  {Le Migration Designer accède à la section Planning pour structurer la feuille de route}
+  {\textbf{1.}~Il crée les éléments de planning~: jalons, tâches, dépendances, dates de début et fin.\newline
+   \textbf{2.}~Il visualise la feuille de route sur le diagramme de Gantt.\newline
+   \textbf{3.}~Il crée les \textit{Delivery Releases}~: nom de la release, date cible, périmètre livré.\newline
+   \textbf{4.}~Il associe les tâches aux releases.\newline
+   \textbf{5.}~Il ajuste les dépendances entre tâches en cas de retard détecté.\newline
+   \textbf{6.}~Il exporte le planning pour partage avec le comité de pilotage.}
+  {Dépendance circulaire entre tâches~: détection automatique et avertissement. Date de release impossible compte tenu des dépendances~: recalcul proposé.}
+  {Planning structuré et partagé~; jalons visibles sur le tableau de bord~; équipe notifiée des échéances}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 2~--- Data Scope}
+\label{subsubsec:uc-phase2}
+
+Le Data Scope définit le périmètre complet de la migration en trois couches~: tables sources (SDS), tables intermédiaires (IDS), et tables cibles (TDS). Il constitue la référence pour toutes les phases suivantes.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 2~: Data Scope}
+    \umlusecase[x=0, y=0,    name=p201]{Définir les tables sources (SDS)}
+    \umlusecase[x=0, y=-1.7, name=p202]{Définir les tables intermédiaires (IDS)}
+    \umlusecase[x=0, y=-3.4, name=p203]{Définir les tables cibles (TDS)}
+    \umlusecase[x=0, y=-5.1, name=p204]{Importer le périmètre depuis Excel}
+    \umlusecase[x=0, y=-6.8, name=p205]{Publier le périmètre de données}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-2]{Data Analyst}
+  \umlactor[x=-4, y=-5]{Migration Designer}
+  \umlassoc{Data Analyst}{p201}
+  \umlassoc{Data Analyst}{p202}
+  \umlassoc{Data Analyst}{p203}
+  \umlassoc{Data Analyst}{p204}
+  \umlassoc{Migration Designer}{p203}
+  \umlassoc{Migration Designer}{p205}
+  \umlextend{p204}{p201}
+  \umlextend{p204}{p203}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 2 — Data Scope}
+\label{fig:uc-phase2}
+\end{figure}
+
+\ucfichephase{Définir le périmètre des données (SDS / IDS / TDS)}
+  {Data Analyst, Migration Designer}
+  {Projet initialisé~; système source et cible identifiés}
+  {Le Data Analyst accède à l'onglet \textit{Data Scope} pour définir les trois couches}
+  {\textbf{1.}~Il sélectionne l'onglet \textit{Source} et crée les tables sources~: nom, domaine, système, liste des colonnes (nom, type, longueur, contraintes).\newline
+   \textbf{2.}~Il passe à l'onglet \textit{Intermediary} et définit les tables intermédiaires utilisées dans la transformation.\newline
+   \textbf{3.}~Il passe à l'onglet \textit{Target} et définit les tables cibles avec leur structure dans le nouveau système.\newline
+   \textbf{4.}~Pour accélérer la saisie, il importe un fichier Excel~; la plateforme auto-détecte les colonnes et types.\newline
+   \textbf{5.}~Il corrige les anomalies détectées lors de l'import (types incohérents, colonnes manquantes).\newline
+   \textbf{6.}~Il publie le périmètre~; il devient disponible comme référence pour les phases Extract et Transform.}
+  {Format Excel invalide~: message d'erreur avec détail des colonnes attendues. Table en doublon~: avertissement et option de fusion. Publication avec tables incomplètes~: validation requise.}
+  {Périmètre de données versionnée~; SDS/IDS/TDS disponibles pour toutes les phases suivantes}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 3~--- Extract}
+\label{subsubsec:uc-phase3}
+
+La phase Extract couvre la collecte des données auprès du client et leur chargement dans la plateforme~: configuration des sources d'extraction, upload de fichiers, auto-détection de structure et alignement avec le SDS.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 3~: Extract}
+    \umlusecase[x=0, y=0,    name=p301]{Collecter les documents client}
+    \umlusecase[x=0, y=-1.7, name=p302]{Créer et configurer une extraction}
+    \umlusecase[x=0, y=-3.4, name=p303]{Charger les fichiers sources}
+    \umlusecase[x=0, y=-5.1, name=p304]{Auto-détecter la structure et aligner avec le SDS}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-2.5]{Data Analyst}
+  \umlassoc{Data Analyst}{p301}
+  \umlassoc{Data Analyst}{p302}
+  \umlassoc{Data Analyst}{p303}
+  \umlassoc{Data Analyst}{p304}
+  \umlinclude{p303}{p302}
+  \umlinclude{p304}{p303}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 3 — Extract}
+\label{fig:uc-phase3}
+\end{figure}
+
+\ucfichephase{Charger un fichier source et aligner avec le SDS}
+  {Data Analyst}
+  {Data scope source (SDS) défini~; fichier d'extraction disponible (CSV, Excel, TXT)}
+  {Le Data Analyst dispose des fichiers bruts fournis par le client et souhaite les intégrer dans la plateforme}
+  {\textbf{1.}~Le Data Analyst crée une nouvelle extraction~: nom, description, source associée.\newline
+   \textbf{2.}~Il téléverse le fichier via la zone de glisser-déposer (drag \& drop).\newline
+   \textbf{3.}~Si le fichier est un Excel multi-onglets, la plateforme liste les feuilles~; il sélectionne les feuilles à importer.\newline
+   \textbf{4.}~Il lance l'\textit{auto-detect}~: la plateforme analyse la structure (colonnes, types, séparateurs) et propose un mapping automatique.\newline
+   \textbf{5.}~Il compare la structure détectée avec le SDS correspondant et corrige les écarts.\newline
+   \textbf{6.}~Il valide l'alignement~; les données sont indexées et disponibles pour la phase Profiling.}
+  {Structure non reconnue (encodage, séparateur inconnu)~: l'utilisateur configure manuellement les paramètres de parsing. Colonne SDS introuvable dans le fichier~: marquage comme manquante avec alerte.}
+  {Fichier source intégré et aligné avec le SDS~; disponible pour l'audit de qualité (Phase 4)}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 4~--- Profiling \& Cleansing}
+\label{subsubsec:uc-phase4}
+
+Cette phase audit la qualité des données sources, détecte et résout les doublons, puis définit et applique des règles de nettoyage et de standardisation avant la transformation.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 4~: Profiling \& Cleansing}
+    \umlusecase[x=0, y=0,    name=p401]{Auditer la qualité des données sources}
+    \umlusecase[x=0, y=-1.7, name=p402]{Dédupliquer les enregistrements}
+    \umlusecase[x=0, y=-3.4, name=p403]{Définir les règles de validation métier}
+    \umlusecase[x=0, y=-5.1, name=p404]{Configurer les règles de nettoyage}
+    \umlusecase[x=0, y=-6.8, name=p405]{Standardiser les valeurs de champs}
+    \umlusecase[x=0, y=-8.5, name=p406]{Consulter le tableau de bord qualité}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-3.5]{Data Analyst}
+  \umlactor[x=10, y=-4.5]{Business Reviewer}
+  \umlassoc{Data Analyst}{p401}
+  \umlassoc{Data Analyst}{p402}
+  \umlassoc{Data Analyst}{p403}
+  \umlassoc{Data Analyst}{p404}
+  \umlassoc{Data Analyst}{p405}
+  \umlassoc{Data Analyst}{p406}
+  \umlassoc{Business Reviewer}{p403}
+  \umlassoc{Business Reviewer}{p406}
+  \umlinclude{p401}{p406}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 4 — Profiling \& Cleansing}
+\label{fig:uc-phase4}
+\end{figure}
+
+\ucfichephase{Auditer la qualité des données sources}
+  {Data Analyst}
+  {Données sources chargées et alignées avec le SDS (Phase 3)}
+  {Le Data Analyst lance un audit depuis la section \textit{Source Data Audit}}
+  {\textbf{1.}~Il sélectionne les tables et champs à profiler.\newline
+   \textbf{2.}~La plateforme exécute l'analyse~: taux de remplissage, valeurs min/max, valeurs distinctes, distributions, patterns de format.\newline
+   \textbf{3.}~Les anomalies détectées sont listées~: valeurs manquantes, outliers, incohérences de format, valeurs hors plage.\newline
+   \textbf{4.}~Le Data Analyst consulte les statistiques par champ dans le rapport de profilage.\newline
+   \textbf{5.}~Il documente les anomalies critiques à corriger avant la transformation.\newline
+   \textbf{6.}~Les résultats alimentent automatiquement le tableau de bord qualité.}
+  {Données insuffisantes pour le calcul statistique~: résultats partiels avec indicateur. Timeout d'analyse sur un volume important~: reprise incrémentale.}
+  {Rapport de profilage disponible~; anomalies classifiées~; base pour les règles de nettoyage et de déduplication}
+
+\ucfichephase{Dédupliquer les enregistrements}
+  {Data Analyst}
+  {Données sources importées~; rapport de profilage indiquant des doublons potentiels}
+  {Le Data Analyst accède à la section \textit{Data Deduplication} pour traiter les doublons}
+  {\textbf{1.}~Il sélectionne la table source à dédupliquer.\newline
+   \textbf{2.}~Il configure les règles de correspondance~: type (exact, phonétique, approximatif), champs de comparaison, seuils de similarité.\newline
+   \textbf{3.}~Il lance le moteur de déduplication~; les clusters de doublons potentiels sont générés.\newline
+   \textbf{4.}~Pour chaque cluster, il examine les enregistrements et choisit~: fusionner (golden record), conserver séparément, ou ignorer le cluster.\newline
+   \textbf{5.}~Il valide les fusions~; un enregistrement \textit{golden} est produit par cluster.\newline
+   \textbf{6.}~Le jeu de données nettoyé est disponible pour la phase Transform.}
+  {Cluster trop large (> 50 enregistrements)~: revue paginée obligatoire avant fusion. Règle de correspondance trop permissive~: ajustement du seuil proposé après aperçu des faux positifs.}
+  {Jeu de données dédupliqué~; golden records créés~; taux de déduplication tracé dans le tableau de bord qualité}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 5~--- Transform}
+\label{subsubsec:uc-phase5}
+
+La phase Transform est le cœur intellectuel de la migration~: analyse des domaines, conception des unités de migration (RC/DP), configuration des paramètres et tables de transco, génération de packages, exécution et simulation.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 5~: Transform}
+    \umlusecase[x=0, y=0,    name=p501]{Analyser les domaines (Table et Data Mapping)}
+    \umlusecase[x=0, y=-1.7, name=p502]{Concevoir les unités de migration (RC / DP)}
+    \umlusecase[x=0, y=-3.4, name=p503]{Configurer paramètres et tables de transco}
+    \umlusecase[x=0, y=-5.1, name=p504]{Générer le package de migration}
+    \umlusecase[x=0, y=-6.8, name=p505]{Lancer et monitorer l'exécution}
+    \umlusecase[x=0, y=-8.5, name=p506]{Simuler sur un échantillon de données}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-3.5]{Migration Designer}
+  \umlactor[x=10, y=-4.5]{Test Engineer}
+  \umlassoc{Migration Designer}{p501}
+  \umlassoc{Migration Designer}{p502}
+  \umlassoc{Migration Designer}{p503}
+  \umlassoc{Migration Designer}{p504}
+  \umlassoc{Migration Designer}{p505}
+  \umlassoc{Test Engineer}{p504}
+  \umlassoc{Test Engineer}{p506}
+  \umlinclude{p502}{p501}
+  \umlinclude{p504}{p502}
+  \umlinclude{p504}{p503}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 5 — Transform}
+\label{fig:uc-phase5}
+\end{figure}
+
+\ucfichephase{Concevoir les unités de migration (RC / DP)}
+  {Migration Designer}
+  {Analyse des domaines complète~; Data Scope validé~; tables de transco configurées}
+  {Le Migration Designer ouvre une unité de migration dans la section \textit{Design} pour rédiger les règles}
+  {\textbf{1.}~Il sélectionne un domaine fonctionnel (ex.~\textit{Customers}) et ouvre l'éditeur d'unités de migration.\newline
+   \textbf{2.}~Il crée l'unité et renseigne le Record Creation (RC)~: pseudo-code avec instructions IF/ELSE, callWriteFile, callDataPopulate, variables et exceptions.\newline
+   \textbf{3.}~Il renseigne le Data Population (DP)~: pour chaque champ cible, il définit la source, la formule de transformation et le format.\newline
+   \textbf{4.}~Il configure les paramètres run-time et les Q\&A associés à l'unité.\newline
+   \textbf{5.}~Il sauvegarde~; une nouvelle version du document est créée automatiquement.\newline
+   \textbf{6.}~Il exporte les documents RC/DP au format Excel ou ZIP ADMP natif pour revue externe.}
+  {Erreur de syntaxe dans le RC~: validation inline avec localisation de l'erreur. Import ZIP échoué (format non reconnu)~: message descriptif avec liste des formats attendus.}
+  {Unité de migration versionnée et prête pour la génération de package}
+
+\ucfichephase{Générer le package de migration}
+  {Migration Designer, Test Engineer}
+  {Unités de migration conçues et validées~; format de sortie sélectionné}
+  {Le Migration Designer accède à \textit{Package Generation} et lance la génération}
+  {\textbf{1.}~Il sélectionne le format de sortie parmi les 8 disponibles (Databricks, SQL Server, ADF, Snowflake\ldots).\newline
+   \textbf{2.}~Il configure les paramètres de génération~: catalog cible, schéma, version de runtime.\newline
+   \textbf{3.}~Il lance la compilation~; le serveur déclenche le moteur TypeScript correspondant au format.\newline
+   \textbf{4.}~La progression est affichée en temps réel (unités traitées, branches générées).\newline
+   \textbf{5.}~En cas de succès, le package est disponible au téléchargement (ex.~\texttt{.whl} pour Databricks).\newline
+   \textbf{6.}~L'historique des compilations est archivé dans le \textit{Dashboard \& Reporting}.}
+  {Erreur de compilation~: log détaillé avec numéro de ligne du document RC fautif. Timeout > 60\,s~: notification et retry automatique.}
+  {Package généré et archivé~; prêt pour déploiement et exécution (UC~: Lancer l'exécution)}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 6~--- Load}
+\label{subsubsec:uc-phase6}
+
+La phase Load configure et exécute le chargement des données transformées dans le système cible, avec validation des contraintes d'intégrité avant et pendant le chargement.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 6~: Load}
+    \umlusecase[x=0, y=0,    name=p601]{Monitorer les chargements (dashboard)}
+    \umlusecase[x=0, y=-1.7, name=p602]{Configurer un design de chargement}
+    \umlusecase[x=0, y=-3.4, name=p603]{Définir les contrôles d'intégrité}
+    \umlusecase[x=0, y=-5.1, name=p604]{Générer et déployer le package de chargement}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-2.5]{Migration Designer}
+  \umlassoc{Migration Designer}{p601}
+  \umlassoc{Migration Designer}{p602}
+  \umlassoc{Migration Designer}{p603}
+  \umlassoc{Migration Designer}{p604}
+  \umlinclude{p604}{p602}
+  \umlinclude{p604}{p603}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 6 — Load}
+\label{fig:uc-phase6}
+\end{figure}
+
+\ucfichephase{Définir et exécuter les contrôles d'intégrité}
+  {Migration Designer}
+  {Données transformées disponibles~; tables cibles créées dans le système cible}
+  {Le Migration Designer accède à \textit{Integrity Checks} pour valider les contraintes avant chargement}
+  {\textbf{1.}~Il importe les règles d'intégrité depuis Excel (types~: PK, FK, NOT NULL, unicité, règles métier).\newline
+   \textbf{2.}~Il filtre les règles par table ou type de contrôle.\newline
+   \textbf{3.}~Il lance l'exécution des contrôles sur les données cibles.\newline
+   \textbf{4.}~Les résultats sont affichés~: contrôles passés (vert), avertissements (orange), violations (rouge).\newline
+   \textbf{5.}~Pour chaque violation, il consulte le détail des enregistrements incriminés.\newline
+   \textbf{6.}~Il exporte les résultats en Excel pour documentation et résolution.}
+  {Volume de violations élevé~: pagination et export par lot. Règle invalide (expression SQL incorrecte)~: message d'erreur avec suggestion de correction.}
+  {Contrôles d'intégrité validés et archivés~; violations documentées~; décision go/no-go pour le chargement prise}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 7~--- Validation}
+\label{subsubsec:uc-phase7}
+
+La phase Validation garantit la conformité des données migrées~: tickets de test fonctionnels et réconciliation volumétrique à trois niveaux (comptages, agrégats, ligne par ligne).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 7~: Validation}
+    \umlusecase[x=0, y=0,    name=p701]{Créer et gérer des tickets de test}
+    \umlusecase[x=0, y=-1.7, name=p702]{Consulter les analytics de tests}
+    \umlusecase[x=0, y=-3.4, name=p703]{Configurer les règles de réconciliation}
+    \umlusecase[x=0, y=-5.1, name=p704]{Exécuter la réconciliation (L1 / L2 / L3)}
+    \umlusecase[x=0, y=-6.8, name=p705]{Synchroniser avec outils externes}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-2.5]{Test Engineer}
+  \umlactor[x=10, y=-3.5]{Business Reviewer}
+  \umlassoc{Test Engineer}{p701}
+  \umlassoc{Test Engineer}{p702}
+  \umlassoc{Test Engineer}{p703}
+  \umlassoc{Test Engineer}{p704}
+  \umlassoc{Test Engineer}{p705}
+  \umlassoc{Business Reviewer}{p701}
+  \umlassoc{Business Reviewer}{p702}
+  \umlinclude{p704}{p703}
+  \umlextend{p705}{p701}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 7 — Validation}
+\label{fig:uc-phase7}
+\end{figure}
+
+\ucfichephase{Configurer et exécuter la réconciliation (L1 / L2 / L3)}
+  {Test Engineer}
+  {Données chargées dans le système cible~; données sources accessibles}
+  {Le Test Engineer accède à la section \textit{Reconciliation} pour valider la complétude et la conformité}
+  {\textbf{1.}~Il configure les règles de réconciliation~:\newline
+   \quad\textbf{Niveau 1~---} Comparaison des comptages d'enregistrements source vs cible par table.\newline
+   \quad\textbf{Niveau 2~---} Comparaison des agrégats sur les champs clés (sommes, moyennes, MAX/MIN).\newline
+   \quad\textbf{Niveau 3~---} Comparaison ligne par ligne sur les champs sélectionnés.\newline
+   \textbf{2.}~Il lance l'exécution des règles~; la plateforme interroge les deux systèmes.\newline
+   \textbf{3.}~Les résultats sont affichés~: pourcentage de concordance, écarts identifiés, statut (passed / warning / failed).\newline
+   \textbf{4.}~Il analyse les écarts~; chaque écart est rattaché à une cause (règle de transformation, donnée manquante\ldots).\newline
+   \textbf{5.}~Il génère le rapport de réconciliation consolidé~; il est soumis au Business Reviewer.}
+  {Écarts bloquants (L1 > 5\,\%)~: alerte critique~; la phase Cutover est bloquée. Timeout L3 sur grand volume~: exécution en mode sampling avec extrapolation.}
+  {Rapport de réconciliation archivé~; statut des trois niveaux tracé~; Business Reviewer notifié pour validation}
+
+\ucfichephase{Créer et gérer des tickets de test}
+  {Test Engineer, Business Reviewer}
+  {Données chargées~; critères d'acceptation définis avec le client}
+  {Le Test Engineer crée les tickets pour organiser la campagne de tests fonctionnels}
+  {\textbf{1.}~Il crée un ticket~: titre, description, équipe, responsable, release, priorité, catégorie.\newline
+   \textbf{2.}~Il importe en masse les tickets depuis un template Excel.\newline
+   \textbf{3.}~Il groupe les tickets par catégorie et objet métier pour une vue organisée.\newline
+   \textbf{4.}~Il met à jour le statut au fil de l'exécution~: \textit{Open}, \textit{In Progress}, \textit{Passed}, \textit{Failed}.\newline
+   \textbf{5.}~Le Business Reviewer valide les tickets passés et commente les tickets échoués.\newline
+   \textbf{6.}~Il consulte le tableau de bord analytics~: taux de résolution, tickets par unité, progression par release.}
+  {Synchronisation Jira/Mantis indisponible~: mode offline avec synchronisation différée. Ticket sans responsable~: alerte dans le tableau de bord.}
+  {Campagne de tests documentée~; taux d'acceptation calculé~; prérequis pour go-live validés}
+
+% -----------------------------------------------------------------------
+\subsubsection*{Phase 8~--- Cutover}
+\label{subsubsec:uc-phase8}
+
+La phase Cutover planifie et exécute la bascule en production~: création de plans avec tâches et dépendances, simulation (dry-run), et exécution en temps réel avec suivi des blocages.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturegray!30]{Phase 8~: Cutover}
+    \umlusecase[x=0, y=0,    name=p801]{Créer un plan de cutover}
+    \umlusecase[x=0, y=-1.7, name=p802]{Gérer les templates réutilisables}
+    \umlusecase[x=0, y=-3.4, name=p803]{Visualiser la timeline et le chemin critique}
+    \umlusecase[x=0, y=-5.1, name=p804]{Simuler le cutover (dry-run)}
+    \umlusecase[x=0, y=-6.8, name=p805]{Exécuter le cutover en temps réel}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-3]{Cutover Manager}
+  \umlactor[x=10, y=-4]{Client}
+  \umlassoc{Cutover Manager}{p801}
+  \umlassoc{Cutover Manager}{p802}
+  \umlassoc{Cutover Manager}{p803}
+  \umlassoc{Cutover Manager}{p804}
+  \umlassoc{Cutover Manager}{p805}
+  \umlassoc{Client}{p805}
+  \umlinclude{p805}{p801}
+  \umlinclude{p804}{p801}
+  \umlextend{p802}{p801}
+\end{tikzpicture}
+\caption{Diagramme UC~: Phase 8 — Cutover}
+\label{fig:uc-phase8}
+\end{figure}
+
+\ucfichephase{Exécuter le cutover en temps réel}
+  {Cutover Manager, Client}
+  {Plan de cutover approuvé et simulé (dry-run réussi)~; critères go/no-go définis~; équipes mobilisées}
+  {La fenêtre de cutover s'ouvre~; le Cutover Manager démarre l'exécution depuis le tableau de bord}
+  {\textbf{1.}~Le Cutover Manager ouvre le tableau de bord d'exécution et démarre le plan.\newline
+   \textbf{2.}~Les tâches s'affichent avec leur statut en temps réel~: \textit{Pending}, \textit{In Progress}, \textit{Done}, \textit{Blocked}.\newline
+   \textbf{3.}~Chaque responsable marque ses tâches comme terminées depuis son interface.\newline
+   \textbf{4.}~En cas de blocage, le Cutover Manager documente l'incident et décide~: contournement ou activation du plan de rollback.\newline
+   \textbf{5.}~Le chemin critique est mis en évidence~; tout retard sur une tâche critique déclenche une alerte immédiate.\newline
+   \textbf{6.}~À la validation de la dernière tâche, le Cutover Manager prononce officiellement le go-live.\newline
+   \textbf{7.}~Le Client valide la bascule~; le journal d'exécution horodaté est archivé.}
+  {Tâche critique bloquée~: escalade automatique au Cutover Manager. Incident majeur~: activation du plan de rollback~; le système source est remis en production. Dépassement de la fenêtre de cutover~: go/no-go décision escaladée au comité de pilotage.}
+  {Go-live prononcé et documenté~; journal d'exécution archivé~; projet marqué \textit{Completed}~; certificat de mise en production généré}
+
+% ---------------------------------------------------------------------
+\subsection{Diagrammes de séquence}
+\label{subsec:sequences}
+
+Les cinq diagrammes de séquence suivants modélisent les flux dynamiques les plus critiques de la plateforme ADMP~AI~Studio.
+
+\subsubsection*{SD-01~--- Création d'un projet de migration}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=Administrator]{admin}
+  \umlbasicobject[class=WebApp]{web}
+  \umlbasicobject[class=ProjectService]{projectsvc}
+  \umlbasicobject[class=Database]{db}
+  \begin{umlcall}[op={createProject(industry\, target\, name)}, return=projectId]{admin}{web}
+    \begin{umlcall}[op={POST /api/projects}, return={201 Created}]{web}{projectsvc}
+      \begin{umlcall}[op={INSERT project}, return=project]{projectsvc}{db}
+      \end{umlcall}
+      \begin{umlcall}[op={INSERT 8 phases}, return=ok]{projectsvc}{db}
+      \end{umlcall}
+    \end{umlcall}
+  \end{umlcall}
+  \begin{umlcall}[op={initDataScope(tables)}, return=scopeId]{admin}{web}
+    \begin{umlcall}[op={POST /api/projects/\{id\}/data-scope}, return=ok]{web}{projectsvc}
+      \begin{umlcall}[op={INSERT SDS/IDS/TDS records}, return=ok]{projectsvc}{db}
+      \end{umlcall}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{SD-01~: Création et initialisation d'un projet de migration}
+\label{fig:sd01}
+\end{figure}
+
+\subsubsection*{SD-02~--- Génération d'un package Databricks}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=MigrationDesigner]{designer}
+  \umlbasicobject[class=WebApp]{web}
+  \umlbasicobject[class=CompilerService]{compiler}
+  \umlbasicobject[class=BundleStorage]{storage}
+  \begin{umlcall}[op={generateBundle(unitId\, format=Databricks)}, return=bundleId]{designer}{web}
+    \begin{umlcall}[op={POST /api/compile}, return=jobId]{web}{compiler}
+      \begin{umlcall}[op={loadDocuments(RC\, DP\, TT\, DS)}, return=docs]{compiler}{storage}
+      \end{umlcall}
+      \begin{umlcall}[op={parseAST(docs.rc)}, return=ast]{compiler}{compiler}
+      \end{umlcall}
+      \begin{umlcall}[op={extractPaths(ast)}, return=paths]{compiler}{compiler}
+      \end{umlcall}
+      \begin{umlcall}[op={generateSelectBlocks(paths)}, return=pyFiles]{compiler}{compiler}
+      \end{umlcall}
+      \begin{umlcall}[op={assembleBundle(pyFiles)}, return=whlPath]{compiler}{storage}
+      \end{umlcall}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{SD-02~: Génération d'un package Databricks (vue plateforme)}
+\label{fig:sd02}
+\end{figure}
+
+\subsubsection*{SD-03~--- Verrouillage d'une section (checkout)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=MigrationDesigner]{designer}
+  \umlbasicobject[class=WebApp]{web}
+  \umlbasicobject[class=LockService]{locksvc}
+  \umlbasicobject[class=Database]{db}
+  \begin{umlcall}[op={checkoutSection(unitId\, section=RC)}, return=lock]{designer}{web}
+    \begin{umlcall}[op={POST /api/units/\{id\}/checkout}, return=lock]{web}{locksvc}
+      \begin{umlcall}[op={SELECT locked\_by WHERE id=unitId}, return=currentLock]{locksvc}{db}
+      \end{umlcall}
+      \begin{umlcall}[op={UPDATE SET rc\_locked\_by=userId}, return=ok]{locksvc}{db}
+      \end{umlcall}
+    \end{umlcall}
+  \end{umlcall}
+  \begin{umlcall}[op={editRC()\, saveRC()}, return=version]{designer}{web}
+    \begin{umlcall}[op={INSERT migration\_unit\_version}, return=versionId]{web}{db}
+    \end{umlcall}
+  \end{umlcall}
+  \begin{umlcall}[op={checkinSection(unitId\, section=RC)}, return=ok]{designer}{web}
+    \begin{umlcall}[op={UPDATE SET rc\_locked\_by=NULL}, return=ok]{web}{db}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{SD-03~: Verrouillage et édition d'une section (checkout / check-in)}
+\label{fig:sd03}
+\end{figure}
+
+\subsubsection*{SD-04~--- Réconciliation source-cible}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=TestEngineer]{tester}
+  \umlbasicobject[class=WebApp]{web}
+  \umlbasicobject[class=ReconService]{reconsvc}
+  \umlbasicobject[class=DatabricksAPI]{dbkapi}
+  \umlbasicobject[class=Database]{db}
+  \begin{umlcall}[op={launchReconciliation(entities)}, return=reportId]{tester}{web}
+    \begin{umlcall}[op={POST /api/reconciliation}, return=jobId]{web}{reconsvc}
+      \begin{umlcall}[op={runCountsJob(srcEntities)}, return=sourceCounts]{reconsvc}{dbkapi}
+      \end{umlcall}
+      \begin{umlcall}[op={runCountsJob(tgtEntities)}, return=targetCounts]{reconsvc}{dbkapi}
+      \end{umlcall}
+      \begin{umlcall}[op={computeDeltas(src\, tgt)}, return=entries]{reconsvc}{reconsvc}
+      \end{umlcall}
+      \begin{umlcall}[op={INSERT reconciliation\_report+entries}, return=reportId]{reconsvc}{db}
+      \end{umlcall}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{SD-04~: Réconciliation source-cible}
+\label{fig:sd04}
+\end{figure}
+
+\subsubsection*{SD-05~--- Exécution du cutover}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=CutoverManager]{cutover}
+  \umlactor[class=Client]{client}
+  \umlbasicobject[class=WebApp]{web}
+  \umlbasicobject[class=CutoverService]{covsvc}
+  \begin{umlcall}[op={startExecution(planId)}, return=execId]{cutover}{web}
+    \begin{umlcall}[op={POST /api/cutover/\{id\}/execute}, return=ok]{web}{covsvc}
+    \end{umlcall}
+  \end{umlcall}
+  \begin{umlcall}[op={updateTaskStatus(taskId\, done)}, return=ok]{cutover}{web}
+    \begin{umlcall}[op={PATCH /api/cutover/tasks/\{id\}}, return=ok]{web}{covsvc}
+    \end{umlcall}
+  \end{umlcall}
+  \begin{umlcall}[op={approveGoLive()}, return=certificate]{client}{web}
+    \begin{umlcall}[op={POST /api/cutover/\{id\}/golive}, return=ok]{web}{covsvc}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{SD-05~: Exécution du cutover et validation go-live}
+\label{fig:sd05}
+\end{figure}
+
+% ---------------------------------------------------------------------
+\subsection{Diagramme de classes}
+\label{subsec:classe}
+
+Le diagramme de classes (Figure~\ref{fig:class}) modélise les quinze entités principales de la plateforme ADMP~AI~Studio persistées dans la base de données PostgreSQL.
+
+\begin{figure}[H]
+\centering
+\scalebox{0.55}{%
+\begin{tikzpicture}
+  %% Row 1
+  \umlclass[x=0, y=0]{Project}{
+    +id : UUID \\
+    +name : String \\
+    +industry : String \\
+    +targetPlatform : String \\
+    +status : ProjectStatus
+  }{}
+
+  \umlclass[x=8, y=0]{User}{
+    +id : UUID \\
+    +email : String \\
+    +firstName : String \\
+    +lastName : String
+  }{}
+
+  \umlclass[x=0, y=-4.5]{ProjectMember}{
+    +id : UUID \\
+    +role : MemberRole
+  }{}
+
+  %% Row 2
+  \umlclass[x=0, y=-8]{MigrationUnit}{
+    +id : UUID \\
+    +name : String \\
+    +rcLockedBy : UUID \\
+    +dpLockedBy : UUID \\
+    +dsLockedBy : UUID
+  }{}
+
+  \umlclass[x=8, y=-6]{MigrationUnitVersion}{
+    +id : UUID \\
+    +version : int \\
+    +content : JSON \\
+    +createdAt : DateTime
+  }{}
+
+  \umlclass[x=0, y=-13]{DataScope}{
+    +id : UUID \\
+    +type : ScopeType \\
+    +content : JSON
+  }{}
+
+  %% Row 3
+  \umlclass[x=8, y=-11]{TranscoTable}{
+    +id : UUID \\
+    +name : String \\
+    +content : XML
+  }{}
+
+  \umlclass[x=0, y=-17]{Bundle}{
+    +id : UUID \\
+    +format : BundleFormat \\
+    +version : String \\
+    +filePath : String \\
+    +status : BundleStatus
+  }{}
+
+  \umlclass[x=8, y=-15.5]{IntegrityCheck}{
+    +id : UUID \\
+    +checkType : CheckType \\
+    +expression : String
+  }{}
+
+  %% Row 4
+  \umlclass[x=0, y=-21]{ReconciliationReport}{
+    +id : UUID \\
+    +level : ReconLevel \\
+    +generatedAt : DateTime \\
+    +status : ReportStatus
+  }{}
+
+  \umlclass[x=8, y=-20]{CutoverPlan}{
+    +id : UUID \\
+    +name : String \\
+    +status : PlanStatus \\
+    +plannedDate : DateTime
+  }{}
+
+  \umlclass[x=0, y=-25]{TestTicket}{
+    +id : UUID \\
+    +title : String \\
+    +team : String \\
+    +status : TicketStatus
+  }{}
+
+  \umlclass[x=8, y=-24]{CutoverTask}{
+    +id : UUID \\
+    +title : String \\
+    +responsible : String \\
+    +dueDate : DateTime \\
+    +type : TaskType
+  }{}
+
+  %% Relationships
+  \umlcompo[mult1=1, mult2=*]{Project}{ProjectMember}
+  \umlassoc[mult1=1, mult2=*]{User}{ProjectMember}
+  \umlcompo[mult1=1, mult2=*]{Project}{MigrationUnit}
+  \umlcompo[mult1=1, mult2=*]{MigrationUnit}{MigrationUnitVersion}
+  \umlcompo[mult1=1, mult2=*]{Project}{DataScope}
+  \umlcompo[mult1=1, mult2=*]{Project}{TranscoTable}
+  \umlcompo[mult1=1, mult2=*]{MigrationUnit}{Bundle}
+  \umlcompo[mult1=1, mult2=*]{MigrationUnit}{IntegrityCheck}
+  \umlcompo[mult1=1, mult2=*]{Project}{ReconciliationReport}
+  \umlcompo[mult1=1, mult2=*]{Project}{CutoverPlan}
+  \umlcompo[mult1=1, mult2=*]{Project}{TestTicket}
+  \umlcompo[mult1=1, mult2=*]{CutoverPlan}{CutoverTask}
+\end{tikzpicture}%
+}% end scalebox
+\caption{Diagramme de classes~--- entités principales d'ADMP~AI~Studio}
+\label{fig:class}
+\end{figure}

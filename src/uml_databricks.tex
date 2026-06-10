@@ -1,0 +1,296 @@
+% =====================================================================
+% UML DATABRICKS — MODULE DE GÉNÉRATION
+% Inclus depuis conception_architecture.tex, section 5.4.3
+% =====================================================================
+
+\subsubsection*{Cas d'utilisation spécifiques au module Databricks}
+
+Le diagramme de la Figure~\ref{fig:uc-databricks} modélise les cas d'utilisation du module de génération Databricks. Le \textbf{Migration Designer} orchestre l'ensemble du cycle~: configuration du formulaire de génération (format, catalog, options), compilation, et déploiement. Le \textbf{Test Engineer} valide le bundle en environnement de test.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \begin{umlsystem}[x=3.5, fill=accenturelightpurple!25]{Module de génération Databricks}
+    \umlusecase[x=0, y=0,    name=ucdb01]{Configurer le formulaire de génération}
+    \umlusecase[x=0, y=-1.7, name=ucdb02]{Compiler une unité de migration}
+    \umlusecase[x=0, y=-3.4, name=ucdb03]{Consulter le log de compilation}
+    \umlusecase[x=0, y=-5.1, name=ucdb04]{Télécharger le package généré}
+    \umlusecase[x=0, y=-6.8, name=ucdb05]{Déployer le bundle sur Databricks}
+    \umlusecase[x=0, y=-8.5, name=ucdb06]{Valider le bundle en environnement de test}
+  \end{umlsystem}
+  \umlactor[x=-4, y=-3.5]{Migration Designer}
+  \umlactor[x=10, y=-5.5]{Test Engineer}
+  \umlassoc{Migration Designer}{ucdb01}
+  \umlassoc{Migration Designer}{ucdb02}
+  \umlassoc{Migration Designer}{ucdb03}
+  \umlassoc{Migration Designer}{ucdb04}
+  \umlassoc{Migration Designer}{ucdb05}
+  \umlassoc{Test Engineer}{ucdb06}
+  \umlassoc{Test Engineer}{ucdb03}
+  \umlinclude{ucdb02}{ucdb01}
+  \umlextend{ucdb03}{ucdb02}
+  \umlinclude{ucdb05}{ucdb04}
+\end{tikzpicture}
+\caption{Diagramme UC~: Module de génération Databricks}
+\label{fig:uc-databricks}
+\end{figure}
+
+Les fiches suivantes décrivent les cas d'utilisation dont la complexité fonctionnelle est la plus représentative du module.
+
+\medskip
+
+\ucfichephase{Configurer le formulaire de génération}
+  {Migration Designer}
+  {Unités de migration conçues et validées~; Data Scope disponible (pour les options DDL/test data)}
+  {Le Migration Designer accède à \textit{Package Generation} et ouvre le formulaire de configuration Databricks}
+  {\textbf{1.}~Il sélectionne le format de sortie parmi les trois options disponibles~:\newline
+   \quad\textbf{Notebooks}~: scripts Python plats directement importables dans un workspace Databricks.\newline
+   \quad\textbf{Python Wheel (.whl)}~: package Python installable, adapté aux environnements CI/CD.\newline
+   \quad\textbf{Asset Bundle}~: wheel + fichier \texttt{databricks.yml} (DAB config), pour un déploiement piloté par code.\newline
+   \textbf{2.}~Il renseigne le catalog Unity Catalog cible (ex.~\texttt{main}) et le schéma (ex.~\texttt{default}).\newline
+   \textbf{3.}~Il saisit optionnellement le \textit{Workspace Host} (URL du workspace Databricks) pour le déploiement automatisé.\newline
+   \textbf{4.}~Pour les formats wheel/bundle, il configure le nom et la version du package, et choisit le mode de calcul (Serverless, Existing Cluster, New Cluster).\newline
+   \textbf{5.}~Il active ou désactive les options~: \textit{Include Source DDL} (CREATE TABLE depuis le Data Scope) et \textit{Include test data} (DataFrames d'exemple).\newline
+   \textbf{6.}~Il valide la configuration~; le formulaire est prêt pour le lancement de la compilation.}
+  {Nom de package invalide (espaces, majuscules)~: validation inline avant soumission. Workspace Host mal formaté~: message d'erreur avec exemple attendu.}
+  {Configuration sauvegardée~; paramètres transmis au compilateur TypeScript pour génération}
+
+\medskip
+
+\ucfichephase{Compiler une unité de migration}
+  {Migration Designer}
+  {Formulaire de génération configuré~; documents ADMP disponibles (RC, DP, TT, DS, MS\ldots)}
+  {Le Migration Designer clique sur \textit{Generate} dans le formulaire de génération}
+  {\textbf{1.}~La plateforme soumet une requête au service de compilation~: \texttt{GET /api/codegen/download-databricks-package/:projectId} avec les paramètres de configuration.\newline
+   \textbf{2.}~Le compilateur TypeScript charge les documents ADMP (RC, DP, TT, DS, MS, IC, PARAM, SDS/IDS/TDS/SDEF).\newline
+   \textbf{3.}~Il parse les instructions RC et construit l'AST~; toute erreur de syntaxe interrompt la compilation avec un message localisé.\newline
+   \textbf{4.}~Il extrait les \texttt{SqlPath} via DFS, génère les blocs SELECT Spark SQL et les agrège par table cible (UNION ALL).\newline
+   \textbf{5.}~Il assemble le package selon le format choisi (Notebooks / Wheel / Bundle) et produit le fichier téléchargeable.\newline
+   \textbf{6.}~La progression est visible en temps réel~; le package est disponible au téléchargement en cas de succès.}
+  {Erreur de parsing RC~: log détaillé avec numéro de ligne et instruction fautive. Timeout > 60\,s~: notification et retry automatique. Document ADMP manquant~: liste des fichiers absents affichée avant tout traitement.}
+  {Package compilé et archivé dans l'historique~; disponible pour téléchargement et déploiement}
+
+\medskip
+
+\ucfichephase{Déployer le bundle sur Databricks}
+  {Migration Designer}
+  {Bundle compilé disponible~; Workspace Host configuré~; token d'API Databricks valide}
+  {Le Migration Designer clique sur \textit{Deploy} après une compilation réussie}
+  {\textbf{1.}~La plateforme téléverse le fichier \texttt{.whl} sur le workspace via l'API Databricks (\textit{dbfs:/FileStore/\ldots}).\newline
+   \textbf{2.}~Elle installe la bibliothèque sur le cluster cible~; le cluster redémarre si nécessaire.\newline
+   \textbf{3.}~Pour le format Asset Bundle, elle exécute \texttt{databricks bundle deploy}~: création des ressources déclarées dans \texttt{databricks.yml} (jobs, clusters, permissions).\newline
+   \textbf{4.}~Le statut de déploiement est affiché~: succès, avertissements ou erreurs.\newline
+   \textbf{5.}~Le bundle déployé est prêt pour l'exécution (\textit{Run Bundle}).}
+  {Token expiré ou invalide~: message d'erreur et invitation à régénérer le token. Cluster indisponible~: suggestion de basculer en mode Serverless. Conflit de version de package~: option de forcer la mise à jour.}
+  {Bundle installé sur le workspace Databricks~; jobs/ressources créés (format Bundle)~; prêt pour exécution}
+
+% -----------------------------------------------------------------------
+\subsubsection*{SD-DB01~--- Détail interne de la compilation}
+
+Ce diagramme (Figure~\ref{fig:sd-db01}) décrit les interactions internes entre les composants TypeScript du compilateur lors du traitement d'une instruction RC.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlbasicobject[class=DatabricksCompiler]{compiler}
+  \umlbasicobject[class=RCParser]{parser}
+  \umlbasicobject[class=PathExtractor]{extractor}
+  \umlbasicobject[class=SparkSqlEmitter]{emitter}
+  \umlbasicobject[class=BundleAssembler]{assembler}
+  \begin{umlcall}[op=compile(docs), return=bundle]{compiler}{compiler}
+    \begin{umlcall}[op=parse(docs.rc), return=ast]{compiler}{parser}
+    \end{umlcall}
+    \begin{umlcall}[op=extractPaths(ast), return=sqlPaths]{compiler}{extractor}
+      \begin{umlcall}[op=visitNode(ast.root), return=paths]{extractor}{extractor}
+      \end{umlcall}
+      \begin{umlcall}[op=healJoinKeys(paths), return=healedPaths]{extractor}{extractor}
+      \end{umlcall}
+    \end{umlcall}
+    \begin{umlcall}[op=generateSelectBlock(path) x N, return=pyCode]{compiler}{emitter}
+      \begin{umlcall}[op=resolveVars(path.conditions), return=resolved]{emitter}{emitter}
+      \end{umlcall}
+      \begin{umlcall}[op=injectTranscoJoins(path), return=path']{emitter}{emitter}
+      \end{umlcall}
+      \begin{umlcall}[op=sortTopological(path.tables), return=ordered]{emitter}{emitter}
+      \end{umlcall}
+      \begin{umlcall}[op=emitSELECT(path), return=sqlBlock]{emitter}{emitter}
+      \end{umlcall}
+    \end{umlcall}
+    \begin{umlcall}[op=assemble(pyFiles\, format), return=whlPath]{compiler}{assembler}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{SD-DB01~: Détail interne de la compilation TypeScript}
+\label{fig:sd-db01}
+\end{figure}
+
+\subsubsection*{SD-DB02~--- Déploiement et exécution du bundle}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=MigrationDesigner]{designer}
+  \umlbasicobject[class=ADMP Portal]{portal}
+  \umlbasicobject[class=DatabricksAPI]{dbkapi}
+  \umlbasicobject[class=DatabricksCluster]{cluster}
+  \begin{umlcall}[op=deployBundle(bundleId\, clusterId), return=deployStatus]{designer}{portal}
+    \begin{umlcall}[op=uploadLibrary(whl), return=libId]{portal}{dbkapi}
+    \end{umlcall}
+    \begin{umlcall}[op=installLibrary(clusterId\, libId), return=ok]{portal}{dbkapi}
+      \begin{umlcall}[op=restart(clusterId), return=ready]{dbkapi}{cluster}
+      \end{umlcall}
+    \end{umlcall}
+  \end{umlcall}
+  \begin{umlcall}[op=runBundle(bundleId\, params), return=jobRunId]{designer}{portal}
+    \begin{umlcall}[op=POST /runs/submit (runner.py), return=runId]{portal}{dbkapi}
+      \begin{umlcall}[op=executeUnits(params), return=counters]{dbkapi}{cluster}
+      \end{umlcall}
+    \end{umlcall}
+  \end{umlcall}
+  \begin{umlcall}[op=getRunStatus(jobRunId), return=result]{designer}{portal}
+    \begin{umlcall}[op=GET /runs/get, return=runState]{portal}{dbkapi}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{SD-DB02~: Déploiement et exécution du bundle sur Databricks}
+\label{fig:sd-db02}
+\end{figure}
+
+\subsubsection*{Diagramme de classes du compilateur Databricks}
+
+La Figure~\ref{fig:class-compiler} modélise l'architecture orientée objet du compilateur TypeScript. La hiérarchie des nœuds AST implémente le pattern \textbf{Visitor}~; les émetteurs héritent d'une interface commune \texttt{IEmitter} permettant le pattern \textbf{Strategy}. La propriété \texttt{dbkOutputFormat} est propagée jusqu'au \texttt{BundleAssembler}, qui sélectionne la stratégie d'assemblage selon le format choisi.
+
+\begin{figure}[H]
+\centering
+\scalebox{0.62}{%
+\begin{tikzpicture}
+  %% Main compiler
+  \umlclass[x=0, y=0]{DatabricksCompiler}{
+    -docs : AdmpDocuments \\
+    -config : DatabricksCompilerOptions
+  }{
+    +compile() : Bundle \\
+    +validateDocs() : void
+  }
+
+  %% DatabricksCompilerOptions
+  \umlclass[x=9, y=0]{DatabricksCompilerOptions}{
+    +catalog : string \\
+    +databricksSchema : string \\
+    +workspaceHost : string \\
+    +dbkOutputFormat : DatabricksOutputFormat \\
+    +packageName : string \\
+    +packageVersion : string \\
+    +computeMode : DatabricksComputeMode \\
+    +includeSourceDDL : boolean \\
+    +includeTestData : boolean
+  }{}
+
+  %% Parser
+  \umlclass[x=-6, y=-4]{RCParser}{
+    -content : string
+  }{
+    +parse() : AstNode \\
+    -tokenize() : Token[]
+  }
+
+  %% Path Extractor
+  \umlclass[x=0, y=-4]{PathExtractor}{
+    -expandedVars : Map
+  }{
+    +extractPaths(ast) : SqlPath[] \\
+    +healJoinKeys(paths) : SqlPath[]
+  }
+
+  %% SqlPath
+  \umlclass[x=7, y=-4]{SqlPath}{
+    +tables : TableEntry[] \\
+    +conditions : string[] \\
+    +assignments : Assignment[] \\
+    +writeTargets : WriteTarget[] \\
+    +joinKeys : string[]
+  }{}
+
+  %% IEmitter interface
+  \umlclass[x=0, y=-8.5, type=interface]{IEmitter}{}{
+    +emit(path : SqlPath) : string
+  }
+
+  %% SparkSqlEmitter
+  \umlclass[x=-5, y=-12]{SparkSqlEmitter}{
+    -catalog : string \\
+    -schema : string
+  }{
+    +emit(path : SqlPath) : string \\
+    -emitSELECT(path) : string \\
+    -injectTranscoJoins(path) : SqlPath
+  }
+
+  %% ExpressionEmitter
+  \umlclass[x=3, y=-12]{ExpressionEmitter}{}{
+    +emitExpr(expr : string) : string \\
+    +emitLiteral(val : string) : string \\
+    +emitTranscoKey(tt : TranscoTable) : string
+  }
+
+  %% FrameworkEmitter
+  \umlclass[x=-5, y=-16]{FrameworkEmitter}{}{
+    +emitRunner(units : string[]) : string \\
+    +emitUnitBase() : string \\
+    +emitValidate() : string
+  }
+
+  %% IntegrityEmitter
+  \umlclass[x=3, y=-16]{IntegrityEmitter}{}{
+    +emitChecks(unit : MigUnit) : string \\
+    +emitReport() : string
+  }
+
+  %% BundleAssembler
+  \umlclass[x=0, y=-20]{BundleAssembler}{
+    -outputDir : string \\
+    -format : DatabricksOutputFormat
+  }{
+    +assemble(files : FileMap) : Bundle \\
+    +packageWhl() : string \\
+    +buildDabConfig() : string
+  }
+
+  %% AST Nodes
+  \umlclass[x=-10, y=-8, type=abstract]{AstNode}{
+    +type : NodeType
+  }{
+    +accept(visitor) : void
+  }
+  \umlclass[x=-13, y=-12]{IfNode}{
+    +condition : string \\
+    +trueBranch : AstNode \\
+    +falseBranch : AstNode
+  }{}
+  \umlclass[x=-9, y=-12]{WriteFileNode}{
+    +target : string \\
+    +assignments : Assignment[]
+  }{}
+
+  %% Relationships
+  \umlcompo[mult1=1, mult2=1]{DatabricksCompiler}{RCParser}
+  \umlcompo[mult1=1, mult2=1]{DatabricksCompiler}{PathExtractor}
+  \umlcompo[mult1=1, mult2=1]{DatabricksCompiler}{BundleAssembler}
+  \umlassoc[mult1=1, mult2=*]{PathExtractor}{SqlPath}
+  \umlassoc[mult1=1, mult2=1]{DatabricksCompiler}{DatabricksCompilerOptions}
+  \umlreal{SparkSqlEmitter}{IEmitter}
+  \umlreal{ExpressionEmitter}{IEmitter}
+  \umlcompo[mult1=1, mult2=1]{DatabricksCompiler}{IEmitter}
+  \umlinherit{IfNode}{AstNode}
+  \umlinherit{WriteFileNode}{AstNode}
+  \umlassoc[mult1=1, mult2=1]{FrameworkEmitter}{BundleAssembler}
+  \umlassoc[mult1=1, mult2=1]{IntegrityEmitter}{BundleAssembler}
+\end{tikzpicture}%
+}% end scalebox
+\caption{Diagramme de classes du compilateur Databricks (TypeScript)}
+\label{fig:class-compiler}
+\end{figure}
