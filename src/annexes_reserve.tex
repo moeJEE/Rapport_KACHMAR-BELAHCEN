@@ -1,0 +1,115 @@
+% =====================================================================
+% ANNEXES — RÉSERVE (contenu retiré du rapport pour respecter la
+% contrainte de 100 pages totales, annexes incluses)
+% Fichier NON injecté dans le rapport compilé. Conservé pour
+% réutilisation future (rapport étendu, soutenance, documentation
+% interne).
+% =====================================================================
+
+% =====================================================================
+% Ex-Annexe B~--- Structure complète du bundle Databricks
+% =====================================================================
+
+Cette annexe détaille la structure complète d'un bundle Databricks généré par ADMP~AI~Studio, à titre d'exemple pour un projet de migration standard composé de trois unités de migration (\texttt{CUS01}, \texttt{ACC00}, \texttt{APD}).
+
+\subsection*{Arborescence du bundle}
+
+\begin{tcolorbox}[colback=accenturegray!40, colframe=accenturedark, boxrule=0.5pt, arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt, fontupper=\small\ttfamily]
+poc\_\textit{project}\_YYYYMMDD\_bundle/\newline
+\quad poc\_\textit{project}\_YYYYMMDD/\newline
+\quad\quad runner.py\newline
+\quad\quad validate.py\newline
+\quad\quad MANIFEST.json\newline
+\quad\quad units/\newline
+\quad\quad\quad mig\_cus01.py\newline
+\quad\quad\quad mig\_acc00.py\newline
+\quad\quad\quad mig\_apd.py\newline
+\quad\quad framework/\newline
+\quad\quad\quad unit\_base.py\newline
+\quad\quad config/\newline
+\quad\quad\quad parameters.py\newline
+\quad\quad\quad transco.py\newline
+\quad\quad source\_ddl/\newline
+\quad\quad\quad create\_tables.py\newline
+\quad\quad\quad generate.py\newline
+\quad\quad reports/\newline
+\quad\quad\quad generate\_reports.py\newline
+\quad\quad\quad integrity\_checks.json\newline
+poc\_\textit{project}\_YYYYMMDD.whl
+\end{tcolorbox}
+
+\subsection*{Rôle de chaque composant}
+
+\begin{table}[H]
+\centering
+\caption{Description des composants du bundle Databricks}
+\label{tab:bundle-detail}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Fichier} & \textbf{Type} & \textbf{Rôle} \\
+\midrule
+\texttt{runner.py} & Orchestrateur &
+  Point d'entrée principal~; exécute les unités dans l'ordre configuré~; passe les paramètres run-time (catalog, schéma, run\_id) \\
+\addlinespace
+\texttt{validate.py} & Validation pré-run &
+  Vérifie l'existence des tables cibles dans Unity Catalog~; contrôle la cohérence des paramètres avant toute écriture \\
+\addlinespace
+\texttt{MANIFEST.json} & Méta-données &
+  Contient la version du bundle, les unités incluses, la date de génération et la version du compilateur \\
+\addlinespace
+\texttt{units/mig\_*.py} & Unités PySpark &
+  Chaque fichier contient la logique de migration d'une entité~: DataFrame Spark, UNION ALL des branches, LEFT JOIN transco, INSERT INTO Delta \\
+\addlinespace
+\texttt{framework/unit\_base.py} & Classe de base &
+  Fournit les mécanismes de logging (compteurs lignes lues/écrites/rejetées), gestion des erreurs et accès aux paramètres \\
+\addlinespace
+\texttt{config/parameters.py} & Paramètres &
+  Dictionnaire typé des paramètres métier et des références catalog/schéma, modifiable avant chaque run \\
+\addlinespace
+\texttt{config/transco.py} & Transcodification &
+  Charge les tables de transco depuis les fichiers de référence et les diffuse en broadcast Spark pour optimiser les jointures \\
+\addlinespace
+\texttt{source\_ddl/create\_tables.py} & DDL source &
+  Recrée les tables sources en mémoire (tables Delta temporaires) pour permettre une exécution offline sans connexion aux systèmes sources \\
+\addlinespace
+\texttt{source\_ddl/generate.py} & Données de test &
+  Génère des données de test synthétiques pour les tables sources~; utilisé dans les environnements de validation (UC-20) \\
+\addlinespace
+\texttt{reports/generate\_reports.py} & Rapports Excel &
+  Génère les rapports de contrôle d'intégrité référentielle par unité et le rapport consolidé global \\
+\addlinespace
+\texttt{reports/integrity\_checks.json} & Définitions &
+  Contient la définition des contrôles d'intégrité à exécuter~: clés primaires, clés étrangères, unicité, règles de gestion \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =====================================================================
+% Ex-Annexe C~--- Modèle de données PostgreSQL
+% =====================================================================
+
+Cette annexe présente les principales tables de la base de données PostgreSQL d'ADMP~AI~Studio, telles que définies dans les migrations Flyway du dépôt. Les colonnes de verrouillage de section (checkout) sont détaillées car elles constituent un mécanisme architectural clé.
+
+\begin{table}[H]
+\centering
+\caption{Table \texttt{migration\_units}~--- colonnes de verrouillage de section}
+\label{tab:migration-units-lock}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Colonne} & \textbf{Type} & \textbf{Description} \\
+\midrule
+\texttt{id} & UUID & Identifiant unique de l'unité de migration \\
+\texttt{project\_id} & UUID & Référence au projet parent (FK) \\
+\texttt{name} & VARCHAR & Nom de l'unité (ex.~\texttt{CUS01}, \texttt{ACC00}) \\
+\texttt{data\_structure\_locked\_by} & UUID & ID utilisateur détenant le verrou sur la section Data Structure~; \texttt{NULL} si section libre \\
+\texttt{record\_creation\_locked\_by} & UUID & ID utilisateur détenant le verrou sur la section RC \\
+\texttt{data\_population\_locked\_by} & UUID & ID utilisateur détenant le verrou sur la section DP \\
+\texttt{checkout\_baseline} & INTEGER & Numéro de version de référence au moment du checkout~; utilisé pour détecter les conflits \\
+\texttt{created\_at} & TIMESTAMPTZ & Date de création de l'unité \\
+\texttt{updated\_at} & TIMESTAMPTZ & Date de dernière modification \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Le mécanisme de verrouillage garantit l'exclusivité d'édition par section~: chaque colonne \texttt{*\_locked\_by} peut être \texttt{NULL} (section libre) ou contenir l'UUID de l'utilisateur qui détient le verrou. La colonne \texttt{checkout\_baseline} permet de détecter les modifications concurrentes~: si la version courante de l'unité diffère de la baseline au moment du check-in, un conflit est signalé et une résolution manuelle est demandée.

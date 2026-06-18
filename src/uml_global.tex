@@ -1,10 +1,13 @@
 % =====================================================================
 % UML GLOBAL — PLATEFORME ADMP AI Studio
-% Inclus depuis conception_architecture.tex, section 5.3
+% Inclus depuis 11_appendices.tex, Annexe A
+% Les diagrammes non retenus restent en place mais sont masqués via
+% \iffalse...\fi (jamais supprimés) pour respecter la contrainte de
+% 100 pages totales du rapport.
 % =====================================================================
 
 % Macro fiche UC sans numérotation (usage principal dans le texte)
-\newcommand{\ucfichephase}[7]{%
+\providecommand{\ucfichephase}[7]{%
   \begin{tcolorbox}[
     colback=accenturegray!30, colframe=accenturepurple,
     boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
@@ -23,7 +26,7 @@
 }
 
 % Macro fiche UC avec numérotation (usage annexes)
-\newcommand{\ucfiche}[8]{%
+\providecommand{\ucfiche}[8]{%
   \begin{tcolorbox}[
     colback=accenturegray!30, colframe=accenturepurple,
     boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
@@ -45,7 +48,7 @@
 \subsection{Diagrammes de cas d'utilisation}
 \label{subsec:uc-global}
 
-La modélisation des cas d'utilisation est organisée en neuf diagrammes~: un diagramme de \textbf{configuration initiale du projet} (création et paramétrage), puis un diagramme par phase du cycle de migration. Chaque diagramme est suivi des fiches descriptives des cas d'utilisation dont la complexité fonctionnelle et la représentativité du cycle justifient une description détaillée. Les cas d'utilisation restants sont décrits en \hyperref[annexe:ucfiches]{Annexe~A}.
+La modélisation complète des cas d'utilisation comporte neuf diagrammes~: un diagramme de \textbf{configuration initiale du projet} (création et paramétrage), puis un diagramme par phase du cycle de migration. Par souci de concision, seuls les diagrammes à plus fort impact sur le projet sont présentés ci-après~: la \textbf{configuration initiale d'un projet}, la \textbf{phase~5 --- Transform} et la \textbf{phase~8 --- Cutover}, chacun accompagné des fiches descriptives de ses cas d'utilisation les plus représentatifs.
 
 % -----------------------------------------------------------------------
 \subsubsection*{Configuration initiale d'un projet}
@@ -93,6 +96,7 @@ La création d'un projet passe par un assistant en six étapes (\textit{wizard})
   {Projet créé avec les 8 phases initialisées~; l'administrateur dispose d'un accès complet~; Quick Start disponible pour un démarrage guidé}
 
 % -----------------------------------------------------------------------
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{Phase 1~--- Project Management}
 \label{subsubsec:uc-phase1}
 
@@ -148,8 +152,10 @@ La phase Project Management couvre le pilotage global du projet~: rapports hebdo
    \textbf{6.}~Il exporte le planning pour partage avec le comité de pilotage.}
   {Dépendance circulaire entre tâches~: détection automatique et avertissement. Date de release impossible compte tenu des dépendances~: recalcul proposé.}
   {Planning structuré et partagé~; jalons visibles sur le tableau de bord~; équipe notifiée des échéances}
+\fi % fin Phase 1 (masqué)
 
 % -----------------------------------------------------------------------
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{Phase 2~--- Data Scope}
 \label{subsubsec:uc-phase2}
 
@@ -192,8 +198,10 @@ Le Data Scope définit le périmètre complet de la migration en trois couches~:
    \textbf{6.}~Il publie le périmètre~; il devient disponible comme référence pour les phases Extract et Transform.}
   {Format Excel invalide~: message d'erreur avec détail des colonnes attendues. Table en doublon~: avertissement et option de fusion. Publication avec tables incomplètes~: validation requise.}
   {Périmètre de données versionnée~; SDS/IDS/TDS disponibles pour toutes les phases suivantes}
+\fi % fin Phase 2 (masqué)
 
 % -----------------------------------------------------------------------
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{Phase 3~--- Extract}
 \label{subsubsec:uc-phase3}
 
@@ -232,8 +240,10 @@ La phase Extract couvre la collecte des données auprès du client et leur charg
    \textbf{6.}~Il valide l'alignement~; les données sont indexées et disponibles pour la phase Profiling.}
   {Structure non reconnue (encodage, séparateur inconnu)~: l'utilisateur configure manuellement les paramètres de parsing. Colonne SDS introuvable dans le fichier~: marquage comme manquante avec alerte.}
   {Fichier source intégré et aligné avec le SDS~; disponible pour l'audit de qualité (Phase 4)}
+\fi % fin Phase 3 (masqué)
 
 % -----------------------------------------------------------------------
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{Phase 4~--- Profiling \& Cleansing}
 \label{subsubsec:uc-phase4}
 
@@ -291,6 +301,7 @@ Cette phase audit la qualité des données sources, détecte et résout les doub
    \textbf{6.}~Le jeu de données nettoyé est disponible pour la phase Transform.}
   {Cluster trop large (> 50 enregistrements)~: revue paginée obligatoire avant fusion. Règle de correspondance trop permissive~: ajustement du seuil proposé après aperçu des faux positifs.}
   {Jeu de données dédupliqué~; golden records créés~; taux de déduplication tracé dans le tableau de bord qualité}
+\fi % fin Phase 4 (masqué)
 
 % -----------------------------------------------------------------------
 \subsubsection*{Phase 5~--- Transform}
@@ -353,6 +364,7 @@ La phase Transform est le cœur intellectuel de la migration~: analyse des domai
   {Package généré et archivé~; prêt pour déploiement et exécution (UC~: Lancer l'exécution)}
 
 % -----------------------------------------------------------------------
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{Phase 6~--- Load}
 \label{subsubsec:uc-phase6}
 
@@ -391,8 +403,10 @@ La phase Load configure et exécute le chargement des données transformées dan
    \textbf{6.}~Il exporte les résultats en Excel pour documentation et résolution.}
   {Volume de violations élevé~: pagination et export par lot. Règle invalide (expression SQL incorrecte)~: message d'erreur avec suggestion de correction.}
   {Contrôles d'intégrité validés et archivés~; violations documentées~; décision go/no-go pour le chargement prise}
+\fi % fin Phase 6 (masqué)
 
 % -----------------------------------------------------------------------
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{Phase 7~--- Validation}
 \label{subsubsec:uc-phase7}
 
@@ -451,6 +465,7 @@ La phase Validation garantit la conformité des données migrées~: tickets de t
    \textbf{6.}~Il consulte le tableau de bord analytics~: taux de résolution, tickets par unité, progression par release.}
   {Synchronisation Jira/Mantis indisponible~: mode offline avec synchronisation différée. Ticket sans responsable~: alerte dans le tableau de bord.}
   {Campagne de tests documentée~; taux d'acceptation calculé~; prérequis pour go-live validés}
+\fi % fin Phase 7 (masqué)
 
 % -----------------------------------------------------------------------
 \subsubsection*{Phase 8~--- Cutover}
@@ -502,8 +517,9 @@ La phase Cutover planifie et exécute la bascule en production~: création de pl
 \subsection{Diagrammes de séquence}
 \label{subsec:sequences}
 
-Les cinq diagrammes de séquence suivants modélisent les flux dynamiques les plus critiques de la plateforme ADMP~AI~Studio.
+La plateforme ADMP~AI~Studio comporte cinq diagrammes de séquence modélisant ses flux dynamiques les plus critiques. Par souci de concision, seuls les deux diagrammes à plus fort impact transverse sont présentés ci-après~: la \textbf{génération des packages de migration} et la \textbf{réconciliation source-cible}.
 
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{SD-01~--- Création d'un projet de migration}
 
 \begin{figure}[H]
@@ -533,8 +549,9 @@ Les cinq diagrammes de séquence suivants modélisent les flux dynamiques les pl
 \caption{SD-01~: Création et initialisation d'un projet de migration}
 \label{fig:sd01}
 \end{figure}
+\fi % fin SD-01 (masqué)
 
-\subsubsection*{SD-02~--- Génération d'un package Databricks}
+\subsubsection*{Génération des packages}
 
 \begin{figure}[H]
 \centering
@@ -544,26 +561,23 @@ Les cinq diagrammes de séquence suivants modélisent les flux dynamiques les pl
   \umlbasicobject[class=WebApp]{web}
   \umlbasicobject[class=CompilerService]{compiler}
   \umlbasicobject[class=BundleStorage]{storage}
-  \begin{umlcall}[op={generateBundle(unitId\, format=Databricks)}, return=bundleId]{designer}{web}
-    \begin{umlcall}[op={POST /api/compile}, return=jobId]{web}{compiler}
+  \begin{umlcall}[op={generatePackage(projectId\, format)}, return=bundleZip]{designer}{web}
+    \begin{umlcall}[op={POST /api/codegen/compile-project/\{projectId\}}, return=zip]{web}{compiler}
       \begin{umlcall}[op={loadDocuments(RC\, DP\, TT\, DS)}, return=docs]{compiler}{storage}
       \end{umlcall}
-      \begin{umlcall}[op={parseAST(docs.rc)}, return=ast]{compiler}{compiler}
+      \begin{umlcall}[op={generateArtifacts(docs\, format)}, return=files]{compiler}{compiler}
       \end{umlcall}
-      \begin{umlcall}[op={extractPaths(ast)}, return=paths]{compiler}{compiler}
-      \end{umlcall}
-      \begin{umlcall}[op={generateSelectBlocks(paths)}, return=pyFiles]{compiler}{compiler}
-      \end{umlcall}
-      \begin{umlcall}[op={assembleBundle(pyFiles)}, return=whlPath]{compiler}{storage}
+      \begin{umlcall}[op={assembleBundle(files\, format)}, return=bundlePath]{compiler}{storage}
       \end{umlcall}
     \end{umlcall}
   \end{umlcall}
 \end{umlseqdiag}
 \end{tikzpicture}
-\caption{SD-02~: Génération d'un package Databricks (vue plateforme)}
+\caption{Génération des packages (vue plateforme, multi-format)}
 \label{fig:sd02}
 \end{figure}
 
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{SD-03~--- Verrouillage d'une section (checkout)}
 
 \begin{figure}[H]
@@ -595,8 +609,9 @@ Les cinq diagrammes de séquence suivants modélisent les flux dynamiques les pl
 \caption{SD-03~: Verrouillage et édition d'une section (checkout / check-in)}
 \label{fig:sd03}
 \end{figure}
+\fi % fin SD-03 (masqué)
 
-\subsubsection*{SD-04~--- Réconciliation source-cible}
+\subsubsection*{Réconciliation source-cible}
 
 \begin{figure}[H]
 \centering
@@ -621,10 +636,11 @@ Les cinq diagrammes de séquence suivants modélisent les flux dynamiques les pl
   \end{umlcall}
 \end{umlseqdiag}
 \end{tikzpicture}
-\caption{SD-04~: Réconciliation source-cible}
+\caption{Réconciliation source-cible}
 \label{fig:sd04}
 \end{figure}
 
+\iffalse % Diagramme masqué (hors sélection à fort impact) — conservé pour réutilisation future
 \subsubsection*{SD-05~--- Exécution du cutover}
 
 \begin{figure}[H]
@@ -652,12 +668,13 @@ Les cinq diagrammes de séquence suivants modélisent les flux dynamiques les pl
 \caption{SD-05~: Exécution du cutover et validation go-live}
 \label{fig:sd05}
 \end{figure}
+\fi % fin SD-05 (masqué)
 
 % ---------------------------------------------------------------------
 \subsection{Diagramme de classes}
 \label{subsec:classe}
 
-Le diagramme de classes (Figure~\ref{fig:class}) modélise les quinze entités principales de la plateforme ADMP~AI~Studio persistées dans la base de données PostgreSQL.
+Le diagramme de classes (Figure~\ref{fig:class}) modélise les quatorze entités principales de la plateforme ADMP~AI~Studio persistées dans la base de données PostgreSQL.
 
 \begin{figure}[H]
 \centering
@@ -710,7 +727,7 @@ Le diagramme de classes (Figure~\ref{fig:class}) modélise les quinze entités p
   \umlclass[x=8, y=-11]{TranscoTable}{
     +id : UUID \\
     +name : String \\
-    +content : XML
+    +data : JSONB
   }{}
 
   \umlclass[x=0, y=-17]{Bundle}{
@@ -757,6 +774,16 @@ Le diagramme de classes (Figure~\ref{fig:class}) modélise les quinze entités p
     +type : TaskType
   }{}
 
+  %% Databricks CI/CD run (generated by bundle pipeline, reported back via API)
+  \umlclass[x=16, y=-8]{DatabricksBundleRun}{
+    +id : UUID \\
+    +jobName : String \\
+    +databricksRunId : String \\
+    +status : RunStatus \\
+    +startedAt : DateTime \\
+    +report : JSONB
+  }{}
+
   %% Relationships
   \umlcompo[mult1=1, mult2=*]{Project}{ProjectMember}
   \umlassoc[mult1=1, mult2=*]{User}{ProjectMember}
@@ -770,6 +797,7 @@ Le diagramme de classes (Figure~\ref{fig:class}) modélise les quinze entités p
   \umlcompo[mult1=1, mult2=*]{Project}{CutoverPlan}
   \umlcompo[mult1=1, mult2=*]{Project}{TestTicket}
   \umlcompo[mult1=1, mult2=*]{CutoverPlan}{CutoverTask}
+  \umlcompo[mult1=1, mult2=*]{Project}{DatabricksBundleRun}
 \end{tikzpicture}%
 }% end scalebox
 \caption{Diagramme de classes~--- entités principales d'ADMP~AI~Studio}

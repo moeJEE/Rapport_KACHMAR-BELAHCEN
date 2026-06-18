@@ -1,0 +1,459 @@
+% =====================================================================
+% FICHES UML — RÉSERVE COMPLÈTE (37 fiches de cas d'utilisation)
+% Fichier NON injecté dans le rapport compilé.
+% Regroupe l'ensemble des fiches descriptives de cas d'utilisation,
+% qu'elles aient été à l'origine affichées dans le corps du document
+% (uml_global.tex, macro \ucfichephase) ou en annexe (ancienne Annexe A
+% de 11_appendices.tex, macro \ucfiche). Conservé pour réutilisation
+% future (rapport étendu, soutenance, documentation interne).
+% =====================================================================
+
+% Macro fiche UC sans numérotation (usage historique~: corps du texte)
+\newcommand{\ucfichephase}[7]{%
+  \begin{tcolorbox}[
+    colback=accenturegray!30, colframe=accenturepurple,
+    boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+    title={\textbf{#1}}, fonttitle=\small\bfseries
+  ]
+  \begin{tabular}{@{}p{3.2cm}p{10.5cm}@{}}
+  \textbf{Acteur(s)}       & #2 \\[2pt]
+  \textbf{Préconditions}   & #3 \\[2pt]
+  \textbf{Déclencheur}     & #4 \\[2pt]
+  \textbf{Scénario nominal}& #5 \\[2pt]
+  \textbf{Alt. / Erreurs}  & #6 \\[2pt]
+  \textbf{Postconditions}  & #7 \\
+  \end{tabular}
+  \end{tcolorbox}
+  \medskip
+}
+
+% Macro fiche UC avec numérotation (usage historique~: annexes)
+\newcommand{\ucfiche}[8]{%
+  \begin{tcolorbox}[
+    colback=accenturegray!30, colframe=accenturepurple,
+    boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+    title={\textbf{#1}~--- #2}, fonttitle=\small\bfseries
+  ]
+  \begin{tabular}{@{}p{3.2cm}p{10.5cm}@{}}
+  \textbf{Acteur(s)}       & #3 \\[2pt]
+  \textbf{Préconditions}   & #4 \\[2pt]
+  \textbf{Déclencheur}     & #5 \\[2pt]
+  \textbf{Scénario nominal}& #6 \\[2pt]
+  \textbf{Alt. / Erreurs}  & #7 \\[2pt]
+  \textbf{Postconditions}  & #8 \\
+  \end{tabular}
+  \end{tcolorbox}
+  \medskip
+}
+
+% =====================================================================
+% PARTIE 1 — Fiches issues du corps du texte (uml_global.tex)
+% Inclut les 4 fiches conservées visibles en Annexe A (Configuration
+% initiale, Phase 5 ×2, Phase 8) et les 9 fiches désormais masquées.
+% =====================================================================
+
+\subsection*{Configuration initiale d'un projet}
+
+\ucfichephase{Créer un nouveau projet de migration}
+  {Administrator}
+  {Utilisateur authentifié avec le rôle Administrator~; référentiels d'industrie et de systèmes disponibles}
+  {L'administrateur clique sur \textit{New Project} depuis le tableau de bord global}
+  {\textbf{Étape 1~---} L'administrateur sélectionne l'industrie et le secteur d'activité dans la liste proposée.\newline
+   \textbf{Étape 2~---} Il choisit le système cible (ex.~Workday, SAP, Oracle Fusion) parmi les packages disponibles.\newline
+   \textbf{Étape 3~---} Il spécifie le système source (nom, type, version).\newline
+   \textbf{Étape 4~---} Il renseigne les détails du projet~: nom, nom du client, description, utilisateur administrateur.\newline
+   \textbf{Étape 5~---} Il configure le volume d'infrastructure~: taille de stockage, taille de base de données, spécifications techniques.\newline
+   \textbf{Étape 6~---} Il initialise le périmètre de données~: sélection des tables initiales et type de scope.\newline
+   \textbf{Fin~---} Le projet est créé~; les 8 phases sont initialisées~; l'administrateur est redirigé vers le tableau de bord du projet.}
+  {Système cible non disponible~: message d'invitation à contacter l'équipe ADMP. Champ obligatoire vide~: validation inline avant passage à l'étape suivante. Nom de projet déjà utilisé~: suggestion de nom disponible.}
+  {Projet créé avec les 8 phases initialisées~; l'administrateur dispose d'un accès complet~; Quick Start disponible pour un démarrage guidé}
+
+\subsection*{Phase 1~--- Project Management}
+
+\ucfichephase{Créer et publier un rapport hebdomadaire}
+  {Migration Designer, Cutover Manager}
+  {Projet actif~; semaine de référence écoulée}
+  {Le Migration Designer clique sur \textit{New Report} dans la section Weekly Reports}
+  {\textbf{1.}~Il sélectionne la semaine et l'année du rapport (versionnage v00.01).\newline
+   \textbf{2.}~Il renseigne les sections du rapport~: risques actifs, blocages, livrables, prochaines étapes.\newline
+   \textbf{3.}~Il ajoute les métriques de santé du projet (nombre de risques, tickets ouverts, avancement).\newline
+   \textbf{4.}~Il sauvegarde en brouillon~; le rapport est visible en mode \textit{Draft}.\newline
+   \textbf{5.}~Après validation interne, il publie le rapport~; il devient visible pour toutes les parties prenantes.\newline
+   \textbf{6.}~Il exporte le rapport publié en PowerPoint pour présentation au client.}
+  {Rapport déjà existant pour la semaine~: avertissement~; possibilité de créer une nouvelle version. Export PowerPoint échoué~: retry automatique.}
+  {Rapport publié~; archivé dans l'historique des versions~; disponible pour export et partage}
+
+\ucfichephase{Planifier via Gantt et jalons de livraison}
+  {Migration Designer}
+  {Projet initialisé~; équipe projet définie (parties prenantes)}
+  {Le Migration Designer accède à la section Planning pour structurer la feuille de route}
+  {\textbf{1.}~Il crée les éléments de planning~: jalons, tâches, dépendances, dates de début et fin.\newline
+   \textbf{2.}~Il visualise la feuille de route sur le diagramme de Gantt.\newline
+   \textbf{3.}~Il crée les \textit{Delivery Releases}~: nom de la release, date cible, périmètre livré.\newline
+   \textbf{4.}~Il associe les tâches aux releases.\newline
+   \textbf{5.}~Il ajuste les dépendances entre tâches en cas de retard détecté.\newline
+   \textbf{6.}~Il exporte le planning pour partage avec le comité de pilotage.}
+  {Dépendance circulaire entre tâches~: détection automatique et avertissement. Date de release impossible compte tenu des dépendances~: recalcul proposé.}
+  {Planning structuré et partagé~; jalons visibles sur le tableau de bord~; équipe notifiée des échéances}
+
+\subsection*{Phase 2~--- Data Scope}
+
+\ucfichephase{Définir le périmètre des données (SDS / IDS / TDS)}
+  {Data Analyst, Migration Designer}
+  {Projet initialisé~; système source et cible identifiés}
+  {Le Data Analyst accède à l'onglet \textit{Data Scope} pour définir les trois couches}
+  {\textbf{1.}~Il sélectionne l'onglet \textit{Source} et crée les tables sources~: nom, domaine, système, liste des colonnes (nom, type, longueur, contraintes).\newline
+   \textbf{2.}~Il passe à l'onglet \textit{Intermediary} et définit les tables intermédiaires utilisées dans la transformation.\newline
+   \textbf{3.}~Il passe à l'onglet \textit{Target} et définit les tables cibles avec leur structure dans le nouveau système.\newline
+   \textbf{4.}~Pour accélérer la saisie, il importe un fichier Excel~; la plateforme auto-détecte les colonnes et types.\newline
+   \textbf{5.}~Il corrige les anomalies détectées lors de l'import (types incohérents, colonnes manquantes).\newline
+   \textbf{6.}~Il publie le périmètre~; il devient disponible comme référence pour les phases Extract et Transform.}
+  {Format Excel invalide~: message d'erreur avec détail des colonnes attendues. Table en doublon~: avertissement et option de fusion. Publication avec tables incomplètes~: validation requise.}
+  {Périmètre de données versionnée~; SDS/IDS/TDS disponibles pour toutes les phases suivantes}
+
+\subsection*{Phase 3~--- Extract}
+
+\ucfichephase{Charger un fichier source et aligner avec le SDS}
+  {Data Analyst}
+  {Data scope source (SDS) défini~; fichier d'extraction disponible (CSV, Excel, TXT)}
+  {Le Data Analyst dispose des fichiers bruts fournis par le client et souhaite les intégrer dans la plateforme}
+  {\textbf{1.}~Le Data Analyst crée une nouvelle extraction~: nom, description, source associée.\newline
+   \textbf{2.}~Il téléverse le fichier via la zone de glisser-déposer (drag \& drop).\newline
+   \textbf{3.}~Si le fichier est un Excel multi-onglets, la plateforme liste les feuilles~; il sélectionne les feuilles à importer.\newline
+   \textbf{4.}~Il lance l'\textit{auto-detect}~: la plateforme analyse la structure (colonnes, types, séparateurs) et propose un mapping automatique.\newline
+   \textbf{5.}~Il compare la structure détectée avec le SDS correspondant et corrige les écarts.\newline
+   \textbf{6.}~Il valide l'alignement~; les données sont indexées et disponibles pour la phase Profiling.}
+  {Structure non reconnue (encodage, séparateur inconnu)~: l'utilisateur configure manuellement les paramètres de parsing. Colonne SDS introuvable dans le fichier~: marquage comme manquante avec alerte.}
+  {Fichier source intégré et aligné avec le SDS~; disponible pour l'audit de qualité (Phase 4)}
+
+\subsection*{Phase 4~--- Profiling \& Cleansing}
+
+\ucfichephase{Auditer la qualité des données sources}
+  {Data Analyst}
+  {Données sources chargées et alignées avec le SDS (Phase 3)}
+  {Le Data Analyst lance un audit depuis la section \textit{Source Data Audit}}
+  {\textbf{1.}~Il sélectionne les tables et champs à profiler.\newline
+   \textbf{2.}~La plateforme exécute l'analyse~: taux de remplissage, valeurs min/max, valeurs distinctes, distributions, patterns de format.\newline
+   \textbf{3.}~Les anomalies détectées sont listées~: valeurs manquantes, outliers, incohérences de format, valeurs hors plage.\newline
+   \textbf{4.}~Le Data Analyst consulte les statistiques par champ dans le rapport de profilage.\newline
+   \textbf{5.}~Il documente les anomalies critiques à corriger avant la transformation.\newline
+   \textbf{6.}~Les résultats alimentent automatiquement le tableau de bord qualité.}
+  {Données insuffisantes pour le calcul statistique~: résultats partiels avec indicateur. Timeout d'analyse sur un volume important~: reprise incrémentale.}
+  {Rapport de profilage disponible~; anomalies classifiées~; base pour les règles de nettoyage et de déduplication}
+
+\ucfichephase{Dédupliquer les enregistrements}
+  {Data Analyst}
+  {Données sources importées~; rapport de profilage indiquant des doublons potentiels}
+  {Le Data Analyst accède à la section \textit{Data Deduplication} pour traiter les doublons}
+  {\textbf{1.}~Il sélectionne la table source à dédupliquer.\newline
+   \textbf{2.}~Il configure les règles de correspondance~: type (exact, phonétique, approximatif), champs de comparaison, seuils de similarité.\newline
+   \textbf{3.}~Il lance le moteur de déduplication~; les clusters de doublons potentiels sont générés.\newline
+   \textbf{4.}~Pour chaque cluster, il examine les enregistrements et choisit~: fusionner (golden record), conserver séparément, ou ignorer le cluster.\newline
+   \textbf{5.}~Il valide les fusions~; un enregistrement \textit{golden} est produit par cluster.\newline
+   \textbf{6.}~Le jeu de données nettoyé est disponible pour la phase Transform.}
+  {Cluster trop large (> 50 enregistrements)~: revue paginée obligatoire avant fusion. Règle de correspondance trop permissive~: ajustement du seuil proposé après aperçu des faux positifs.}
+  {Jeu de données dédupliqué~; golden records créés~; taux de déduplication tracé dans le tableau de bord qualité}
+
+\subsection*{Phase 5~--- Transform}
+
+\ucfichephase{Concevoir les unités de migration (RC / DP)}
+  {Migration Designer}
+  {Analyse des domaines complète~; Data Scope validé~; tables de transco configurées}
+  {Le Migration Designer ouvre une unité de migration dans la section \textit{Design} pour rédiger les règles}
+  {\textbf{1.}~Il sélectionne un domaine fonctionnel (ex.~\textit{Customers}) et ouvre l'éditeur d'unités de migration.\newline
+   \textbf{2.}~Il crée l'unité et renseigne le Record Creation (RC)~: pseudo-code avec instructions IF/ELSE, callWriteFile, callDataPopulate, variables et exceptions.\newline
+   \textbf{3.}~Il renseigne le Data Population (DP)~: pour chaque champ cible, il définit la source, la formule de transformation et le format.\newline
+   \textbf{4.}~Il configure les paramètres run-time et les Q\&A associés à l'unité.\newline
+   \textbf{5.}~Il sauvegarde~; une nouvelle version du document est créée automatiquement.\newline
+   \textbf{6.}~Il exporte les documents RC/DP au format Excel ou ZIP ADMP natif pour revue externe.}
+  {Erreur de syntaxe dans le RC~: validation inline avec localisation de l'erreur. Import ZIP échoué (format non reconnu)~: message descriptif avec liste des formats attendus.}
+  {Unité de migration versionnée et prête pour la génération de package}
+
+\ucfichephase{Générer le package de migration}
+  {Migration Designer, Test Engineer}
+  {Unités de migration conçues et validées~; format de sortie sélectionné}
+  {Le Migration Designer accède à \textit{Package Generation} et lance la génération}
+  {\textbf{1.}~Il sélectionne le format de sortie parmi les 8 disponibles (Databricks, SQL Server, ADF, Snowflake\ldots).\newline
+   \textbf{2.}~Il configure les paramètres de génération~: catalog cible, schéma, version de runtime.\newline
+   \textbf{3.}~Il lance la compilation~; le serveur déclenche le moteur TypeScript correspondant au format.\newline
+   \textbf{4.}~La progression est affichée en temps réel (unités traitées, branches générées).\newline
+   \textbf{5.}~En cas de succès, le package est disponible au téléchargement (ex.~\texttt{.whl} pour Databricks).\newline
+   \textbf{6.}~L'historique des compilations est archivé dans le \textit{Dashboard \& Reporting}.}
+  {Erreur de compilation~: log détaillé avec numéro de ligne du document RC fautif. Timeout > 60\,s~: notification et retry automatique.}
+  {Package généré et archivé~; prêt pour déploiement et exécution (UC~: Lancer l'exécution)}
+
+\subsection*{Phase 6~--- Load}
+
+\ucfichephase{Définir et exécuter les contrôles d'intégrité}
+  {Migration Designer}
+  {Données transformées disponibles~; tables cibles créées dans le système cible}
+  {Le Migration Designer accède à \textit{Integrity Checks} pour valider les contraintes avant chargement}
+  {\textbf{1.}~Il importe les règles d'intégrité depuis Excel (types~: PK, FK, NOT NULL, unicité, règles métier).\newline
+   \textbf{2.}~Il filtre les règles par table ou type de contrôle.\newline
+   \textbf{3.}~Il lance l'exécution des contrôles sur les données cibles.\newline
+   \textbf{4.}~Les résultats sont affichés~: contrôles passés (vert), avertissements (orange), violations (rouge).\newline
+   \textbf{5.}~Pour chaque violation, il consulte le détail des enregistrements incriminés.\newline
+   \textbf{6.}~Il exporte les résultats en Excel pour documentation et résolution.}
+  {Volume de violations élevé~: pagination et export par lot. Règle invalide (expression SQL incorrecte)~: message d'erreur avec suggestion de correction.}
+  {Contrôles d'intégrité validés et archivés~; violations documentées~; décision go/no-go pour le chargement prise}
+
+\subsection*{Phase 7~--- Validation}
+
+\ucfichephase{Configurer et exécuter la réconciliation (L1 / L2 / L3)}
+  {Test Engineer}
+  {Données chargées dans le système cible~; données sources accessibles}
+  {Le Test Engineer accède à la section \textit{Reconciliation} pour valider la complétude et la conformité}
+  {\textbf{1.}~Il configure les règles de réconciliation~:\newline
+   \quad\textbf{Niveau 1~---} Comparaison des comptages d'enregistrements source vs cible par table.\newline
+   \quad\textbf{Niveau 2~---} Comparaison des agrégats sur les champs clés (sommes, moyennes, MAX/MIN).\newline
+   \quad\textbf{Niveau 3~---} Comparaison ligne par ligne sur les champs sélectionnés.\newline
+   \textbf{2.}~Il lance l'exécution des règles~; la plateforme interroge les deux systèmes.\newline
+   \textbf{3.}~Les résultats sont affichés~: pourcentage de concordance, écarts identifiés, statut (passed / warning / failed).\newline
+   \textbf{4.}~Il analyse les écarts~; chaque écart est rattaché à une cause (règle de transformation, donnée manquante\ldots).\newline
+   \textbf{5.}~Il génère le rapport de réconciliation consolidé~; il est soumis au Business Reviewer.}
+  {Écarts bloquants (L1 > 5\,\%)~: alerte critique~; la phase Cutover est bloquée. Timeout L3 sur grand volume~: exécution en mode sampling avec extrapolation.}
+  {Rapport de réconciliation archivé~; statut des trois niveaux tracé~; Business Reviewer notifié pour validation}
+
+\ucfichephase{Créer et gérer des tickets de test}
+  {Test Engineer, Business Reviewer}
+  {Données chargées~; critères d'acceptation définis avec le client}
+  {Le Test Engineer crée les tickets pour organiser la campagne de tests fonctionnels}
+  {\textbf{1.}~Il crée un ticket~: titre, description, équipe, responsable, release, priorité, catégorie.\newline
+   \textbf{2.}~Il importe en masse les tickets depuis un template Excel.\newline
+   \textbf{3.}~Il groupe les tickets par catégorie et objet métier pour une vue organisée.\newline
+   \textbf{4.}~Il met à jour le statut au fil de l'exécution~: \textit{Open}, \textit{In Progress}, \textit{Passed}, \textit{Failed}.\newline
+   \textbf{5.}~Le Business Reviewer valide les tickets passés et commente les tickets échoués.\newline
+   \textbf{6.}~Il consulte le tableau de bord analytics~: taux de résolution, tickets par unité, progression par release.}
+  {Synchronisation Jira/Mantis indisponible~: mode offline avec synchronisation différée. Ticket sans responsable~: alerte dans le tableau de bord.}
+  {Campagne de tests documentée~; taux d'acceptation calculé~; prérequis pour go-live validés}
+
+\subsection*{Phase 8~--- Cutover}
+
+\ucfichephase{Exécuter le cutover en temps réel}
+  {Cutover Manager, Client}
+  {Plan de cutover approuvé et simulé (dry-run réussi)~; critères go/no-go définis~; équipes mobilisées}
+  {La fenêtre de cutover s'ouvre~; le Cutover Manager démarre l'exécution depuis le tableau de bord}
+  {\textbf{1.}~Le Cutover Manager ouvre le tableau de bord d'exécution et démarre le plan.\newline
+   \textbf{2.}~Les tâches s'affichent avec leur statut en temps réel~: \textit{Pending}, \textit{In Progress}, \textit{Done}, \textit{Blocked}.\newline
+   \textbf{3.}~Chaque responsable marque ses tâches comme terminées depuis son interface.\newline
+   \textbf{4.}~En cas de blocage, le Cutover Manager documente l'incident et décide~: contournement ou activation du plan de rollback.\newline
+   \textbf{5.}~Le chemin critique est mis en évidence~; tout retard sur une tâche critique déclenche une alerte immédiate.\newline
+   \textbf{6.}~À la validation de la dernière tâche, le Cutover Manager prononce officiellement le go-live.\newline
+   \textbf{7.}~Le Client valide la bascule~; le journal d'exécution horodaté est archivé.}
+  {Tâche critique bloquée~: escalade automatique au Cutover Manager. Incident majeur~: activation du plan de rollback~; le système source est remis en production. Dépassement de la fenêtre de cutover~: go/no-go décision escaladée au comité de pilotage.}
+  {Go-live prononcé et documenté~; journal d'exécution archivé~; projet marqué \textit{Completed}~; certificat de mise en production généré}
+
+% =====================================================================
+% PARTIE 2 — Fiches issues de l'ancienne Annexe A (11_appendices.tex)
+% Les 24 cas d'utilisation non développés dans le corps du document.
+% =====================================================================
+
+\subsection*{Phase 1~--- Project Management}
+
+\ucfiche{UC-01}{Créer un projet de migration}
+  {Administrator}
+  {Utilisateur authentifié avec le rôle Administrator}
+  {L'administrateur souhaite initier un nouveau projet de migration de données}
+  {\textbf{1.} L'administrateur accède au tableau de bord global. \textbf{2.} Il clique sur ``Nouveau projet''. \textbf{3.} Il renseigne les informations~: nom, Industry, Target platform, Source system. \textbf{4.} Il valide la création. \textbf{5.} La plateforme initialise les huit phases et génère l'identifiant projet.}
+  {Nom de projet déjà existant~: message d'erreur et suggestion d'un nom disponible. Champs obligatoires manquants~: validation inline.}
+  {Projet créé avec les huit phases initialisées~; l'administrateur est automatiquement ajouté comme membre owner}
+
+\ucfiche{UC-02}{Configurer les paramètres du projet}
+  {Administrator}
+  {Projet créé (UC-01)~; au moins un membre de l'équipe défini (UC-03)}
+  {L'administrateur souhaite modifier ou affiner les paramètres d'un projet existant}
+  {\textbf{1.} L'administrateur ouvre les paramètres du projet. \textbf{2.} Il modifie les informations disponibles~: description, dates cibles, options d'affichage. \textbf{3.} Il sauvegarde les modifications. \textbf{4.} Un historique des changements est enregistré.}
+  {Champs protégés en mode lecture seule si le projet est verrouillé~: notification à l'administrateur. Sauvegarde concurrente~: résolution par timestamp.}
+  {Paramètres mis à jour~; historique des modifications disponible dans les logs projet}
+
+\ucfiche{UC-04}{Suivre l'avancement du projet}
+  {Migration Designer, Cutover Manager}
+  {Projet actif avec au moins une phase démarrée}
+  {L'utilisateur consulte le tableau de bord pour suivre l'avancement global du projet}
+  {\textbf{1.} L'utilisateur ouvre le tableau de bord du projet. \textbf{2.} Il visualise le statut de chaque phase (Non démarré, En cours, Terminé, Bloqué). \textbf{3.} Il consulte les métriques d'avancement~: pourcentage de complétion, jalons atteints, alertes en cours. \textbf{4.} Il peut naviguer directement vers une phase en cliquant dessus.}
+  {Données non disponibles pour une phase non initialisée~: indicateur grisé. Alertes critiques~: bandeau rouge en haut du tableau de bord.}
+  {Vue d'avancement consultée~; aucune modification de l'état du projet}
+
+\ucfiche{UC-05}{Archiver un projet finalisé}
+  {Administrator}
+  {Projet en statut ``Completed''~; validation go-live effectuée (UC-29)}
+  {L'administrateur archive le projet pour libérer les ressources actives et conserver le dossier}
+  {\textbf{1.} L'administrateur sélectionne le projet finalisé. \textbf{2.} Il déclenche l'action ``Archiver''. \textbf{3.} La plateforme génère une archive complète~: documents, bundles, rapports, logs. \textbf{4.} Le projet passe en mode lecture seule~; les ressources computationnelles sont libérées.}
+  {Projet avec des tâches cutover ouvertes~: archivage refusé jusqu'à clôture complète. Erreur d'archivage~: rollback et notification.}
+  {Projet archivé en lecture seule~; archive téléchargeable pendant 12 mois}
+
+\subsection*{Phase 2~--- Data Scope}
+
+\ucfiche{UC-06}{Définir le périmètre des données}
+  {Data Analyst, Migration Designer}
+  {Projet initialisé (UC-01)~; phase Data Scope débloquée}
+  {Le Data Analyst définit les entités sources, intermédiaires et cibles du périmètre de migration}
+  {\textbf{1.} Le Data Analyst accède à la phase Data Scope. \textbf{2.} Il importe ou crée manuellement les définitions SDS (entités sources), TDS (entités cibles) et IDS (entités intermédiaires). \textbf{3.} Pour chaque entité, il renseigne les attributs~: nom, colonnes, types, clés. \textbf{4.} Il sauvegarde~; une version du data scope est créée.}
+  {Entité en doublon~: avertissement et possibilité de fusion. Format invalide~: message d'erreur détaillé avec localisation.}
+  {Data scope versionnée~; entités disponibles pour les phases suivantes~; verrouillage activable (UC-07)}
+
+\ucfiche{UC-07}{Verrouiller une section du data scope}
+  {Data Analyst}
+  {Data scope défini (UC-06)~; section non verrouillée par un autre utilisateur}
+  {Le Data Analyst verrouille une section du data scope pour l'éditer exclusivement}
+  {\textbf{1.} Le Data Analyst sélectionne une entité ou un groupe d'entités. \textbf{2.} Il clique sur ``Checkout''. \textbf{3.} La plateforme vérifie qu'aucun verrou concurrent n'existe. \textbf{4.} Le verrou est posé~; les autres utilisateurs voient la section en lecture seule. \textbf{5.} Après édition, le Data Analyst effectue le ``Check-in'' pour libérer le verrou.}
+  {Section déjà verrouillée~: affichage du nom du détenteur et heure de prise du verrou. Verrou expiré (> 4h)~: relâchement automatique après confirmation.}
+  {Verrou libéré~; nouvelle version du data scope enregistrée~; section disponible pour d'autres éditeurs}
+
+\ucfiche{UC-08}{Exporter le data scope}
+  {Data Analyst}
+  {Data scope finalisé et validé (UC-06)}
+  {Le Data Analyst exporte le périmètre vers le format natif ADMP pour utilisation dans les outils de conception}
+  {\textbf{1.} Le Data Analyst accède à la phase Data Scope. \textbf{2.} Il sélectionne le format d'export~: ADMP Native (Excel/Word) ou JSON structuré. \textbf{3.} La plateforme génère les fichiers correspondants (SDS, TDS, IDS). \textbf{4.} L'export est téléchargeable directement ou envoyé par email.}
+  {Entités incomplètes~: avertissement avec liste des champs manquants avant export. Timeout d'export~: retry automatique.}
+  {Fichiers SDS/TDS/IDS disponibles en téléchargement~; date d'export enregistrée dans les métadonnées}
+
+\subsection*{Phase 3~--- Extract}
+
+\ucfiche{UC-09}{Configurer une source d'extraction}
+  {Data Analyst}
+  {Phase Extract initialisée~; data scope défini (UC-06)}
+  {Le Data Analyst configure les paramètres de connexion à une source de données à extraire}
+  {\textbf{1.} Le Data Analyst accède à la phase Extract. \textbf{2.} Il ajoute une nouvelle source~: type (Oracle, SQL Server, CSV, VSAM), paramètres de connexion (hôte, port, base). \textbf{3.} Il teste la connexion. \textbf{4.} Il associe la source aux entités correspondantes du data scope. \textbf{5.} Il sauvegarde la configuration.}
+  {Test de connexion échoué~: message d'erreur technique et suggestions de diagnostic. Entité non trouvée dans la source~: avertissement et option d'alignement manuel.}
+  {Source configurée et associée aux entités~; prête pour l'import de fichiers (UC-10)}
+
+\subsection*{Phase 4~--- Profiling \& Cleansing}
+
+\ucfiche{UC-12}{Générer un rapport de profilage}
+  {Data Analyst}
+  {Audit de données lancé (UC-11)~; résultats disponibles}
+  {Le Data Analyst génère un rapport formel de profilage statistique par entité}
+  {\textbf{1.} Le Data Analyst accède aux résultats d'audit (UC-11). \textbf{2.} Il sélectionne les entités à inclure dans le rapport. \textbf{3.} Il choisit le format~: PDF, Excel, HTML interactif. \textbf{4.} La plateforme génère le rapport avec~: distributions, taux de nullité, cardinalités, exemples d'anomalies. \textbf{5.} Le rapport est archivé dans le dossier projet.}
+  {Données insuffisantes pour une entité~: section correspondante marquée ``Données insuffisantes''. Génération longue~: notification par email.}
+  {Rapport archivé~; disponible pour partage avec le Business Reviewer~; base pour les règles de nettoyage (UC-13)}
+
+\ucfiche{UC-13}{Documenter les règles de nettoyage}
+  {Data Analyst}
+  {Rapport de profilage disponible (UC-12)~; anomalies identifiées}
+  {Le Data Analyst documente les règles de nettoyage à appliquer aux données identifiées comme non conformes}
+  {\textbf{1.} Le Data Analyst consulte les anomalies du rapport de profilage. \textbf{2.} Pour chaque anomalie, il crée une règle de nettoyage~: type (substitution, suppression, normalisation), expression, entités concernées. \textbf{3.} Il documente la justification métier. \textbf{4.} Il sauvegarde les règles~; elles sont versionnées et traçables.}
+  {Règle en conflit avec une règle existante~: avertissement et possibilité de remplacement ou fusion. Expression invalide~: validation en temps réel.}
+  {Règles de nettoyage documentées~; prêtes pour soumission (UC-15) et validation métier (UC-16)}
+
+\ucfiche{UC-14}{Valider la conformité qualité des données}
+  {Business Reviewer}
+  {Règles de nettoyage appliquées~; rapport de profilage post-nettoyage disponible}
+  {Le Business Reviewer évalue la conformité des données nettoyées par rapport aux exigences métier}
+  {\textbf{1.} Le Business Reviewer reçoit une notification de disponibilité. \textbf{2.} Il consulte le rapport de profilage post-nettoyage. \textbf{3.} Il vérifie la conformité entité par entité. \textbf{4.} Pour chaque entité, il renseigne son avis (Conforme, Non conforme + commentaire). \textbf{5.} Il soumet sa validation.}
+  {Entité non conforme~: commentaire obligatoire~; renvoi au Data Analyst pour correction. Délai dépassé (> 48h sans réponse)~: escalade automatique vers le Migration Designer.}
+  {Validation métier enregistrée~; phase Profiling débloquée pour passage à Transform si toutes entités conformes}
+
+\ucfiche{UC-15}{Soumettre les règles pour validation}
+  {Data Analyst}
+  {Règles de nettoyage documentées (UC-13)~; phase Profiling en cours}
+  {Le Data Analyst soumet les règles de nettoyage au Business Reviewer pour approbation}
+  {\textbf{1.} Le Data Analyst finalise les règles de nettoyage dans l'éditeur. \textbf{2.} Il clique sur ``Soumettre pour validation''. \textbf{3.} La plateforme notifie le ou les Business Reviewers assignés. \textbf{4.} Les règles passent en statut ``En attente de validation''.}
+  {Aucun Business Reviewer assigné~: blocage avec message demandant l'assignation via UC-03. Règles incomplètes~: validation inline avant soumission.}
+  {Règles soumises~; Business Reviewer notifié~; Data Analyst informé de la prise en charge}
+
+\ucfiche{UC-16}{Approuver les règles de nettoyage}
+  {Business Reviewer}
+  {Règles soumises (UC-15)~; Business Reviewer notifié}
+  {Le Business Reviewer approuve ou rejette les règles de nettoyage soumises par le Data Analyst}
+  {\textbf{1.} Le Business Reviewer ouvre la liste des règles en attente. \textbf{2.} Il examine chaque règle~: description, entités concernées, justification métier. \textbf{3.} Il approuve (vert) ou rejette (rouge + commentaire) chaque règle. \textbf{4.} Il soumet sa décision. \textbf{5.} Le Data Analyst est notifié.}
+  {Règle ambiguë~: possibilité de demander une clarification au Data Analyst via commentaire. Approbation partielle~: les règles approuvées sont validées~; les rejetées retournent en édition.}
+  {Règles approuvées enregistrées~; règles rejetées renvoyées au Data Analyst~; journal d'approbation tracé}
+
+\subsection*{Phase 5~--- Transform}
+
+\ucfiche{UC-19}{Configurer les tables de transcodification}
+  {Migration Designer}
+  {Data scope finalisé~; phase Transform débloquée}
+  {Le Migration Designer configure les tables de transcodification (TT) pour une unité de migration}
+  {\textbf{1.} Le Migration Designer accède à la gestion des transco. \textbf{2.} Il importe un fichier TT (XML) ou crée les entrées manuellement. \textbf{3.} Il définit les clés et valeurs de mapping. \textbf{4.} Il associe la TT aux unités de migration qui l'utilisent. \textbf{5.} Il valide et sauvegarde.}
+  {Clé dupliquée dans la TT~: avertissement et proposition de merge. Format XML invalide~: erreur de validation avant import.}
+  {Tables de transco disponibles pour les règles RC/DP~; vues broadcast générées automatiquement lors de la compilation}
+
+\ucfiche{UC-20}{Valider le bundle généré}
+  {Test Engineer}
+  {Bundle généré et disponible (UC-18)}
+  {Le Test Engineer exécute des tests de validation sur le bundle généré avant déploiement en production}
+  {\textbf{1.} Le Test Engineer accède au bundle dans la phase Transform. \textbf{2.} Il lance l'exécution sur un cluster de test Databricks. \textbf{3.} Il vérifie les compteurs (lignes lues, écrites, rejetées). \textbf{4.} Il consulte les rapports d'intégrité Excel générés. \textbf{5.} Il documente le résultat~: approuvé ou rejeté avec détail des anomalies.}
+  {Erreur d'exécution sur le cluster~: log Spark UI disponible pour diagnostic. Compteurs inattendus~: comparaison avec la baseline de référence.}
+  {Résultat de validation enregistré~; si approuvé, bundle prêt pour déploiement (UC-21)}
+
+\ucfiche{UC-21}{Publier le bundle sur Databricks}
+  {Migration Designer}
+  {Bundle validé (UC-20)~; cluster Databricks de production accessible}
+  {Le Migration Designer déploie le bundle validé sur le cluster Databricks de production}
+  {\textbf{1.} Le Migration Designer sélectionne le bundle validé. \textbf{2.} Il choisit le cluster cible et les paramètres de déploiement. \textbf{3.} La plateforme appelle l'API Databricks~: upload du .whl, installation de la librairie. \textbf{4.} Un test de smoke est exécuté automatiquement (import du module). \textbf{5.} La plateforme confirme le déploiement réussi.}
+  {Cluster indisponible~: notification et retry programmé. Test de smoke échoué~: rollback de l'installation et notification.}
+  {Bundle installé sur le cluster~; disponible pour l'exécution du chargement (UC-23)}
+
+\subsection*{Phase 6~--- Load}
+
+\ucfiche{UC-22}{Configurer le chargement cible}
+  {Migration Designer}
+  {Bundle déployé (UC-21)~; système cible accessible (Delta Lake / Unity Catalog)}
+  {Le Migration Designer configure les paramètres d'exécution du chargement vers le système cible}
+  {\textbf{1.} Le Migration Designer accède à la phase Load. \textbf{2.} Il sélectionne le bundle déployé. \textbf{3.} Il renseigne les paramètres run-time~: catalog, schéma, paramètres métier, mode d'exécution (full/delta). \textbf{4.} Il configure l'ordre d'exécution des unités. \textbf{5.} Il sauvegarde la configuration de run.}
+  {Catalog ou schéma introuvable~: vérification via Unity Catalog API~; message d'erreur détaillé. Paramètre manquant~: validation inline.}
+  {Configuration de chargement sauvegardée~; prête pour exécution (UC-23)}
+
+\subsection*{Phase 7~--- Validation}
+
+\ucfiche{UC-24}{Définir les cas de test}
+  {Test Engineer}
+  {Chargement exécuté (UC-23)~; données présentes dans le système cible}
+  {Le Test Engineer définit les cas de test et les critères d'acceptation pour la réconciliation}
+  {\textbf{1.} Le Test Engineer accède à la phase Validation. \textbf{2.} Il crée les cas de test~: entités à vérifier, type de contrôle (count, spot-check, intégrité), valeurs attendues. \textbf{3.} Il associe chaque cas à une entité du data scope. \textbf{4.} Il sauvegarde et documente la justification des critères.}
+  {Entité non chargée~: avertissement~; cas de test créé en statut ``En attente de données''. Critère sans valeur attendue~: validation requise avant exécution.}
+  {Cas de test définis~; prêts pour exécution de la réconciliation (UC-25)}
+
+\ucfiche{UC-25}{Exécuter les contrôles de réconciliation}
+  {Test Engineer}
+  {Cas de test définis (UC-24)~; données sources et cibles disponibles}
+  {Le Test Engineer exécute les contrôles de réconciliation pour comparer les données source et cible}
+  {\textbf{1.} Le Test Engineer sélectionne les cas de test à exécuter. \textbf{2.} Il lance la réconciliation. \textbf{3.} La plateforme interroge les systèmes source et cible~: comptages, spot-checks, vérifications d'intégrité. \textbf{4.} Les résultats sont comparés aux valeurs attendues. \textbf{5.} Les écarts sont classifiés (bloquant / majeur / mineur).}
+  {Connexion source perdue~: résultats partiels marqués~; retry programmé. Timeout de contrôle~: reprise incrémentale possible.}
+  {Résultats disponibles~; écarts classifiés~; rapport de réconciliation générable (UC-26)}
+
+\subsection*{Phase 8~--- Cutover}
+
+\ucfiche{UC-27}{Créer le plan de cutover}
+  {Cutover Manager}
+  {Rapport de réconciliation approuvé~; phase Cutover débloquée}
+  {Le Cutover Manager crée un plan de cutover structuré pour orchestrer la bascule en production}
+  {\textbf{1.} Le Cutover Manager accède à la phase Cutover. \textbf{2.} Il crée un plan~: nom, description, date cible de go-live. \textbf{3.} Il ajoute les tâches~: titre, responsable, durée estimée, ordre, dépendances. \textbf{4.} Il définit les jalons et critères go/no-go. \textbf{5.} Il soumet le plan pour revue par l'équipe.}
+  {Dépendance circulaire entre tâches~: détection et avertissement~; résolution requise. Date cible incompatible avec les dépendances~: recalcul de la date proposé.}
+  {Plan de cutover créé et versionné~; partagé avec l'équipe~; tâches assignées aux responsables}
+
+\ucfiche{UC-28}{Exécuter les tâches de cutover}
+  {Cutover Manager}
+  {Plan de cutover approuvé (UC-27)~; équipe notifiée~; fenêtre de cutover ouverte}
+  {Le Cutover Manager pilote l'exécution des tâches du plan de cutover en temps réel}
+  {\textbf{1.} Le Cutover Manager ouvre la vue d'exécution du plan. \textbf{2.} Il démarre les tâches selon leur séquence et dépendances. \textbf{3.} Chaque responsable marque ses tâches comme terminées au fil de l'exécution. \textbf{4.} Le Cutover Manager suit l'avancement global sur le tableau de bord. \textbf{5.} Les incidents sont documentés en temps réel.}
+  {Tâche bloquée ou en retard~: alerte immédiate avec escalade optionnelle. Incident critique~: activation du plan de rollback.}
+  {Toutes les tâches complétées~; journal d'exécution horodaté~; bascule technique effectuée~; prêt pour go-live (UC-29)}
+
+\subsection*{Modules transverses}
+
+\ucfiche{UC-30}{Gérer la base de connaissances}
+  {Administrator}
+  {Accès Administrator à la plateforme}
+  {L'administrateur met à jour la base de connaissances utilisée par les agents IA et les équipes}
+  {\textbf{1.} L'administrateur accède au module Apprentissage. \textbf{2.} Il crée, modifie ou supprime des articles~: titre, contenu (Markdown), tags, catégorie. \textbf{3.} Il indexe le contenu pour la recherche vectorielle (RAG). \textbf{4.} Il publie ou archive les articles. \textbf{5.} Les agents IA disposent de la nouvelle connaissance lors de la prochaine requête.}
+  {Conflit de version~: édition concurrente détectée~; fusion manuelle requise. Indexation échouée~: notification~; retry automatique toutes les 5 minutes.}
+  {Articles publiés~; base de connaissances mise à jour~; agents IA bénéficiant de la nouvelle connaissance}
+
+\ucfiche{UC-31}{Consulter les journaux système}
+  {Administrator}
+  {Accès Administrator~; journaux disponibles}
+  {L'administrateur consulte les journaux système pour diagnostiquer des incidents ou auditer des actions}
+  {\textbf{1.} L'administrateur accède au module Journaux. \textbf{2.} Il filtre par~: projet, utilisateur, type d'opération, plage de dates, niveau de log (INFO, WARNING, ERROR). \textbf{3.} Il consulte les entrées~: horodatage, acteur, action, payload, résultat. \textbf{4.} Il peut exporter les logs filtrés en CSV.}
+  {Volume de logs élevé~: pagination et chargement progressif. Export > 10\,000 lignes~: génération asynchrone avec notification email.}
+  {Journaux consultés~; export disponible~; aucune modification de l'état du système}
+
+\ucfiche{UC-32}{Configurer les agents IA}
+  {Administrator}
+  {Accès Administrator~; clé API disponible pour au moins un fournisseur LLM}
+  {L'administrateur configure les paramètres des agents IA (fournisseur, modèle, contexte, permissions)}
+  {\textbf{1.} L'administrateur accède au module Agents IA. \textbf{2.} Il configure les paramètres globaux~: fournisseur LLM par défaut (OpenAI, Claude/Anthropic, Gemini, Mistral, Bedrock), modèle, température, longueur max de contexte. \textbf{3.} Il définit les permissions par rôle~: quels agents sont accessibles à quels acteurs. \textbf{4.} Il active ou désactive les agents par projet. \textbf{5.} Il sauvegarde~; les changements prennent effet immédiatement.}
+  {Clé API invalide~: message d'erreur~; test de connectivité disponible. Fournisseur indisponible~: bascule automatique vers un fournisseur de repli avec notification.}
+  {Configuration des agents sauvegardée~; agents disponibles pour les acteurs autorisés dans leurs projets}

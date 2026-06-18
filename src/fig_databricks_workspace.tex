@@ -1,0 +1,145 @@
+% Databricks Workspace — Databricks official palette (minimalist)
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\fontfamily{Montserrat-LF}\selectfont, >=Latex]
+
+% === OUTER CONTAINER ===
+\draw[rounded corners=8pt, fill=dboatlight, draw=dbnavy, line width=2pt]
+  (-0.3,0.5) rectangle (17.3,-9.2);
+
+\node[fill=dbnavy, text=white, font=\bfseries\large,
+      rounded corners=4pt, inner sep=9pt, minimum width=17cm]
+  at (8.5,0.15) {DATABRICKS WORKSPACE \quad
+    \normalfont\small\color{white!65}
+    Quatre piliers technologiques du plan d'exécution};
+
+% ============================================================
+% PILIER 1 — UNITY CATALOG
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1.2pt]
+  (0.0,-0.65) rectangle (3.95,-8.9);
+
+\draw[rounded corners=5pt, fill=dbnavy]
+  (0.0,-0.65) rectangle (3.95,-1.55);
+\node[text=white, font=\bfseries\normalsize, align=center]
+  at (1.975,-1.1) {Unity Catalog};
+
+\node[font=\fontsize{7}{8}\selectfont\ttfamily, text=dbnavy!65, anchor=north]
+  at (1.975,-1.7) {catalog.schema.table};
+
+\draw[dboatmed, line width=0.5pt] (0.2,-2.45) -- (3.75,-2.45);
+
+\foreach \i/\feat in {
+  1/Contrôle accès (ACL),
+  2/Lineage automatique,
+  3/Audit des accès,
+  4/Delta Sharing,
+  5/Multi-cloud
+}{
+  \node[font=\scriptsize, text=dbnavy, anchor=west]
+    at (0.25,{-2.7 - (\i-1)*0.98}) {$\bullet$\;\feat};
+}
+
+% ============================================================
+% PILIER 2 — DELTA LAKE
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1.2pt]
+  (4.25,-0.65) rectangle (8.2,-8.9);
+
+\draw[rounded corners=5pt, fill=dbnavy]
+  (4.25,-0.65) rectangle (8.2,-1.55);
+\node[text=white, font=\bfseries\normalsize, align=center]
+  at (6.225,-1.1) {Delta Lake};
+
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!65, anchor=north]
+  at (6.225,-1.7) {Transactions ACID};
+
+\draw[dboatmed, line width=0.5pt] (4.45,-2.45) -- (8.0,-2.45);
+
+\foreach \i/\feat in {
+  1/Time Travel,
+  2/Schema Evolution,
+  3/Z-Ordering,
+  4/Auto-optimize,
+  5/Parquet natif
+}{
+  \node[font=\scriptsize, text=dbnavy, anchor=west]
+    at (4.5,{-2.7 - (\i-1)*0.98}) {$\bullet$\;\feat};
+}
+
+% ============================================================
+% PILIER 3 — COMPUTE  (lava accent — operational/configurable)
+% ============================================================
+\draw[rounded corners=6pt, fill=dblava!6, draw=dblava, line width=2pt]
+  (8.5,-0.65) rectangle (13.1,-8.9);
+
+\draw[rounded corners=5pt, fill=dblava]
+  (8.5,-0.65) rectangle (13.1,-1.55);
+\node[text=white, font=\bfseries\normalsize, align=center]
+  at (10.8,-1.1) {Compute};
+\node[text=white!65, font=\fontsize{7}{8}\selectfont, anchor=east]
+  at (13.0,-0.82) {3 modes};
+
+\draw[dblava!20, line width=0.5pt] (8.7,-1.72) -- (12.9,-1.72);
+
+% Mode 1 — Serverless
+\draw[rounded corners=4pt, fill=dblava!15, draw=dblava!40, line width=0.9pt]
+  (8.7,-1.88) rectangle (12.9,-3.6);
+\node[font=\bfseries\scriptsize\ttfamily, text=dbnavy, anchor=west]
+  at (8.88,-2.4) {serverless};
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!60, anchor=west]
+  at (8.88,-2.9) {Auto-scale · zéro configuration};
+\node[fill=dblava, draw=dblava, rounded corners=2pt,
+      font=\fontsize{6}{7}\selectfont\bfseries, text=white,
+      inner sep=3pt, anchor=east]
+  at (12.8,-3.3) {Recommandé};
+
+% Mode 2 — existing cluster
+\draw[rounded corners=4pt, fill=dblava!7, draw=dblava!25, line width=0.7pt]
+  (8.7,-3.8) rectangle (12.9,-5.5);
+\node[font=\bfseries\scriptsize\ttfamily, text=dbnavy, anchor=west]
+  at (8.88,-4.32) {existing\_cluster};
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!60, anchor=west]
+  at (8.88,-4.82) {Cluster existant réutilisé};
+
+% Mode 3 — new cluster
+\draw[rounded corners=4pt, fill=white, draw=dboatmed, line width=0.6pt]
+  (8.7,-5.7) rectangle (12.9,-7.4);
+\node[font=\bfseries\scriptsize\ttfamily, text=dbnavy, anchor=west]
+  at (8.88,-6.22) {new\_cluster};
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!60, anchor=west]
+  at (8.88,-6.72) {DBR 14+ · Photon activé};
+
+% ============================================================
+% PILIER 4 — SPARK ENGINE
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1.2pt]
+  (13.4,-0.65) rectangle (17.1,-8.9);
+
+\draw[rounded corners=5pt, fill=dbnavy]
+  (13.4,-0.65) rectangle (17.1,-1.55);
+\node[text=white, font=\bfseries\normalsize, align=center]
+  at (15.25,-1.1) {Spark Engine};
+
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!65, anchor=north]
+  at (15.25,-1.7) {Apache Spark 3.5};
+
+\draw[dboatmed, line width=0.5pt] (13.6,-2.45) -- (16.9,-2.45);
+
+\foreach \i/\feat in {
+  1/Photon (C++ vectorisé),
+  2/Catalyst Optimizer,
+  3/PySpark API (3.10+),
+  4/Broadcast JOIN,
+  5/RDD $\rightarrow$ DataFrame
+}{
+  \node[font=\scriptsize, text=dbnavy, anchor=west]
+    at (13.65,{-2.7 - (\i-1)*0.98}) {$\bullet$\;\feat};
+}
+
+\end{tikzpicture}%
+}
+\caption{Databricks Workspace~: quatre piliers technologiques du plan d'exécution}
+\label{fig:archi-execution}
+\end{figure}

@@ -1,0 +1,143 @@
+% Pipeline de compilation — Databricks official palette (minimalist)
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\fontfamily{Montserrat-LF}\selectfont, >=Latex]
+
+% === OUTER CONTAINER ===
+\draw[rounded corners=8pt, fill=dboatlight, draw=dbnavy, line width=2pt]
+  (-0.3,0.5) rectangle (17.3,-13.2);
+
+\node[fill=dbnavy, text=white, font=\bfseries\large,
+      rounded corners=4pt, inner sep=9pt, minimum width=17cm]
+  at (8.5,0.15) {PIPELINE DE COMPILATION \quad
+    \normalfont\small\color{white!65} 5 étapes séquentielles — TypeScript / Node.js};
+
+% Vertical spine
+\draw[dboatmed, line width=2pt] (2.75,-0.75) -- (2.75,-12.65);
+
+% ============================================================
+% ÉTAPE 1
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1pt]
+  (1.5,-0.75) rectangle (16.8,-2.6);
+
+\node[circle, fill=dbnavy, text=white, font=\bfseries\normalsize,
+      minimum size=1.0cm, inner sep=0pt] at (2.75,-1.675) {1};
+
+\node[font=\bfseries\normalsize, text=dbnavy, anchor=west]
+  at (3.65,-1.3) {Document Loader \& Validator};
+\node[font=\scriptsize, text=dbnavy!55, anchor=west]
+  at (3.65,-1.88) {Résolution et validation~: SDS · IDS · TDS · RC · DP · TT · IC · PARAM · MS · KD};
+
+\node[fill=dboatmed, draw=dboatmed, rounded corners=3pt,
+      font=\fontsize{7}{8}\selectfont\ttfamily, inner sep=4pt,
+      text=dbnavy, anchor=east]
+  at (16.6,-1.675) {Excel \textbullet\ JSON \textbullet\ CSV};
+
+\draw[->, line width=2pt, color=dbnavy!40] (8.5,-2.6) -- (8.5,-3.05);
+
+% ============================================================
+% ÉTAPE 2
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1pt]
+  (1.5,-3.05) rectangle (16.8,-4.9);
+
+\node[circle, fill=dbnavy, text=white, font=\bfseries\normalsize,
+      minimum size=1.0cm, inner sep=0pt] at (2.75,-3.975) {2};
+
+\node[font=\bfseries\normalsize, text=dbnavy, anchor=west]
+  at (3.65,-3.6) {RC Parser \textrightarrow\ AST};
+\node[font=\scriptsize, text=dbnavy!55, anchor=west]
+  at (3.65,-4.18) {Pseudo-code RC $\rightarrow$ arbre syntaxique~: \texttt{IfNode} · \texttt{WriteFileNode} · \texttt{DataPopulateNode}};
+
+\node[fill=dboatmed, draw=dboatmed, rounded corners=3pt,
+      font=\fontsize{7}{8}\selectfont\ttfamily, inner sep=4pt,
+      text=dbnavy, anchor=east]
+  at (16.6,-3.975) {chevrotain};
+
+\draw[->, line width=2pt, color=dbnavy!40] (8.5,-4.9) -- (8.5,-5.35);
+
+% ============================================================
+% ÉTAPE 3
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1pt]
+  (1.5,-5.35) rectangle (16.8,-7.2);
+
+\node[circle, fill=dbnavy, text=white, font=\bfseries\normalsize,
+      minimum size=1.0cm, inner sep=0pt] at (2.75,-6.275) {3};
+
+\node[font=\bfseries\normalsize, text=dbnavy, anchor=west]
+  at (3.65,-5.9) {Path Extractor \textrightarrow\ \texttt{SqlPath[]}};
+\node[font=\scriptsize, text=dbnavy!55, anchor=west]
+  at (3.65,-6.48) {Parcours DFS de l'AST $\rightarrow$ chemins autonomes, branches auto-suffisantes};
+
+\node[fill=dboatmed, draw=dboatmed, rounded corners=3pt,
+      font=\fontsize{7}{8}\selectfont\ttfamily, inner sep=4pt,
+      text=dbnavy, anchor=east]
+  at (16.6,-6.275) {DFS traversal};
+
+\draw[->, line width=2pt, color=dbnavy!40] (8.5,-7.2) -- (8.5,-7.7);
+
+% ============================================================
+% ÉTAPE 4 — SparkSQL Emitter  (lava accent — CŒUR)
+% ============================================================
+\draw[rounded corners=6pt, fill=dblava!6, draw=dblava, line width=2pt]
+  (1.5,-7.7) rectangle (16.8,-10.85);
+
+\node[circle, fill=dblava, text=white, font=\bfseries\normalsize,
+      minimum size=1.0cm, inner sep=0pt] at (2.75,-9.275) {4};
+
+\node[font=\bfseries\normalsize, text=dbnavy, anchor=west]
+  at (3.65,-8.15) {SparkSQL Emitter};
+
+\node[fill=dblava, text=white, font=\bfseries\fontsize{7}{8}\selectfont,
+      rounded corners=3pt, inner sep=4pt, anchor=east]
+  at (16.6,-8.15) {CŒUR DU COMPILATEUR};
+
+\node[font=\scriptsize, text=dbnavy, anchor=west]
+  at (3.65,-8.82) {\textbf{1.}\ resolveVars \quad
+                   \textbf{2.}\ injectTranscoJoins \quad
+                   \textbf{3.}\ healJoinKeys};
+\node[font=\scriptsize, text=dbnavy, anchor=west]
+  at (3.65,-9.38) {\textbf{4.}\ sortTopological \quad
+                   \textbf{5.}\ emitSELECT \quad
+                   \textbf{6.}\ UNION ALL};
+
+\draw[dboatmed, line width=0.5pt] (3.65,-9.75) -- (16.6,-9.75);
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!55, italic, anchor=west]
+  at (3.65,-10.3) {Génère un bloc \texttt{SELECT} par branche de l'AST, agrégés en \texttt{UNION ALL} final};
+
+\draw[->, line width=2pt, color=dbnavy!40] (8.5,-10.85) -- (8.5,-11.35);
+
+% ============================================================
+% ÉTAPE 5
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1pt]
+  (1.5,-11.35) rectangle (16.8,-13.0);
+
+\node[circle, fill=dbnavy, text=white, font=\bfseries\normalsize,
+      minimum size=1.0cm, inner sep=0pt] at (2.75,-12.175) {5};
+
+\node[font=\bfseries\normalsize, text=dbnavy, anchor=west]
+  at (3.65,-11.75) {Bundle Assembler};
+
+\node[fill=dboatmed, draw=dboatmed, rounded corners=3pt,
+      font=\fontsize{7}{8}\selectfont\ttfamily, inner sep=4pt,
+      text=dbnavy, anchor=east]
+  at (16.6,-12.175) {outputFormat};
+
+\node[font=\scriptsize\ttfamily, text=dbnavy!60, anchor=west]
+  at (3.65,-12.25) {pyproject.toml};
+\node[font=\scriptsize\ttfamily, text=dbnavy!60, anchor=west]
+  at (3.65,-12.68) {bitbucket-pipelines.yml};
+\node[font=\scriptsize\ttfamily, text=dbnavy!60, anchor=west]
+  at (9.5,-12.25) {databricks.yml};
+\node[font=\scriptsize\ttfamily, text=dbnavy!60, anchor=west]
+  at (9.5,-12.68) {scripts/fetch\_reports.ps1 \quad README.md};
+
+\end{tikzpicture}%
+}
+\caption{Pipeline de compilation~: 5 étapes séquentielles du compilateur TypeScript/Node.js}
+\label{fig:archi-pipeline}
+\end{figure}

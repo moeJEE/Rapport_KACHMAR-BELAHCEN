@@ -17,7 +17,8 @@
 \usepackage{etoolbox}
 
 % Typography
-\usepackage{XCharter}
+\usepackage{XCharter}                  % serif — body text (unchanged)
+\usepackage[scaled=0.92]{montserrat}   % loaded for TikZ figures only — NOT set as document default
 \usepackage[protrusion=true, expansion=true]{microtype}
 \usepackage[onehalfspacing]{setspace}
 \usepackage[most]{tcolorbox}
@@ -50,11 +51,17 @@
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning, decorations.pathreplacing, backgrounds, calc}
 \usepackage{tikz-uml}
 
-% Accenture brand colors
+% Accenture brand colors (used in UC fiches, TOC, body styles)
 \definecolor{accenturepurple}{HTML}{A100FF}
 \definecolor{accenturedark}{HTML}{460099}
 \definecolor{accenturegray}{HTML}{F2F2F2}
 \definecolor{accenturelightpurple}{HTML}{E8CCFF}
+
+% Databricks official brand palette — minimalist (used in TikZ figures)
+\definecolor{dblava}{HTML}{FF3621}      % Lava 600  — primary accent (one element per figure)
+\definecolor{dbnavy}{HTML}{1B3139}      % Navy 900  — all structure: headers, borders, text
+\definecolor{dboatmed}{HTML}{EEEDE9}    % Oat Medium — secondary backgrounds, borders
+\definecolor{dboatlight}{HTML}{F9F7F4}  % Oat Light  — figure background
 
 % Misc
 \usepackage[colorinlistoftodos]{todonotes}
@@ -64,6 +71,44 @@
 
 % ---- Custom commands ----
 \newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+
+% Fiche UC sans numérotation (corps du texte)
+\newcommand{\ucfichephase}[7]{%
+  \begin{tcolorbox}[
+    colback=accenturegray!30, colframe=accenturepurple,
+    boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+    title={\textbf{#1}}, fonttitle=\small\bfseries
+  ]
+  \begin{tabular}{@{}p{3.2cm}p{10.5cm}@{}}
+  \textbf{Acteur(s)}       & #2 \\[2pt]
+  \textbf{Préconditions}   & #3 \\[2pt]
+  \textbf{Déclencheur}     & #4 \\[2pt]
+  \textbf{Scénario nominal}& #5 \\[2pt]
+  \textbf{Alt. / Erreurs}  & #6 \\[2pt]
+  \textbf{Postconditions}  & #7 \\
+  \end{tabular}
+  \end{tcolorbox}
+  \medskip
+}
+
+% Fiche UC avec numérotation (annexes)
+\newcommand{\ucfiche}[8]{%
+  \begin{tcolorbox}[
+    colback=accenturegray!30, colframe=accenturepurple,
+    boxrule=0.6pt, arc=4pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+    title={\textbf{#1}~--- #2}, fonttitle=\small\bfseries
+  ]
+  \begin{tabular}{@{}p{3.2cm}p{10.5cm}@{}}
+  \textbf{Acteur(s)}       & #3 \\[2pt]
+  \textbf{Préconditions}   & #4 \\[2pt]
+  \textbf{Déclencheur}     & #5 \\[2pt]
+  \textbf{Scénario nominal}& #6 \\[2pt]
+  \textbf{Alt. / Erreurs}  & #7 \\[2pt]
+  \textbf{Postconditions}  & #8 \\
+  \end{tabular}
+  \end{tcolorbox}
+  \medskip
+}
 
 % ---- Depth ----
 \setcounter{tocdepth}{3}

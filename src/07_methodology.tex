@@ -1,10 +1,10 @@
 % =====================================================================
-% CHAPITRE 4 — CADRE MÉTHODOLOGIQUE ET GESTION DE PROJET
+% CHAPITRE 4 — CADRE MÉTHODOLOGIQUE ET GESTION DE PROJET (condensé)
 % =====================================================================
 \chapter{Cadre Méthodologique et Gestion de Projet}
 \label{chap:methodologie}
 
-Le chapitre précédent a identifié les fondements théoriques, les solutions existantes et les opportunités d'amélioration qui positionnent notre contribution. Avant de détailler la conception de notre solution (chapitre~5), il est essentiel de présenter le cadre méthodologique et organisationnel dans lequel s'inscrit ce travail. Ce chapitre décrit comment l'équipe ADMP s'organise au quotidien pour mener à bien ses projets de migration : la méthodologie Agile adoptée, le cycle de vie des tickets, les processus de validation des données, et les pratiques collaboratives qui assurent la cohésion et l'efficacité de l'équipe.
+Le chapitre précédent a identifié les fondements théoriques et les opportunités d'amélioration qui positionnent notre contribution. Avant de détailler la conception de la solution (chapitre~\ref{chap:conception}), il est essentiel de présenter le cadre méthodologique et organisationnel dans lequel s'inscrit ce travail. Ce chapitre décrit comment l'équipe ADMP s'organise pour mener ses projets de migration : la méthodologie Agile adoptée, le cycle de vie des tickets, les processus de validation des données et les pratiques collaboratives.
 
 % =====================================================================
 \section{Méthodologie Agile adoptée}
@@ -14,7 +14,7 @@ Le chapitre précédent a identifié les fondements théoriques, les solutions e
 \subsection{Principes Scrum appliqués au projet}
 \label{subsec:scrum}
 
-Le cadre de travail adopté au sein de l'équipe ADMP s'inspire du framework \textbf{Scrum}, la méthodologie Agile la plus répandue au monde, utilisée par près de \textbf{87\,\%} des équipes Agile selon le \textit{State of Agile Report} \cite{digitalai2024}. Scrum repose sur trois piliers fondamentaux --- transparence, inspection et adaptation --- et s'articule autour de la règle \og~3-5-3~\fg{}, synthétisée dans le Tableau~\ref{tab:scrum-335}.
+Le cadre de travail de l'équipe ADMP s'inspire du framework \textbf{Scrum}, la méthodologie Agile la plus répandue, utilisée par près de \textbf{87\,\%} des équipes Agile selon le \textit{State of Agile Report} \cite{digitalai2024}. Scrum repose sur trois piliers (transparence, inspection, adaptation) et s'articule autour de la règle \og~3-5-3~\fg{}, synthétisée dans le Tableau~\ref{tab:scrum-335}.
 
 \begin{table}[H]
 \centering
@@ -26,30 +26,26 @@ Le cadre de travail adopté au sein de l'équipe ADMP s'inspire du framework \te
 \midrule
 3 Rôles & Product Owner, Scrum Master, Développeurs & Définir les responsabilités et permettre l'auto-organisation \\
 \addlinespace
-5 Événements & Sprint, Sprint Planning, Daily Scrum, Sprint Review, Sprint Retrospective & Créer la régularité et permettre l'inspection-adaptation \\
+5 Événements & Sprint, Planning, Daily, Review, Retrospective & Créer la régularité et permettre l'inspection-adaptation \\
 \addlinespace
 3 Artefacts & Product Backlog, Sprint Backlog, Increment & Maximiser la transparence et mesurer la progression \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Dans le contexte spécifique de la migration de données, ces principes sont adaptés aux réalités du projet. Le \textbf{Product Owner} est représenté par le chef de projet migration, qui priorise les lots fonctionnels à migrer en fonction des besoins métier et des dépendances techniques. Le \textbf{Scrum Master} est incarné par le Team Lead ADMP, qui facilite les cérémonies, lève les blocages et veille au respect de la méthodologie. Les \textbf{Développeurs} correspondent aux Data Analysts ADMP, qui rédigent les spécifications (RC, DP, DS), analysent les données et valident les résultats de migration.
-
-Les cinq valeurs Scrum --- engagement, courage, focus, ouverture et respect --- guident les interactions quotidiennes au sein de l'équipe, particulièrement dans les échanges avec le client lors des phases de validation et de prise de décision.
+Dans le contexte de la migration, ces principes sont adaptés. Le \textbf{Product Owner} est le chef de projet migration, qui priorise les lots fonctionnels selon les besoins métier et les dépendances techniques. Le \textbf{Scrum Master} est le Team Lead ADMP, qui facilite les cérémonies et lève les blocages. Les \textbf{Développeurs} sont les Data Analysts, qui rédigent les spécifications (RC, DP, DS), analysent les données et valident les résultats. Les cinq valeurs Scrum (engagement, courage, focus, ouverture, respect) guident les interactions quotidiennes, notamment lors des phases de validation avec le client.
 
 % ---------------------------------------------------------------------
 \subsection{Organisation des sprints de migration}
 \label{subsec:sprints}
 
-L'approche ADMP structure le processus de migration en \textbf{sprints itératifs} d'une durée de 2 à 4 semaines, chacun livrant un nouveau jeu de données migré intégrant les corrections, les rafraîchissements de données source et les mises à jour des règles. Cette cadence régulière constitue le rythme fondamental du projet.
-
-Chaque sprint de migration suit un enchaînement rigoureux de quatre phases :
+L'approche ADMP structure la migration en \textbf{sprints itératifs de 2 à 4 semaines}, chacun livrant un nouveau jeu de données migré intégrant les corrections, les rafraîchissements de données source et les mises à jour de règles. Chaque sprint suit un enchaînement de quatre phases :
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Phase 1 --- Design / Build (Static Tests)} : les Data Analysts rédigent ou mettent à jour les spécifications (RC, DP, DS, TT), versionnées via IDMF Explorer. Le Core Engine génère automatiquement les programmes de migration. Des tests statiques valident la cohérence des règles avant toute exécution.
-    \item \textbf{Phase 2 --- Test Support} : l'équipe analyse les défauts identifiés, identifie leurs causes racines et affine les règles de migration pour garantir la stabilité des versions livrées à l'environnement de test.
-    \item \textbf{Phase 3 --- Stabilisation et livraison itérative} : des versions successives (V1, V2, V3, V4, V5\ldots) sont produites, chacune intégrant les corrections issues des cycles de test précédents, convergeant progressivement vers la qualité attendue.
-    \item \textbf{Phase 4 --- Rehearsal \& Rollout} : l'équipe gère le processus complet de migration durant les répétitions générales (\textit{rehearsals}), en se concentrant sur l'automatisation de la migration, l'exécution du plan de bascule (\textit{cutover}) et le déploiement dans les délais impartis.
+    \item \textbf{Phase 1, Design / Build (Static Tests)} : rédaction ou mise à jour des spécifications (RC, DP, DS, TT) versionnées via IDMF Explorer, génération automatique des programmes par le Core Engine, et validation statique de la cohérence des règles.
+    \item \textbf{Phase 2, Test Support} : analyse des défauts, identification des causes racines et affinage des règles pour stabiliser les versions livrées en test.
+    \item \textbf{Phase 3, Stabilisation} : versions successives (V1, V2, V3\ldots) intégrant les corrections des cycles précédents, convergeant vers la qualité attendue.
+    \item \textbf{Phase 4, Rehearsal \& Rollout} : répétitions générales (\textit{rehearsals}), automatisation de la migration, exécution du plan de bascule (\textit{cutover}) et déploiement final.
 \end{itemize}
 
 Le cycle complet d'un projet type suit la progression illustrée en Figure~\ref{fig:sprint-cycle}.
@@ -65,7 +61,6 @@ Le cycle complet d'un projet type suit la progression illustrée en Figure~\ref{
              minimum size=10mm, inner sep=0pt},
   >=Latex, thick, color=accenturedark
 ]
-  % --- Milestone nodes (absolute coordinates, 1.5 cm center-to-center) ---
   \node[ms] (p0) at (0,    0) {P0};
   \node[ms] (p1) at (1.5,  0) {P1};
   \node[ms] (p2) at (3.0,  0) {P2};
@@ -76,28 +71,16 @@ Le cycle complet d'un projet type suit la progression illustrée en Figure~\ref{
   \node[rh] (r1) at (10.5, 0) {R1};
   \node[rh] (r2) at (12.0, 0) {R2};
   \node[gl] (gl) at (13.5, 0) {};
-  \node[below=2pt of gl, font=\scriptsize\bfseries, text=accenturepurple]
-       {Go Live};
-
-  % --- Arrows ---
-  \foreach \s/\t in {p0/p1, p1/p2, p2/p3, p3/p4, p4/p5, p5/p6,
-                     p6/r1, r1/r2}{
+  \node[below=2pt of gl, font=\scriptsize\bfseries, text=accenturepurple] {Go Live};
+  \foreach \s/\t in {p0/p1, p1/p2, p2/p3, p3/p4, p4/p5, p5/p6, p6/r1, r1/r2}{
     \draw[->] (\s) -- (\t);
   }
   \draw[->, color=accenturepurple] (r2) -- (gl);
-
-  % --- Phase brace : Design/Build/Test ---
-  \draw[decorate,
-        decoration={brace, mirror, amplitude=6pt},
-        color=accenturedark, thick]
+  \draw[decorate, decoration={brace, mirror, amplitude=6pt}, color=accenturedark, thick]
     ([yshift=-5mm]p0.south) -- ([yshift=-5mm]p6.south)
     node[midway, below=9pt, font=\small, align=center, text=accenturedark]
          {Design / Build / Test\\[-1pt]{\scriptsize(Versions V1--V5)}};
-
-  % --- Phase brace : Rehearsals ---
-  \draw[decorate,
-        decoration={brace, mirror, amplitude=6pt},
-        color=accenturepurple, thick]
+  \draw[decorate, decoration={brace, mirror, amplitude=6pt}, color=accenturepurple, thick]
     ([yshift=-5mm]r1.south) -- ([yshift=-5mm]r2.south)
     node[midway, below=9pt, font=\small, align=center, text=accenturepurple]
          {Rehearsals\\[-1pt]{\scriptsize(Répétitions)}};
@@ -106,24 +89,20 @@ Le cycle complet d'un projet type suit la progression illustrée en Figure~\ref{
 \label{fig:sprint-cycle}
 \end{figure}
 
-Cette organisation permet de découvrir et de résoudre les problèmes de manière incrémentale, plutôt que de les accumuler jusqu'à un \og~Big Bang~\fg{} final risqué. L'approche Agile appliquée à la migration de données réduit considérablement les risques grâce à la validation précoce et continue, par opposition à l'approche traditionnelle où les tests ne sont conduits qu'après l'exécution complète \cite{datavail2025}.
+Cette approche incrémentale évite l'accumulation des problèmes vers un \og~Big Bang~\fg{} final risqué et réduit les risques grâce à la validation précoce et continue, par opposition aux approches où les tests ne sont conduits qu'après l'exécution complète \cite{datavail2025}.
 
 % ---------------------------------------------------------------------
 \subsection{Outils de pilotage}
 \label{subsec:outils-pilotage}
 
-L'outil central de pilotage du projet est \textbf{Azure DevOps}, une plateforme Microsoft conçue pour faciliter la collaboration entre les équipes de développement et d'exploitation dans l'esprit DevOps \cite{microsoft2025devops}. Le composant principal utilisé est \textbf{Azure Boards}, qui assure la gestion agile à travers les fonctionnalités suivantes :
+L'outil central de pilotage est \textbf{Azure DevOps}, plateforme Microsoft conçue pour la collaboration entre équipes de développement et d'exploitation \cite{microsoft2025devops}. Son composant \textbf{Azure Boards} assure la gestion agile via les Backlogs (priorisation des Epics, Features, User Stories), un tableau Kanban (états \textit{New, Active, Resolved, Closed}), les Sprints, les Burndown Charts, les Dashboards de métriques (vélocité, tendances de défauts, couverture de test) et les Queries personnalisées. Il supporte les processus Agile, Scrum et CMMI avec des types de \textit{work items} prédéfinis (Epic, Feature, User Story, Task, Bug) \cite{microsoft2025boards}.
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Backlogs} : priorisation et planification du travail à venir au niveau des Epics, Features et User Stories.
-    \item \textbf{Boards (Kanban)} : visualisation du flux de travail avec des colonnes représentant les états des tickets (\textit{New, Active, Resolved, Closed}).
-    \item \textbf{Sprints} : planification des itérations avec distribution des tâches entre les membres de l'équipe.
-    \item \textbf{Burndown Charts} : graphiques de suivi montrant le travail restant vs.\ la ligne idéale de progression, permettant de détecter rapidement les écarts et d'ajuster l'effort.
-    \item \textbf{Dashboards} : tableaux de bord personnalisables agrégant les métriques clés du projet (vélocité, tendances de défauts, couverture de test).
-    \item \textbf{Queries} : requêtes personnalisées pour filtrer et grouper les tickets selon différents critères (sévérité, assignation, état, sprint).
-\end{itemize}
-
-Azure Boards supporte les processus Agile, Scrum et CMMI, avec des types de \textit{work items} prédéfinis (Epic, Feature, User Story, Task, Bug) et des transitions d'état configurables \cite{microsoft2025boards}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/azure.png}
+    \caption{Tableau de bord Azure Boards}
+    \label{fig:azure}
+\end{figure}
 
 % =====================================================================
 \section{Gestion des tickets et cycle de vie des défauts}
@@ -133,7 +112,7 @@ Azure Boards supporte les processus Agile, Scrum et CMMI, avec des types de \tex
 \subsection{Typologie des tickets}
 \label{subsec:typologie-tickets}
 
-Dans le contexte d'un projet de migration ADMP, les tickets Azure DevOps se déclinent en plusieurs types organisés hiérarchiquement, comme le résume le Tableau~\ref{tab:ticket-types}.
+Les tickets Azure DevOps se déclinent en plusieurs types organisés hiérarchiquement (Tableau~\ref{tab:ticket-types}).
 
 \begin{table}[H]
 \centering
@@ -143,89 +122,76 @@ Dans le contexte d'un projet de migration ADMP, les tickets Azure DevOps se déc
 \toprule
 \textbf{Type} & \textbf{Description} & \textbf{Exemple en migration} \\
 \midrule
-Epic    & Initiative stratégique de haut niveau & \og~Migration du domaine Opérations~\fg{} \\
+Epic & Initiative stratégique & \og~Migration du domaine Opérations~\fg{} \\
 \addlinespace
-Feature & Fonctionnalité regroupant plusieurs User Stories & \og~Migration des Work Orders~\fg{} \\
+Feature & Regroupe plusieurs User Stories & \og~Migration des Work Orders~\fg{} \\
 \addlinespace
-User Story & Besoin métier décrit du point de vue utilisateur & \og~Migrer les compétences des ressources de service~\fg{} \\
+User Story & Besoin métier côté utilisateur & \og~Migrer les compétences des ressources~\fg{} \\
 \addlinespace
-Task    & Tâche technique unitaire & \og~Rédiger le RC du lot SKL01~\fg{} \\
+Task & Tâche technique unitaire & \og~Rédiger le RC du lot SKL01~\fg{} \\
 \addlinespace
-Bug / Defect & Anomalie identifiée lors des tests & \og~Team Leader name vide pour certains contrats~\fg{} \\
+Bug / Defect & Anomalie identifiée en test & \og~Team Leader vide pour certains contrats~\fg{} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Cette hiérarchie (Epic $\rightarrow$ Feature $\rightarrow$ User Story $\rightarrow$ Task) permet une traçabilité complète depuis les objectifs stratégiques jusqu'aux tâches individuelles, et assure que chaque action est reliée à un besoin métier identifié.
+Cette hiérarchie (Epic $\rightarrow$ Feature $\rightarrow$ User Story $\rightarrow$ Task) assure une traçabilité complète depuis les objectifs stratégiques jusqu'aux tâches individuelles, chaque action étant reliée à un besoin métier.
 
 % ---------------------------------------------------------------------
 \subsection{Workflow d'un ticket de défaut}
 \label{subsec:workflow-ticket}
+
 
 Le cycle de vie d'un ticket de défaut dans le contexte ADMP suit un processus structuré en cinq étapes, illustré par la Figure~\ref{fig:ticket-workflow}.
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-  state/.style={rectangle, rounded corners=5pt,
-                fill=accenturedark, text=white,
-                font=\bfseries\small, minimum width=2.4cm,
-                minimum height=1.1cm, align=center},
-  role/.style={font=\scriptsize, text=accenturedark,
-               align=center, text width=2.4cm},
-  >=Latex, thick, color=accenturedark,
-  node distance=0.7cm
+  state/.style={rectangle, rounded corners=5pt, fill=accenturedark, text=white,
+                font=\bfseries\small, minimum width=2.4cm, minimum height=1.1cm, align=center},
+  role/.style={font=\scriptsize, text=accenturedark, align=center, text width=2.4cm},
+  >=Latex, thick, color=accenturedark, node distance=0.7cm
 ]
-  % --- State boxes ---
   \node[state]                          (new)  {CRÉATION\\\tiny(New)};
   \node[state, right=0.7cm of new]      (act)  {ANALYSE\\\tiny(Active)};
   \node[state, right=0.7cm of act]      (res)  {RÉSOLUTION\\\tiny(Resolved)};
   \node[state, right=0.7cm of res]      (val)  {VALIDATION\\\tiny(Test)};
-  \node[state, right=0.7cm of val,
-        fill=accenturepurple]           (clo)  {CLÔTURE\\\tiny(Closed)};
-
-  % --- Arrows ---
+  \node[state, right=0.7cm of val, fill=accenturepurple] (clo)  {CLÔTURE\\\tiny(Closed)};
   \draw[->] (new) -- (act);
   \draw[->] (act) -- (res);
   \draw[->] (res) -- (val);
   \draw[->] (val) -- (clo);
-
-  % --- Role labels below ---
-  \node[role, below=0.6cm of new]
-       {Tester / Client détecte l'anomalie};
-  \node[role, below=0.6cm of act]
-       {Data Analyst identifie la root cause};
-  \node[role, below=0.6cm of res]
-       {Data Analyst corrige les Smart Designs};
-  \node[role, below=0.6cm of val]
-       {Tester vérifie le fix (nouveau snapshot)};
-  \node[role, below=0.6cm of clo]
-       {QA / PM valide la clôture};
+  \node[role, below=0.6cm of new] {Tester / Client détecte l'anomalie};
+  \node[role, below=0.6cm of act] {Data Analyst identifie la root cause};
+  \node[role, below=0.6cm of res] {Data Analyst corrige les Smart Designs};
+  \node[role, below=0.6cm of val] {Tester vérifie le fix (nouveau snapshot)};
+  \node[role, below=0.6cm of clo] {QA / PM valide la clôture};
 \end{tikzpicture}
 \caption{Cycle de vie d'un ticket de défaut ADMP (5 états)}
 \label{fig:ticket-workflow}
 \end{figure}
 
-\paragraph{Étape 1 --- Création.}
+
+\paragraph{Étape 1 : Création.}
 Le testeur ou le client identifie une anomalie dans les données migrées et crée un ticket avec une description détaillée (étapes de reproduction, résultat attendu vs.\ résultat obtenu, captures d'écran). Le ticket est assigné au Data Analyst responsable du domaine fonctionnel concerné.
 
-\paragraph{Étape 2 --- Analyse (Root Cause).}
+\paragraph{Étape 2 : Analyse (Root Cause).}
 Le Data Analyst identifie la cause racine du défaut en examinant les spécifications de migration. Cette analyse s'appuie sur une méthodologie rigoureuse : consultation du SDS/IDS/TDS pour vérifier les noms exacts des champs, du DS pour la structure hiérarchique et les clés de jointure, du RC pour les règles de création d'enregistrements, et du DP pour les règles de peuplement des champs.
 
-\paragraph{Étape 3 --- Résolution.}
+\paragraph{Étape 3 : Résolution.}
 Le Data Analyst implémente la correction dans les Smart Designs. Celle-ci peut prendre la forme d'une modification de règle RC/DP, d'un ajout de transcodification, d'un \textit{data patch} SQL, ou d'une mise à jour de la structure DS. La résolution est documentée dans le champ \og~\textit{Resolution Action}~\fg{} du ticket.
 
-\paragraph{Étape 4 --- Validation.}
+\paragraph{Étape 4 : Validation.}
 Après génération d'un nouveau snapshot de données, le testeur vérifie que le défaut est corrigé et qu'aucune régression n'a été introduite dans les données précédemment validées.
 
-\paragraph{Étape 5 --- Clôture.}
+\paragraph{Étape 5 : Clôture.}
 Une fois la validation réussie, le ticket est marqué \og~Closed~\fg{} avec les commentaires de validation confirmant la correction effective.
 
 % ---------------------------------------------------------------------
 \subsection{Priorisation et classification}
 \label{subsec:priorisation}
 
-Les défauts sont classifiés selon deux axes complémentaires qui déterminent l'ordre de traitement, comme le précise le Tableau~\ref{tab:severite-priorite}.
+Les défauts sont classifiés selon deux axes complémentaires (Tableau~\ref{tab:severite-priorite}).
 
 \begin{table}[H]
 \centering
@@ -235,50 +201,14 @@ Les défauts sont classifiés selon deux axes complémentaires qui déterminent 
 \toprule
 \textbf{Axe} & \textbf{Niveaux} & \textbf{Description} \\
 \midrule
-Sévérité & Critical / High / Medium / Low &
-Impact technique du défaut sur le système : données corrompues, perte d'enregistrements, incohérence référentielle\ldots \\
+Sévérité & Critical / High / Medium / Low & Impact technique : données corrompues, perte d'enregistrements, incohérence référentielle \\
 \addlinespace
-Priorité & P1 (Urgente) / P2 (Haute) / P3 (Moyenne) / P4 (Basse) &
-Urgence de résolution du point de vue métier : périmètre fonctionnel impacté, criticité pour le Go Live\ldots \\
+Priorité & P1 à P4 & Urgence métier : périmètre fonctionnel impacté, criticité pour le Go Live \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-La distinction entre \textbf{sévérité} et \textbf{priorité} est essentielle : un défaut peut être techniquement critique (données corrompues) mais de priorité moyenne s'il ne concerne qu'un périmètre limité, ou inversement. Des réunions de triage hebdomadaires permettent à l'équipe de réévaluer les priorités en fonction de l'avancement du projet et des retours du client.
-
-% ---------------------------------------------------------------------
-\subsection{Exemple de cycle complet d'un défaut}
-\label{subsec:exemple-defaut}
-
-Pour illustrer concrètement le processus, considérons un défaut typique rencontré en projet de migration. Le Tableau~\ref{tab:exemple-defaut} détaille le cycle complet du ticket suivant : \og~Le champ \texttt{Team Leader} est vide pour certains Work Orders alors qu'il devrait être renseigné.~\fg{}
-
-\begin{table}[H]
-\centering
-\caption{Exemple de cycle complet d'un ticket de défaut}
-\label{tab:exemple-defaut}
-\begin{tabularx}{\textwidth}{llX}
-\toprule
-\textbf{Étape} & \textbf{Action} & \textbf{Détail} \\
-\midrule
-1. Création & Ticket créé par le testeur &
-Pour un contrat donné, 6 Work Orders ont le champ \texttt{CER\_TEAMLEADER\_\_C} vide \\
-\addlinespace
-2. Analyse & Identification de la root cause &
-Le RC du lot WRK01 filtre les Work Orders par flag (Y/N), mais ne couvre pas le cas où le flag est Y et le champ source correspondant est NULL \\
-\addlinespace
-3. Résolution & Modification du RC/DP &
-Ajout d'une condition dans le RC pour gérer le cas \texttt{Flag = Y AND Source\_TL IS NULL}, avec fallback vers le Service Resource principal \\
-\addlinespace
-4. Validation & Nouveau snapshot P20.3 &
-Requête SQL de vérification : \textbf{0 cas KO} dans le nouveau snapshot (vs.\ 132 dans P20.1 et 32 dans P20.2) \\
-\addlinespace
-5. Clôture & Ticket fermé &
-Commentaire : \og~Fix validé --- régression zéro --- confirmé par comparaison P20.1 $\rightarrow$ P20.2 $\rightarrow$ P20.3~\fg{} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Ce cycle illustre l'approche systématique de l'équipe : chaque défaut est tracé de bout en bout, avec une documentation complète de l'analyse, de la correction et de la validation.
+La distinction est essentielle : un défaut peut être techniquement critique mais de priorité moyenne s'il ne touche qu'un périmètre limité, ou inversement. Des réunions de triage hebdomadaires réévaluent les priorités selon l'avancement et les retours du client.
 
 % =====================================================================
 \section{Processus de validation des données}
@@ -288,78 +218,25 @@ Ce cycle illustre l'approche systématique de l'équipe : chaque défaut est tra
 \subsection{Snapshots et cycles de test}
 \label{subsec:snapshots}
 
-Le processus de validation repose sur un mécanisme de \textbf{snapshots} --- des extractions complètes des données à un instant donné --- qui servent de base aux cycles de test successifs. Chaque snapshot est identifié par un code de version (P20.1, P20.2, P20.3\ldots) et représente l'état des données après application des dernières corrections.
-
-La progression entre les snapshots suit une logique de convergence vers la qualité cible, illustrée par la Figure~\ref{fig:snapshot-convergence}. À chaque nouveau snapshot, l'équipe vérifie que les défauts précédemment identifiés sont corrigés (test de non-régression) et qu'aucun nouveau défaut n'a été introduit par les corrections.
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-  >=Latex, thick,
-  ms/.style={circle, fill=accenturedark, text=white,
-             font=\bfseries\tiny, minimum size=6mm, inner sep=0pt},
-  rh/.style={circle, fill=accenturepurple, text=white,
-             font=\bfseries\tiny, minimum size=6mm, inner sep=0pt},
-  gl/.style={diamond, fill=accenturepurple, text=white,
-             font=\bfseries\tiny, minimum size=8mm, inner sep=0pt},
-  lbl/.style={font=\scriptsize, align=center, text width=2.2cm}
-]
-  % --- Timeline ---
-  \node[ms] (p0) at (0,   0) {P0};
-  \node[ms] (p1) at (2.0, 0) {P1};
-  \node[ms] (p2) at (4.0, 0) {P2};
-  \node[ms] (pn) at (6.5, 0) {Pn};
-  \node[rh] (r1) at (9.0, 0) {R1};
-  \node[rh] (r2) at (11.0,0) {R2};
-  \node[gl] (gl) at (13.0,0) {};
-  \node[below=2pt of gl, font=\scriptsize\bfseries, text=accenturepurple] {Go Live};
-
-  % --- Arrows (dashed between p2 and pn) ---
-  \draw[->] (p0) -- (p1);
-  \draw[->] (p1) -- (p2);
-  \draw[->, dashed, color=accenturedark!60] (p2) -- (pn)
-      node[midway, above, font=\tiny, text=accenturedark!80] {\ldots};
-  \draw[->] (pn) -- (r1);
-  \draw[->, color=accenturepurple] (r1) -- (r2);
-  \draw[->, color=accenturepurple] (r2) -- (gl);
-
-  % --- Defect annotations ---
-  \node[lbl, above=8pt of p0] {\scriptsize Beaucoup de KO};
-  \node[lbl, above=8pt of p1] {\scriptsize Corrections majeures};
-  \node[lbl, above=8pt of p2] {\scriptsize Affinements};
-  \node[lbl, above=8pt of pn] {\scriptsize Quasi-stable};
-
-  % --- Brace: nombre de défauts décroissant ---
-  \draw[decorate,
-        decoration={brace, amplitude=6pt},
-        color=accenturedark!70]
-    ([yshift=30pt]p0.north) -- ([yshift=30pt]gl.north)
-    node[midway, above=8pt, font=\small, text=accenturedark!80, align=center]
-    {Nombre de défauts décroissant};
-\end{tikzpicture}
-\caption{Convergence progressive des snapshots vers la qualité cible}
-\label{fig:snapshot-convergence}
-\end{figure}
+La validation repose sur des \textbf{snapshots}, extractions complètes des données à un instant donné, identifiés par un code de version (P20.1, P20.2, P20.3\ldots). À chaque nouveau snapshot, l'équipe vérifie que les défauts précédents sont corrigés (non-régression) et qu'aucun nouveau défaut n'apparaît. La progression suit une logique de convergence : nombreux cas KO au départ (P0), corrections majeures, puis affinements successifs jusqu'à un état quasi-stable avant les répétitions (R1, R2) et le Go Live.
 
 % ---------------------------------------------------------------------
 \subsection{Stratégie de test}
 \label{subsec:strategie-test}
 
-La stratégie de test adoptée dans les projets de migration ADMP couvre trois niveaux complémentaires \cite{datagaps2025,quinnox2025} :
+La stratégie couvre trois niveaux complémentaires \cite{datagaps2025,quinnox2025} :
 
 \begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}]
-    \item \textbf{Tests unitaires (par lot de migration)} --- Chaque lot de migration (ex.\ : SKL01, WRK01, RES01) est testé individuellement pour vérifier que les règles de création (RC) et de peuplement (DP) produisent les résultats attendus. Les Data Analysts rédigent des requêtes SQL ciblées pour contrôler les cas nominaux et les cas limites.
-
-    \item \textbf{Tests d'intégration (inter-lots)} --- Les relations entre les lots de migration sont vérifiées pour garantir l'intégrité référentielle. Par exemple, un Work Order doit pointer vers un Service Contract existant, et un ServiceResourceSkill doit référencer un ServiceResource et un Skill valides. Ces tests détectent les incohérences de clés étrangères et les enregistrements orphelins.
-
-    \item \textbf{Tests de réconciliation} --- La réconciliation compare les volumes de données entre la source et la cible à plusieurs niveaux de granularité : nombre total d'enregistrements par table, sommes de contrôle sur les champs numériques, et vérification d'échantillons aléatoires. L'objectif est de garantir qu'aucune donnée n'a été perdue, dupliquée ou altérée durant le processus \cite{datafold2025}.
+    \item \textbf{Tests unitaires (par lot)} : chaque lot (SKL01, WRK01, RES01\ldots) est validé via des requêtes SQL ciblées contrôlant que les règles RC et DP produisent les résultats attendus (cas nominaux et cas limites).
+    \item \textbf{Tests d'intégration (inter-lots)} : vérification de l'intégrité référentielle (un Work Order doit pointer vers un Service Contract existant), détection des clés étrangères incohérentes et des enregistrements orphelins.
+    \item \textbf{Tests de réconciliation} : comparaison source/cible en volume (nombre d'enregistrements par table), sommes de contrôle sur les champs numériques et vérification d'échantillons aléatoires, pour garantir qu'aucune donnée n'est perdue, dupliquée ou altérée \cite{datafold2025}.
 \end{enumerate}
 
 % ---------------------------------------------------------------------
-\subsection{Rapports de validation et KPIs}
+\subsection{Rapports de validation et communication client}
 \label{subsec:rapports-validation}
 
-La plateforme ADMP génère automatiquement plusieurs types de rapports de validation, consultables via l'\textbf{ADMP Portal}, synthétisés dans le Tableau~\ref{tab:rapports-validation}.
+La plateforme ADMP génère automatiquement cinq types de rapports consultables via l'\textbf{ADMP Portal} (Tableau~\ref{tab:rapports-validation}), complétés par des analyses \textit{ad hoc} en SQL Server (lister les cas KO d'un ticket, vérifier des doublons, valider une déduplication).
 
 \begin{table}[H]
 \centering
@@ -369,34 +246,27 @@ La plateforme ADMP génère automatiquement plusieurs types de rapports de valid
 \toprule
 \textbf{Rapport} & \textbf{Phase} & \textbf{Contenu} \\
 \midrule
-Load Report        & Post-extraction    & Confirmation du chargement réussi des fichiers source dans la base SQL Server \\
+Load Report & Post-extraction & Confirmation du chargement des fichiers source dans SQL Server \\
 \addlinespace
-Data Audit         & Post-extraction    & KPIs sur les données sources : complétude, distribution des valeurs, détection d'anomalies \\
+Data Audit & Post-extraction & KPIs source : complétude, distribution, détection d'anomalies \\
 \addlinespace
-DS Audit           & Post-design        & Validation de la cohérence des Data Structures (relations hiérarchiques) \\
+DS Audit & Post-design & Cohérence des Data Structures (relations hiérarchiques) \\
 \addlinespace
-Integrity Check    & Post-transformation & Vérification de l'intégrité référentielle entre les tables cibles \\
+Integrity Check & Post-transformation & Intégrité référentielle entre les tables cibles \\
 \addlinespace
-Run Report         & Post-transformation & Statistiques d'exécution : enregistrements traités, créés, rejetés, avec détail des erreurs \\
+Run Report & Post-transformation & Statistiques d'exécution : traités, créés, rejetés, erreurs \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-En complément des rapports automatiques, l'équipe utilise des requêtes SQL sur la base SQL Server pour des analyses \textit{ad hoc} plus fines --- lister tous les cas KO d'un ticket, vérifier la présence de doublons, ou valider une logique de déduplication spécifique.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/migration_plateforme.png}
+    \caption{ADMP Portal}
+    \label{fig:PORTAL}
+\end{figure}
 
-% ---------------------------------------------------------------------
-\subsection{Communication avec le client}
-\label{subsec:communication-client}
-
-La communication avec le client s'articule autour de deux livrables transversaux fondamentaux :
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Key Decisions (KD)} : ce document recense les écarts majeurs identifiés entre le système source et le système cible, ainsi que les décisions prises conjointement avec le métier pour les résoudre. Chaque Key Decision suit un processus formel de proposition, discussion et validation. Les KD sont critiques car elles engagent à la fois l'équipe technique et le client sur des choix qui impactent directement les données migrées.
-
-    \item \textbf{Questions \& Answers (Q\&A)} : ce document sert de canal structuré pour les échanges techniques et fonctionnels entre l'équipe ADMP et le client. Les questions sont formalisées, numérotées et suivies jusqu'à résolution. Elles couvrent aussi bien des clarifications sur les modèles de données que des demandes de validation de règles métier spécifiques.
-\end{itemize}
-
-Au-delà de ces documents formels, des \textbf{revues de validation régulières} sont organisées avec le client pour présenter les résultats des derniers snapshots, discuter des défauts ouverts et aligner les priorités pour le sprint suivant.
+La communication avec le client s'appuie sur deux livrables formels. Les \textbf{Key Decisions (KD)} recensent les écarts majeurs source/cible et les décisions prises conjointement avec le métier, selon un processus de proposition, discussion et validation : elles engagent l'équipe et le client sur des choix impactant directement les données. Les \textbf{Questions \& Answers (Q\&A)} formalisent et numérotent les échanges techniques et fonctionnels jusqu'à résolution. Ces documents sont complétés par des \textbf{revues de validation régulières} qui présentent les derniers snapshots et alignent les priorités du sprint suivant.
 
 % =====================================================================
 \section{Collaboration et communication}
@@ -406,61 +276,36 @@ Au-delà de ces documents formels, des \textbf{revues de validation régulières
 \subsection{Organisation de l'équipe projet}
 \label{subsec:organisation-equipe}
 
-L'équipe projet ADMP est structurée en deux grandes composantes complémentaires. Le \textbf{Front Office} (Tableau~\ref{tab:frontoffice}) regroupe les équipes de design fonctionnel en contact direct avec le client, focalisées sur les règles métier. Le \textbf{Back Office} (Tableau~\ref{tab:backoffice}) rassemble les équipes techniques et de support, responsables de l'infrastructure et de la plateforme.
+L'équipe ADMP distingue un \textbf{Front Office} (design fonctionnel, en contact direct avec le client) d'un \textbf{Back Office} (équipes techniques et support, responsables de l'infrastructure et de la plateforme). Leur composition est synthétisée dans le Tableau~\ref{tab:equipe}.
 
 \begin{table}[H]
 \centering
-\caption{Composition du Front Office --- équipes de design}
-\label{tab:frontoffice}
-\begin{tabularx}{\textwidth}{lX}
+\caption{Organisation de l'équipe projet ADMP}
+\label{tab:equipe}
+\begin{tabularx}{\textwidth}{llX}
 \toprule
-\textbf{Rôle} & \textbf{Responsabilité} \\
+\textbf{Composante} & \textbf{Rôle} & \textbf{Responsabilité} \\
 \midrule
-Project Manager (PM) &
-Pilotage global, relation client, priorisation du backlog \\
+\multirow{4}{*}{Front Office}
+  & Project Manager & Pilotage global, relation client, priorisation du backlog \\
+  & Team Lead & Coordination technique, facilitation Scrum, revue des designs \\
+  & Data Analyst & Spécifications (RC, DP, DS), analyse, résolution de tickets \\
+  & DA Junior / Stagiaire & Analyses, tests et documentation sous supervision \\
 \addlinespace
-Team Lead &
-Coordination technique, facilitation Scrum, revue des designs \\
-\addlinespace
-Data Analyst (DA) &
-Rédaction des spécifications (RC, DP, DS), analyse de données, résolution de tickets \\
-\addlinespace
-Data Analyst Junior / Stagiaire &
-Contribution aux analyses, tests et documentation sous supervision \\
+\multirow{4}{*}{Back Office}
+  & Platform Specialist & Configuration et maintenance du Core Engine, environnements \\
+  & Architecture Team & Conception technique, intégration système, performance \\
+  & IT Experts & Expertise sur les systèmes source et cible du client \\
+  & Security \& Infra & Sécurité des transferts, gestion des accès, infrastructure \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-\begin{table}[H]
-\centering
-\caption{Composition du Back Office --- équipes techniques}
-\label{tab:backoffice}
-\begin{tabularx}{\textwidth}{lX}
-\toprule
-\textbf{Rôle} & \textbf{Responsabilité} \\
-\midrule
-ADMP Platform Specialist &
-Configuration et maintenance du Core Engine, gestion des environnements \\
-\addlinespace
-Architecture Team &
-Conception technique, intégration système, performance \\
-\addlinespace
-IT Experts (Source/Target) &
-Expertise sur les systèmes source et cible du client \\
-\addlinespace
-Security \& Infrastructure &
-Sécurité des transferts de données, gestion des accès, infrastructure \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Cette organisation distingue clairement le Front Office du Back Office, tout en assurant une communication fluide entre les deux via les rituels d'équipe.
 
 % ---------------------------------------------------------------------
 \subsection{Rituels d'équipe}
 \label{subsec:rituels}
 
-Les rituels agiles adoptés par l'équipe ADMP sont adaptés au contexte spécifique de la migration de données, comme le résume le Tableau~\ref{tab:rituels}.
+Les rituels agiles sont adaptés au contexte migration (Tableau~\ref{tab:rituels}). Le \textbf{Daily Stand-up} est le plus structurant : chaque membre partage en 2 à 3 minutes son avancement, ses blocages et ses objectifs. La \textbf{Sprint Retrospective}, articulée autour des questions \og~Qu'est-ce qui a bien fonctionné~?~\fg{}, \og~Qu'est-ce qui peut être amélioré~?~\fg{} et \og~Quelles actions concrètes~?~\fg{}, alimente l'amélioration continue.
 
 \begin{table}[H]
 \centering
@@ -470,28 +315,26 @@ Les rituels agiles adoptés par l'équipe ADMP sont adaptés au contexte spécif
 \toprule
 \textbf{Rituel} & \textbf{Fréquence} & \textbf{Durée} & \textbf{Participants} & \textbf{Objectif} \\
 \midrule
-Daily Stand-up     & Quotidien       & 15 min  & Équipe DA + Team Lead      & Avancement, blocages, objectifs du jour \\
+Daily Stand-up & Quotidien & 15 min & DA + Team Lead & Avancement, blocages, objectifs \\
 \addlinespace
-Sprint Planning    & Début de sprint & 2--4 h  & Équipe + PM                & Définir les objectifs, distribuer les tickets \\
+Sprint Planning & Début sprint & 2--4 h & Équipe + PM & Définir objectifs, distribuer tickets \\
 \addlinespace
-Sprint Review      & Fin de sprint   & 1--2 h  & Équipe + Client            & Présenter les résultats, recueillir le feedback \\
+Sprint Review & Fin sprint & 1--2 h & Équipe + Client & Présenter résultats, feedback \\
 \addlinespace
-Sprint Retrospective & Fin de sprint & 1 h     & Équipe interne             & Identifier améliorations, plan d'actions \\
+Retrospective & Fin sprint & 1 h & Équipe interne & Améliorations, plan d'actions \\
 \addlinespace
-Backlog Refinement & Hebdomadaire    & 1 h     & PM + Team Lead + DA seniors & Affiner les User Stories, estimer l'effort \\
+Backlog Refinement & Hebdo & 1 h & PM + Lead + DA & Affiner User Stories, estimer \\
 \addlinespace
-Triage des défauts & Hebdomadaire    & 30 min  & Équipe + PM                & Réévaluer les priorités des tickets ouverts \\
+Triage défauts & Hebdo & 30 min & Équipe + PM & Réévaluer priorités \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-Le \textbf{Daily Stand-up} est le rituel le plus structurant : chaque membre partage en 2--3 minutes son avancement, ses blocages éventuels et ses objectifs de la journée. La \textbf{Sprint Retrospective} mérite une attention particulière : structurée autour des trois questions \og~Qu'est-ce qui a bien fonctionné ?~\fg{}, \og~Qu'est-ce qui peut être amélioré ?~\fg{} et \og~Quelles actions concrètes prenons-nous ?~\fg{}, elle alimente un plan d'amélioration continue.
 
 % ---------------------------------------------------------------------
 \subsection{Outils collaboratifs}
 \label{subsec:outils-collaboratifs}
 
-L'écosystème d'outils collaboratifs de l'équipe ADMP couvre l'ensemble des besoins de communication, de stockage et de versioning, comme le synthétise le Tableau~\ref{tab:outils-collaboratifs}.
+L'écosystème d'outils couvre communication, stockage et versioning (Tableau~\ref{tab:outils-collaboratifs}).
 
 \begin{table}[H]
 \centering
@@ -501,54 +344,38 @@ L'écosystème d'outils collaboratifs de l'équipe ADMP couvre l'ensemble des be
 \toprule
 \textbf{Outil} & \textbf{Usage principal} \\
 \midrule
-Microsoft Teams &
-Communication instantanée, réunions virtuelles, canaux thématiques par projet \\
+Microsoft Teams & Communication, réunions, canaux par projet \\
 \addlinespace
-SharePoint &
-Stockage et partage des documents de design, rapports et livrables client \\
+SharePoint & Stockage des documents de design, rapports et livrables \\
 \addlinespace
-IDMF Explorer &
-Versioning des documents de migration --- check-out exclusif, développement, check-in avec historique complet \\
+IDMF Explorer & Versioning des documents : check-out exclusif, check-in, historique \\
 \addlinespace
-Azure DevOps &
-Gestion des tickets, backlogs, sprints, dashboards, burndown charts \\
+Azure DevOps & Tickets, backlogs, sprints, dashboards, burndown charts \\
 \addlinespace
-SQL Server Management Studio &
-Requêtage, analyse ad hoc, data patch, optimisation des requêtes de validation \\
+SQL Server Management Studio & Requêtage, analyse ad hoc, data patch, validation \\
 \addlinespace
-ADMP Portal &
-Lancement des traitements ETL, consultation des rapports, analyse interactive des erreurs \\
+ADMP Portal & Lancement ETL, consultation des rapports, analyse des erreurs \\
 \addlinespace
-Outlook / Email &
-Communication formelle avec le client, partage des Key Decisions et Q\&A \\
+Outlook / Email & Communication formelle client, partage des KD et Q\&A \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-L'\textbf{IDMF Explorer} mérite une mention spéciale : son mécanisme de \textit{check-out / check-in} garantit qu'un seul Data Analyst modifie un fichier à la fois, évitant les conflits d'édition et assurant la traçabilité complète des modifications apportées aux Smart Designs.
+L'\textbf{IDMF Explorer} joue un rôle central : son mécanisme de \textit{check-out / check-in} exclusif garantit qu'un seul Data Analyst modifie un fichier à la fois, évitant les conflits d'édition et assurant la traçabilité complète des modifications.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/IDMF_Explorer.png}
+    \caption{IDMF Explorer}
+    \label{fig:idmf}
+\end{figure}
 
 % =====================================================================
 \section{Bilan méthodologique}
 \label{sec:bilan-methodologique}
 
-L'organisation décrite dans ce chapitre apporte des bénéfices concrets et mesurables au projet de migration. Sur le plan de l'\textbf{approche Agile}, quatre apports sont particulièrement significatifs :
+L'approche Agile appliquée à la migration apporte quatre bénéfices mesurables : la \textbf{détection précoce des défauts} (un défaut corrigé en test coûte en moyenne 15 fois moins qu'en production \cite{quinnox2025}), la \textbf{visibilité en temps réel} via les dashboards Azure DevOps et les rapports ADMP, l'\textbf{adaptabilité} grâce à la priorisation dynamique du backlog, et la \textbf{qualité progressive et vérifiable} démontrée par la comparaison entre snapshots (P20.1 $\rightarrow$ P20.2 $\rightarrow$ P20.3).
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Détection précoce des problèmes} : les cycles itératifs courts (2--4 semaines) permettent d'identifier et de corriger les défauts au plus tôt, réduisant leur coût de correction de manière significative. Un défaut détecté en phase de test coûte en moyenne 15 fois moins qu'un défaut découvert en production \cite{quinnox2025}.
+Trois enseignements se dégagent de la pratique : la rigueur dans la documentation des tickets (description, root cause, resolution action), la communication structurée avec le client (KD, Q\&A) pour garantir l'alignement métier/technique, et l'équilibre entre autonomie individuelle et partage collectif lors des dailys.
 
-    \item \textbf{Visibilité et transparence} : les dashboards Azure DevOps, les burndown charts et les rapports automatiques ADMP offrent une visibilité en temps réel sur l'état du projet, tant pour l'équipe interne que pour le client.
-
-    \item \textbf{Adaptabilité} : la priorisation dynamique du backlog permet de réagir rapidement aux changements de périmètre, aux nouvelles exigences du client, ou aux découvertes réalisées en cours de migration.
-
-    \item \textbf{Qualité progressive et vérifiable} : la comparaison systématique entre snapshots (P20.1 $\rightarrow$ P20.2 $\rightarrow$ P20.3) fournit une preuve tangible de la convergence vers la qualité cible.
-\end{itemize}
-
-Trois \textbf{enseignements clés} se dégagent de la pratique terrain :
-
-\begin{itemize}[leftmargin=*]
-    \item La \textbf{rigueur dans la documentation des tickets} (description complète, root cause, resolution action) est un facteur clé de succès : elle facilite le transfert de connaissances et accélère la résolution des défauts similaires.
-    \item La \textbf{communication structurée avec le client} (Key Decisions, Q\&A) est indispensable pour éviter les malentendus et garantir l'alignement entre les attentes métier et l'implémentation technique.
-    \item L'\textbf{équilibre entre autonomie et collaboration} --- chaque Data Analyst travaille de manière autonome sur ses lots tout en partageant ses découvertes lors des dailys --- constitue le mode de fonctionnement le plus efficace pour une équipe de migration distribuée.
-\end{itemize}
-
-Ce cadre méthodologique constitue le socle opérationnel sur lequel s'appuie notre contribution technique. Le chapitre suivant présentera la conception et l'architecture de la solution IA développée dans ce contexte.
+Ce cadre méthodologique constitue le socle opérationnel sur lequel s'appuie notre contribution technique. Le chapitre suivant présente la conception et l'architecture de la solution développée dans ce contexte, dont le module de génération de packages Azure Data Factory.

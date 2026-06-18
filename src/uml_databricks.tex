@@ -1,47 +1,51 @@
 % =====================================================================
 % UML DATABRICKS — MODULE DE GÉNÉRATION
-% Inclus depuis conception_architecture.tex, section 5.4.3
+% Inclus depuis 11_appendices.tex, Annexe B
 % =====================================================================
 
-\subsubsection*{Cas d'utilisation spécifiques au module Databricks}
+\subsection*{Diagramme de cas d'utilisation}
 
-Le diagramme de la Figure~\ref{fig:uc-databricks} modélise les cas d'utilisation du module de génération Databricks. Le \textbf{Migration Designer} orchestre l'ensemble du cycle~: configuration du formulaire de génération (format, catalog, options), compilation, et déploiement. Le \textbf{Test Engineer} valide le bundle en environnement de test.
+Le diagramme de la Figure~\ref{fig:uc-databricks} modélise les cas d'utilisation du module de génération Databricks. Deux acteurs interviennent~: le \textbf{Migration Designer} (qui assume également le rôle de Databricks Engineer dans ce contexte), responsable du cycle complet configuration~--~compilation~--~déploiement~--~reporting et déclenchement CI/CD~; et le \textbf{Test Engineer}, qui valide le bundle compilé. Les relations \texttt{<<include>>} expriment des dépendances obligatoires~; les relations \texttt{<<extend>>} expriment des comportements optionnels.
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
   \begin{umlsystem}[x=3.5, fill=accenturelightpurple!25]{Module de génération Databricks}
-    \umlusecase[x=0, y=0,    name=ucdb01]{Configurer le formulaire de génération}
-    \umlusecase[x=0, y=-1.7, name=ucdb02]{Compiler une unité de migration}
-    \umlusecase[x=0, y=-3.4, name=ucdb03]{Consulter le log de compilation}
-    \umlusecase[x=0, y=-5.1, name=ucdb04]{Télécharger le package généré}
-    \umlusecase[x=0, y=-6.8, name=ucdb05]{Déployer le bundle sur Databricks}
-    \umlusecase[x=0, y=-8.5, name=ucdb06]{Valider le bundle en environnement de test}
+    \umlusecase[x=0, y=0,     name=ucdb01]{Configurer le bundle}
+    \umlusecase[x=0, y=-1.8,  name=ucdb02]{Compiler le bundle}
+    \umlusecase[x=0, y=-3.6,  name=ucdb03]{Déployer le bundle}
+    \umlusecase[x=0, y=-5.4,  name=ucdb04]{Générer les rapports}
+    \umlusecase[x=0, y=-7.2,  name=ucdb05]{Valider le bundle}
+    \umlusecase[x=0, y=-9.0,  name=ucdb06]{Déclencher le pipeline CI/CD}
   \end{umlsystem}
-  \umlactor[x=-4, y=-3.5]{Migration Designer}
-  \umlactor[x=10, y=-5.5]{Test Engineer}
+  \umlactor[x=-4.5, y=-4.5]{Migration Designer}
+  \umlactor[x=10.5, y=-4.5]{Test Engineer}
   \umlassoc{Migration Designer}{ucdb01}
   \umlassoc{Migration Designer}{ucdb02}
   \umlassoc{Migration Designer}{ucdb03}
   \umlassoc{Migration Designer}{ucdb04}
-  \umlassoc{Migration Designer}{ucdb05}
-  \umlassoc{Test Engineer}{ucdb06}
-  \umlassoc{Test Engineer}{ucdb03}
+  \umlassoc{Migration Designer}{ucdb06}
+  \umlassoc{Test Engineer}{ucdb02}
+  \umlassoc{Test Engineer}{ucdb05}
+  % <<include>> : dépendance obligatoire (la cible est toujours exécutée)
   \umlinclude{ucdb02}{ucdb01}
-  \umlextend{ucdb03}{ucdb02}
-  \umlinclude{ucdb05}{ucdb04}
+  \umlinclude{ucdb03}{ucdb02}
+  \umlinclude{ucdb05}{ucdb02}
+  % <<extend>> : comportement optionnel greffe sur la cible
+  \umlextend{ucdb04}{ucdb03}
+  \umlextend{ucdb06}{ucdb03}
 \end{tikzpicture}
 \caption{Diagramme UC~: Module de génération Databricks}
 \label{fig:uc-databricks}
 \end{figure}
 
-Les fiches suivantes décrivent les cas d'utilisation dont la complexité fonctionnelle est la plus représentative du module.
+Les fiches suivantes décrivent en détail les cinq cas d'utilisation dont la complexité fonctionnelle est la plus représentative du module. Leur lecture suit la séquence naturelle du cycle de vie d'un bundle~: configuration, compilation, déploiement, reporting, puis déclenchement du pipeline CI/CD.
 
 \medskip
 
-\ucfichephase{Configurer le formulaire de génération}
+\ucfichephase{Configurer le bundle}
   {Migration Designer}
-  {Unités de migration conçues et validées~; Data Scope disponible (pour les options DDL/test data)}
+  {Unités de migration conçues et validées~; Data Scope disponible pour les options DDL}
   {Le Migration Designer accède à \textit{Package Generation} et ouvre le formulaire de configuration Databricks}
   {\textbf{1.}~Il sélectionne le format de sortie parmi les trois options disponibles~:\newline
    \quad\textbf{Notebooks}~: scripts Python plats directement importables dans un workspace Databricks.\newline
@@ -50,44 +54,74 @@ Les fiches suivantes décrivent les cas d'utilisation dont la complexité foncti
    \textbf{2.}~Il renseigne le catalog Unity Catalog cible (ex.~\texttt{main}) et le schéma (ex.~\texttt{default}).\newline
    \textbf{3.}~Il saisit optionnellement le \textit{Workspace Host} (URL du workspace Databricks) pour le déploiement automatisé.\newline
    \textbf{4.}~Pour les formats wheel/bundle, il configure le nom et la version du package, et choisit le mode de calcul (Serverless, Existing Cluster, New Cluster).\newline
-   \textbf{5.}~Il active ou désactive les options~: \textit{Include Source DDL} (CREATE TABLE depuis le Data Scope) et \textit{Include test data} (DataFrames d'exemple).\newline
+   \textbf{5.}~Il active ou désactive l'option \textit{Include Source DDL} (génération des CREATE TABLE depuis le Data Scope).\newline
    \textbf{6.}~Il valide la configuration~; le formulaire est prêt pour le lancement de la compilation.}
   {Nom de package invalide (espaces, majuscules)~: validation inline avant soumission. Workspace Host mal formaté~: message d'erreur avec exemple attendu.}
-  {Configuration sauvegardée~; paramètres transmis au compilateur TypeScript pour génération}
+  {Configuration sauvegardée~; paramètres transmis au compilateur TypeScript pour la génération du bundle}
 
 \medskip
 
-\ucfichephase{Compiler une unité de migration}
+\ucfichephase{Compiler le bundle}
   {Migration Designer}
-  {Formulaire de génération configuré~; documents ADMP disponibles (RC, DP, TT, DS, MS\ldots)}
+  {Formulaire de génération configuré~; documents ADMP disponibles (RC, DP, TT, DS, MS, IC, PARAM, KD, SDS/IDS/TDS)}
   {Le Migration Designer clique sur \textit{Generate} dans le formulaire de génération}
   {\textbf{1.}~La plateforme soumet une requête au service de compilation~: \texttt{GET /api/codegen/download-databricks-package/:projectId} avec les paramètres de configuration.\newline
-   \textbf{2.}~Le compilateur TypeScript charge les documents ADMP (RC, DP, TT, DS, MS, IC, PARAM, SDS/IDS/TDS/SDEF).\newline
-   \textbf{3.}~Il parse les instructions RC et construit l'AST~; toute erreur de syntaxe interrompt la compilation avec un message localisé.\newline
-   \textbf{4.}~Il extrait les \texttt{SqlPath} via DFS, génère les blocs SELECT Spark SQL et les agrège par table cible (UNION ALL).\newline
-   \textbf{5.}~Il assemble le package selon le format choisi (Notebooks / Wheel / Bundle) et produit le fichier téléchargeable.\newline
-   \textbf{6.}~La progression est visible en temps réel~; le package est disponible au téléchargement en cas de succès.}
-  {Erreur de parsing RC~: log détaillé avec numéro de ligne et instruction fautive. Timeout > 60\,s~: notification et retry automatique. Document ADMP manquant~: liste des fichiers absents affichée avant tout traitement.}
-  {Package compilé et archivé dans l'historique~; disponible pour téléchargement et déploiement}
+   \textbf{2.}~Le compilateur TypeScript charge les documents ADMP depuis PostgreSQL~; les documents manquants sont listés avant tout traitement.\newline
+   \textbf{3.}~Il parse les instructions RC et construit l'AST~; toute erreur de syntaxe interrompt la compilation avec un message localisé (instruction fautive et numéro de ligne).\newline
+   \textbf{4.}~Il extrait les \texttt{SqlPath} via parcours DFS, génère les blocs SELECT Spark SQL et les agrège par table cible (\texttt{UNION ALL}).\newline
+   \textbf{5.}~Il assemble le bundle selon le format choisi (Notebooks / Wheel / Bundle), y compris le système de rapports et les fichiers de framework.\newline
+   \textbf{6.}~Le bundle est archivé~; la progression est visible en temps réel~; le package est disponible au téléchargement en cas de succès.}
+  {Erreur de parsing RC~: log détaillé avec instruction fautive. Timeout > 60\,s~: notification et retry automatique. Document ADMP manquant~: liste des fichiers absents affichée.}
+  {Bundle compilé et archivé dans l'historique~; disponible pour téléchargement et déploiement}
 
 \medskip
 
-\ucfichephase{Déployer le bundle sur Databricks}
+\ucfichephase{Déployer le bundle}
   {Migration Designer}
   {Bundle compilé disponible~; Workspace Host configuré~; token d'API Databricks valide}
   {Le Migration Designer clique sur \textit{Deploy} après une compilation réussie}
-  {\textbf{1.}~La plateforme téléverse le fichier \texttt{.whl} sur le workspace via l'API Databricks (\textit{dbfs:/FileStore/\ldots}).\newline
+  {\textbf{1.}~La plateforme téléverse le fichier \texttt{.whl} sur le workspace via l'API Databricks (\texttt{dbfs:/FileStore/\ldots}).\newline
    \textbf{2.}~Elle installe la bibliothèque sur le cluster cible~; le cluster redémarre si nécessaire.\newline
    \textbf{3.}~Pour le format Asset Bundle, elle exécute \texttt{databricks bundle deploy}~: création des ressources déclarées dans \texttt{databricks.yml} (jobs, clusters, permissions).\newline
    \textbf{4.}~Le statut de déploiement est affiché~: succès, avertissements ou erreurs.\newline
    \textbf{5.}~Le bundle déployé est prêt pour l'exécution (\textit{Run Bundle}).}
   {Token expiré ou invalide~: message d'erreur et invitation à régénérer le token. Cluster indisponible~: suggestion de basculer en mode Serverless. Conflit de version de package~: option de forcer la mise à jour.}
-  {Bundle installé sur le workspace Databricks~; jobs/ressources créés (format Bundle)~; prêt pour exécution}
+  {Bundle installé sur le workspace Databricks~; jobs et ressources créés (format Bundle)~; prêt pour exécution}
+
+\medskip
+
+\ucfichephase{Générer les rapports}
+  {Migration Designer}
+  {Bundle exécuté sur le workspace~; tables Delta \texttt{mig\_execution\_log}, \texttt{mig\_integrity\_check}, \texttt{mig\_table\_volumetry} alimentées par le runner}
+  {Le Migration Designer clique sur \textit{Generate Reports} dans le portail ADMP après une exécution de migration}
+  {\textbf{1.}~La plateforme invoque la fonction \texttt{generate\_reports()} sur le cluster Databricks via l'API REST.\newline
+   \textbf{2.}~La fonction lit les quatre tables Delta de suivi~: \texttt{mig\_execution\_log}, \texttt{mig\_integrity\_check}, \texttt{mig\_table\_volumetry}, \texttt{mig\_target\_file}.\newline
+   \textbf{3.}~Elle consolide les données et produit un rapport global \texttt{global.xlsx} (8 feuilles~: synthèse, log d'exécution, intégrité, volumétrie, \ldots).\newline
+   \textbf{4.}~Elle génère un rapport unitaire \texttt{units/<unit>.xlsx} (5 feuilles) pour chaque unité de migration exécutée.\newline
+   \textbf{5.}~Les fichiers Excel sont archivés dans Unity Catalog Volumes~; les liens de téléchargement sont exposés dans le portail.}
+  {Cluster inactif~: relancer l'exécution avant de générer les rapports. Tables Delta vides~: vérifier que \texttt{runner.py} a bien été exécuté. Erreur d'écriture UC Volume~: vérifier les permissions du service principal.}
+  {Rapports Excel disponibles en téléchargement dans le portail~; données de suivi archivées pour audit}
+
+\medskip
+
+\ucfichephase{Déclencher le pipeline CI/CD}
+  {Migration Designer}
+  {Bundle Asset Bundle compilé~; dépôt Bitbucket initialisé avec les artefacts~; variables de repository configurées (\texttt{DATABRICKS\_HOST}, \texttt{DATABRICKS\_TOKEN}, \texttt{ADMP\_API\_URL}, \texttt{PIPELINE\_INGEST\_TOKEN})}
+  {Push ou merge d'une branche dans le dépôt Bitbucket}
+  {\textbf{1.}~Bitbucket Pipelines déclenche automatiquement le fichier \texttt{bitbucket-pipelines.yml} généré par le compilateur.\newline
+   \textbf{2.}~Le pipeline exécute \texttt{databricks bundle validate}~; toute incohérence de configuration bloque la suite.\newline
+   \textbf{3.}~Le pipeline construit le \texttt{.whl} (\texttt{pip build}) et déploie le bundle~: \texttt{databricks bundle deploy -t dev}.\newline
+   \textbf{4.}~Le pipeline exécute le job de migration~: \texttt{databricks bundle run <job>}~; le \texttt{run\_id} est capturé depuis la sortie JSON.\newline
+   \textbf{5.}~Le rapport \texttt{report.json} est téléchargé depuis Unity Catalog Volume et transmis à ADMP~AI~Studio via \texttt{POST /api/pipeline/databricks-runs}.}
+  {Token \texttt{DATABRICKS\_TOKEN} expiré~: régénérer dans les variables de repository Bitbucket. Bundle invalide~: corriger les erreurs détectées par \texttt{bundle validate} avant de relancer. Échec du run~: consulter les logs Databricks via le \texttt{run\_id} capturé.}
+  {Run tracé dans la table \texttt{databricks\_bundle\_runs}~; résultats et rapport visibles dans le portail ADMP~AI~Studio}
 
 % -----------------------------------------------------------------------
-\subsubsection*{SD-DB01~--- Détail interne de la compilation}
+\subsection*{Diagrammes de séquence}
 
-Ce diagramme (Figure~\ref{fig:sd-db01}) décrit les interactions internes entre les composants TypeScript du compilateur lors du traitement d'une instruction RC.
+\subsubsection*{Détail interne de la compilation}
+
+Ce diagramme (Figure~\ref{fig:sd-db01}) décrit les interactions internes entre les composants TypeScript du compilateur lors du traitement d'un bundle complet. Le parcours DFS de l'AST, la résolution des variables de design, l'injection des jointures transco et le tri topologique sont les étapes clés de la génération SQL-First.
 
 \begin{figure}[H]
 \centering
@@ -98,7 +132,7 @@ Ce diagramme (Figure~\ref{fig:sd-db01}) décrit les interactions internes entre 
   \umlbasicobject[class=PathExtractor]{extractor}
   \umlbasicobject[class=SparkSqlEmitter]{emitter}
   \umlbasicobject[class=BundleAssembler]{assembler}
-  \begin{umlcall}[op=compile(docs), return=bundle]{compiler}{compiler}
+  \begin{umlcall}[op=compileBundle(project\, config), return=bundle]{compiler}{compiler}
     \begin{umlcall}[op=parse(docs.rc), return=ast]{compiler}{parser}
     \end{umlcall}
     \begin{umlcall}[op=extractPaths(ast), return=sqlPaths]{compiler}{extractor}
@@ -122,11 +156,13 @@ Ce diagramme (Figure~\ref{fig:sd-db01}) décrit les interactions internes entre 
   \end{umlcall}
 \end{umlseqdiag}
 \end{tikzpicture}
-\caption{SD-DB01~: Détail interne de la compilation TypeScript}
+\caption{Détail interne de la compilation TypeScript}
 \label{fig:sd-db01}
 \end{figure}
 
-\subsubsection*{SD-DB02~--- Déploiement et exécution du bundle}
+\subsubsection*{Déploiement et exécution du bundle}
+
+La Figure~\ref{fig:sd-db02} modélise la séquence de déploiement et d'exécution d'un bundle sur Databricks. Le portail ADMP orchestre les appels à l'API Databricks~; le cluster prend en charge l'exécution distribuée des unités de migration.
 
 \begin{figure}[H]
 \centering
@@ -156,17 +192,86 @@ Ce diagramme (Figure~\ref{fig:sd-db01}) décrit les interactions internes entre 
   \end{umlcall}
 \end{umlseqdiag}
 \end{tikzpicture}
-\caption{SD-DB02~: Déploiement et exécution du bundle sur Databricks}
+\caption{Déploiement et exécution du bundle sur Databricks}
 \label{fig:sd-db02}
 \end{figure}
 
-\subsubsection*{Diagramme de classes du compilateur Databricks}
+\subsubsection*{Génération des rapports d'intégrité}
 
-La Figure~\ref{fig:class-compiler} modélise l'architecture orientée objet du compilateur TypeScript. La hiérarchie des nœuds AST implémente le pattern \textbf{Visitor}~; les émetteurs héritent d'une interface commune \texttt{IEmitter} permettant le pattern \textbf{Strategy}. La propriété \texttt{dbkOutputFormat} est propagée jusqu'au \texttt{BundleAssembler}, qui sélectionne la stratégie d'assemblage selon le format choisi.
+La Figure~\ref{fig:sd-db03} modélise la séquence de génération des rapports. Le cluster lit les tables Delta de suivi, consolide les données et archive les livrables Excel dans Unity Catalog Volumes.
 
 \begin{figure}[H]
 \centering
-\scalebox{0.62}{%
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=MigrationDesigner]{designer}
+  \umlbasicobject[class=ADMP Portal]{portal}
+  \umlbasicobject[class=DatabricksAPI]{dbkapi}
+  \umlbasicobject[class=DatabricksCluster]{cluster}
+  \umlbasicobject[class=Delta Tables]{delta}
+  \umlbasicobject[class=UC Volume]{ucvol}
+  \begin{umlcall}[op=generateReports(projectId), return=reportLinks]{designer}{portal}
+    \begin{umlcall}[op=POST /runs/submit (generate\_reports.py), return=runId]{portal}{dbkapi}
+      \begin{umlcall}[op=executeReports(), return=ok]{dbkapi}{cluster}
+        \begin{umlcall}[op=SELECT * FROM mig\_* tables, return=data]{cluster}{delta}
+        \end{umlcall}
+        \begin{umlcall}[op=writeExcel(global.xlsx\, units/*.xlsx), return=paths]{cluster}{ucvol}
+        \end{umlcall}
+      \end{umlcall}
+    \end{umlcall}
+    \begin{umlcall}[op=GET /runs/get, return=reportPaths]{portal}{dbkapi}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{Génération des rapports d'intégrité}
+\label{fig:sd-db03}
+\end{figure}
+
+\subsubsection*{Pipeline CI/CD automatisé}
+
+La Figure~\ref{fig:sd-db04} modélise le cycle d'exécution du pipeline CI/CD tel qu'il est généré par le compilateur dans le fichier \texttt{bitbucket-pipelines.yml}. Le déclencheur est un \textit{push} sur le dépôt~; le pipeline orchestre la validation, le déploiement, l'exécution de la migration et le reporting automatique vers ADMP~AI~Studio.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{umlseqdiag}
+  \umlactor[class=MigrationDesigner]{designer}
+  \umlbasicobject[class=Bitbucket Pipeline]{cicd}
+  \umlbasicobject[class=DatabricksCLI]{cli}
+  \umlbasicobject[class=Databricks DEV]{dbkdev}
+  \umlbasicobject[class=ADMP AI Studio]{admp}
+  \begin{umlcall}[op=git push (bundle artefacts), return=ok]{designer}{cicd}
+    \begin{umlcall}[op=bundle validate, return=valid]{cicd}{cli}
+      \begin{umlcall}[op=check databricks.yml, return=ok]{cli}{dbkdev}
+      \end{umlcall}
+    \end{umlcall}
+    \begin{umlcall}[op=pip build + bundle deploy -t dev, return=deployOk]{cicd}{cli}
+      \begin{umlcall}[op=install .whl + create job, return=ok]{cli}{dbkdev}
+      \end{umlcall}
+    \end{umlcall}
+    \begin{umlcall}[op=bundle run <job>, return=run\_id]{cicd}{cli}
+      \begin{umlcall}[op=executeUnits(), return=counters]{cli}{dbkdev}
+      \end{umlcall}
+    \end{umlcall}
+    \begin{umlcall}[op=fetch report.json (UC Volume), return=report]{cicd}{dbkdev}
+    \end{umlcall}
+    \begin{umlcall}[op=POST /api/pipeline/databricks-runs, return=201]{cicd}{admp}
+    \end{umlcall}
+  \end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\caption{Pipeline CI/CD automatisé~--- validation, déploiement, exécution et reporting}
+\label{fig:sd-db04}
+\end{figure}
+
+\subsection*{Diagramme de classes du compilateur Databricks}
+
+La Figure~\ref{fig:class-compiler} modélise l'architecture orientée objet du compilateur TypeScript. La hiérarchie des nœuds AST implémente le pattern \textbf{Visitor}~; les émetteurs héritent d'une interface commune \texttt{IEmitter} permettant le pattern \textbf{Strategy}. La propriété \texttt{dbkOutputFormat} est propagée jusqu'au \texttt{BundleAssembler}, qui sélectionne la stratégie d'assemblage selon le format choisi. La classe \texttt{DbkReportEmitter}, ajoutée pour le système de rapports, est composée dans le \texttt{BundleAssembler} et produit les fichiers \texttt{generate\_reports.py}.
+
+\begin{figure}[H]
+\centering
+\scalebox{0.60}{%
 \begin{tikzpicture}
   %% Main compiler
   \umlclass[x=0, y=0]{DatabricksCompiler}{
@@ -186,8 +291,7 @@ La Figure~\ref{fig:class-compiler} modélise l'architecture orientée objet du c
     +packageName : string \\
     +packageVersion : string \\
     +computeMode : DatabricksComputeMode \\
-    +includeSourceDDL : boolean \\
-    +includeTestData : boolean
+    +includeSourceDDL : boolean
   }{}
 
   %% Parser
@@ -250,6 +354,13 @@ La Figure~\ref{fig:class-compiler} modélise l'architecture orientée objet du c
     +emitReport() : string
   }
 
+  %% DbkReportEmitter
+  \umlclass[x=11, y=-16]{DbkReportEmitter}{}{
+    +emitReports(tables : DeltaTable[]) : string \\
+    +emitGlobalReport() : string \\
+    +emitUnitReport(unit : string) : string
+  }
+
   %% BundleAssembler
   \umlclass[x=0, y=-20]{BundleAssembler}{
     -outputDir : string \\
@@ -289,6 +400,7 @@ La Figure~\ref{fig:class-compiler} modélise l'architecture orientée objet du c
   \umlinherit{WriteFileNode}{AstNode}
   \umlassoc[mult1=1, mult2=1]{FrameworkEmitter}{BundleAssembler}
   \umlassoc[mult1=1, mult2=1]{IntegrityEmitter}{BundleAssembler}
+  \umlcompo[mult1=1, mult2=1]{BundleAssembler}{DbkReportEmitter}
 \end{tikzpicture}%
 }% end scalebox
 \caption{Diagramme de classes du compilateur Databricks (TypeScript)}

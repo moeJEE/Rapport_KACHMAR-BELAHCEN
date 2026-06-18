@@ -5,17 +5,26 @@
 
 \chapter{Contexte et Problématique}
 
-
 La transformation numérique est devenue un impératif stratégique pour les
-entreprises de toutes tailles et de tous secteurs. Au coeur de cette
+entreprises de toutes tailles et de tous secteurs. Selon IDC, les dépenses
+mondiales en transformation digitale devraient atteindre près de
+\textbf{4\,000 milliards USD d'ici 2027}, avec un taux de croissance annuel
+composé (CAGR) de 16,2\,\%~\cite{integrate_io_stats}. Au cœur de cette
 transformation se trouve un processus souvent sous-estimé mais fondamental :
 la migration de données. Qu'il s'agisse de remplacer un système legacy par
 une plateforme moderne, de consolider des bases de données après une
-fusion-acquisition, ou d'adopter des solutions cloud pour gagner en agilité,
-la migration de données constitue le socle invisible sur lequel repose le
-succès -- ou l'échec -- de tout projet de modernisation. Ce chapitre dresse
-un panorama des enjeux et des défis liés à la migration de données, avant de
-formuler la problématique qui guidera l'ensemble de ce travail.
+fusion-acquisition, d'adopter des solutions cloud pour gagner en agilité, ou
+de préparer une infrastructure \textit{AI-ready} pour exploiter le potentiel
+de l'intelligence artificielle, la migration constitue le socle invisible sur
+lequel repose le succès --- ou l'échec --- de tout projet de modernisation.
+
+Pourtant, la réalité est préoccupante : selon une analyse BCG portant sur
+plus de 850 entreprises, seules \textbf{35\,\% des initiatives de
+transformation digitale atteignent leurs objectifs}~\cite{integrate_io_stats}.
+Le reste échoue ou livre des résultats en deçà des attentes, souvent à cause
+de fondations de données fragiles. Ce chapitre dresse un panorama des enjeux
+et des défis liés à la migration de données, avant de formuler la
+problématique qui guidera l'ensemble de ce travail.
 
 % ------------------------------------------------------------
 \section{La migration de données : définition et enjeux}
@@ -23,159 +32,121 @@ formuler la problématique qui guidera l'ensemble de ce travail.
 
 \subsection{Qu'est-ce qu'une migration de données ?}
 
-La migration de données désigne le processus de transfert de données d'un
-système source vers un système cible, tout en garantissant leur intégrité,
-leur qualité et leur conformité aux exigences du nouvel environnement. Ce
-processus ne se limite pas à un simple déplacement physique de fichiers : il
-implique l'extraction des données depuis le système d'origine, leur
-transformation pour les adapter au modèle cible (types de données, formats,
-contraintes métier, relations entre entités), et leur chargement dans le
-nouveau système. Ce triptyque, universellement connu sous l'acronyme
-\textbf{ETL} (\textit{Extract, Transform, Load}), constitue le paradigme
-fondamental de toute opération de migration~\cite{microsoft_etl}.
+La migration de données désigne le transfert structuré et planifié de données
+d'un système source vers un système cible, en garantissant intégrité, qualité,
+sécurité et conformité tout au long du processus. Ce processus repose sur le
+triptyque \textbf{ETL} (\textit{Extract, Transform, Load})~\cite{microsoft_etl} :
+extraction depuis le système source, transformation pour adapter les données au
+modèle cible (nettoyage, standardisation, enrichissement, application des règles
+métier), et chargement dans le nouveau système. Une variante moderne, l'approche
+\textbf{ELT} (\textit{Extract, Load, Transform}), inverse les deux dernières
+étapes en exploitant la puissance de calcul des entrepôts de données cloud
+(Snowflake, BigQuery, Azure Synapse) pour effectuer les transformations après
+le chargement~\cite{latentview2026, alphabyte_etl}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{img/ETL.png}
-    \caption{Schéma du processus ETL classique.}
+    \caption{Schéma du processus ETL classique --- extraction, transformation
+    et chargement des données.}
     \label{fig:etl_schema}
 \end{figure}
 
-Il est essentiel de distinguer la migration de données d'autres processus
-apparentés. L'\textbf{intégration de données} vise à combiner en continu des
-données provenant de sources hétérogènes, tandis que la \textbf{réplication}
-crée des copies synchronisées entre systèmes. La migration, quant à elle,
-est un événement ponctuel et planifié, avec un début et une fin définis, qui
-s'inscrit généralement dans un projet plus large de transformation des
-systèmes d'information~\cite{cloudficient2025}.
+Il est important de distinguer la migration de données de concepts voisins :
+l'\textbf{intégration continue} (synchronisation permanente entre systèmes
+en temps réel), la \textbf{réplication} (copie à l'identique pour la haute
+disponibilité) et l'\textbf{archivage} (déplacement de données historiques
+vers un stockage de moindre coût). La migration se caractérise par son
+caractère \textbf{ponctuel et planifié}, avec un périmètre défini, une
+fenêtre d'exécution limitée et un objectif de basculement définitif vers
+le système cible~\cite{cloudficient2025}.
 
-\subsection{Typologies de migration}
-
-Les projets de migration de données se déclinent en plusieurs typologies
-selon le contexte métier qui les déclenche :
+Les projets de migration se déclinent en \textbf{cinq typologies
+principales}~\cite{admp_core, latentview2026} :
 
 \begin{itemize}
-    \item \textbf{Re-platforming (migration applicative)} : il s'agit du
-    remplacement d'un système legacy par une plateforme moderne. C'est le
-    cas, par exemple, lorsqu'une entreprise migre son CRM on-premise vers
-    Salesforce, ou son ERP vers SAP S/4HANA. Cette catégorie représente la
-    majorité des projets de migration à grande échelle~\cite{admp_core}.
+    \item \textbf{Re-platforming} --- Remplacement d'un système legacy par
+    une plateforme moderne (Salesforce, SAP, Workday, Duck Creek). C'est le
+    cas le plus fréquent dans le secteur de l'assurance et de la banque.
 
-    \item \textbf{Consolidation et fusion (Merger \& Acquisition)} : lors
-    d'une fusion ou d'une acquisition, les entreprises doivent fusionner
-    leurs bases de données hétérogènes en un référentiel unifié, un défi
-    d'autant plus complexe que les systèmes à consolider peuvent avoir des
-    modèles de données radicalement différents.
+    \item \textbf{Consolidation post-fusion} --- Unification de bases de
+    données hétérogènes suite à une fusion-acquisition, nécessitant la
+    réconciliation de schémas, de référentiels et de règles métier
+    divergents.
 
-    \item \textbf{Migration vers le cloud} : avec 94\,\% des organisations
-    utilisant déjà une infrastructure cloud en 2025 et 85\,\% engagées dans
-    une transition \textit{cloud-first}, la migration des données on-premise
-    vers des environnements cloud (AWS, Azure, GCP) ou hybrides est devenue
-    un processus incontournable~\cite{duplocloud2025}.
+    \item \textbf{Migration cloud} --- Transfert des données et des
+    workloads vers des plateformes cloud (AWS, Azure, GCP). En 2026,
+    \textbf{94\,\% des entreprises} utilisent au moins un service cloud
+    et \textbf{60\,\% des données d'entreprise} sont désormais stockées
+    dans le cloud~\cite{medhacloud2026, datastackhub2026}.
 
-    \item \textbf{Profiling et cleansing} : certaines migrations sont
-    motivées principalement par un objectif d'amélioration de la qualité des
-    données -- nettoyage, déduplication, enrichissement -- avant leur
-    réinjection dans un système existant ou nouveau~\cite{admp_core}.
+    \item \textbf{Profiling et cleansing} --- Amélioration de la qualité
+    des données (dédoublonnage, normalisation, enrichissement) avant
+    réinjection dans le système existant ou un nouveau système.
 
-    \item \textbf{Externalisation de processus métier (BPO)} : le transfert
-    de processus métier vers un prestataire externe nécessite la migration
-    sécurisée des données associées, avec des contraintes strictes de
-    confidentialité et de conformité.
+    \item \textbf{Externalisation BPO} --- Transfert sécurisé de données
+    vers un prestataire externe dans le cadre d'une externalisation de
+    processus métier.
 \end{itemize}
 
 \subsection{Enjeux stratégiques pour les entreprises}
 
 La migration de données est bien plus qu'un exercice technique : c'est un
-enjeu stratégique à fort impact business. Les chiffres du marché en
-témoignent de manière éloquente.
+enjeu stratégique à fort impact business dont les dimensions sont multiples.
 
-Le \textbf{marché mondial de la migration de données} est estimé à
-\textbf{12,8 milliards USD en 2025} et devrait atteindre
-\textbf{36,8 milliards USD d'ici 2033}, soit un taux de croissance annuel
-composé (CAGR) de \textbf{14,6\,\%}~\cite{datamintel2026}. En parallèle, le
-marché plus large de l'\textbf{intégration de données} (incluant les
-plateformes ETL/ELT, iPaaS et outils de streaming) est évalué à
-\textbf{17,58 milliards USD en 2025}, avec une projection à
-\textbf{33,24 milliards USD en 2030} (CAGR de 13,6\,\%)~\cite{mam2025}. Le
-marché spécifique des \textbf{logiciels ETL}, quant à lui, est estimé à
-\textbf{15 milliards USD en 2025} et devrait atteindre
-\textbf{45 milliards USD d'ici 2033} (CAGR de 12\,\%)~\cite{mordor2025}.
+\subsubsection{Un marché en croissance exponentielle}
+
+Le marché mondial de la migration de données connaît une expansion
+remarquable. Selon les estimations convergentes de plusieurs cabinets
+d'analyse, il est évalué entre \textbf{15 et 21 milliards USD en 2025}
+et devrait atteindre \textbf{36 à 48 milliards USD d'ici 2032--2035},
+avec un CAGR oscillant entre 12 et 17\,\% selon les
+périmètres~\cite{datamintel2026, reportsanddata2026, researchandmarkets2026,
+fortunebi2026}. Le marché plus large des services de migration cloud
+représente à lui seul \textbf{31,5 milliards USD en 2026}, avec un CAGR
+de 22,4\,\%~\cite{medhacloud2026}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{img/migration_prev.png}
     \caption{Évolution du marché mondial de la migration de données
-    (2024--2034).}
+    (2024--2035), sources multiples.}
     \label{fig:market_growth}
 \end{figure}
 
-Le tableau~\ref{tab:market_data} synthétise les principales estimations de
-marché issues de différents cabinets d'analyse :
+Cette croissance est portée par quatre forces motrices majeures identifiées
+par Business Research Insights~\cite{bri2026} : l'\textbf{adoption du cloud}
+(facteur cité par 65\,\% des organisations), la \textbf{croissance des volumes
+de données} (58\,\%), les \textbf{initiatives de transformation digitale}
+(62\,\%) et l'\textbf{adoption de l'IA et de l'automatisation} (54\,\%).
 
-\begin{table}[H]
-\centering
-\caption{Estimations du marché de la migration de données selon différentes
-sources.}
-\label{tab:market_data}
-\begin{tabular}{lcccl}
-\hline
-\textbf{Source} & \textbf{Val. 2025} & \textbf{Projection} &
-\textbf{CAGR} & \textbf{Période} \\
-\hline
-DataM Intelligence & 12,8 Mds USD & 36,8 Mds USD (2033) & 14,6\,\% &
-2026--2033 \\
-Market Research Future & 10,56 Mds USD & 34,57 Mds USD (2035) & 12,59\,\%
-& 2025--2035 \\
-Market Trends Analysis & 15,2 Mds USD (2024) & 32,8 Mds USD (2033) & 9,2\,\%
-& 2025--2033 \\
-\hline
-\end{tabular}
-\end{table}
+\subsubsection{Les dimensions stratégiques de la migration}
 
-Ces chiffres révèlent une réalité sans équivoque : la migration de données
-est un marché en pleine expansion, porté par la transformation digitale,
-l'adoption massive du cloud, et l'émergence de l'intelligence artificielle
-qui exige des données propres, structurées et accessibles. Les outils de
-migration pilotés par l'IA connaissent d'ailleurs une croissance de
-\textbf{28\,\%} selon Gartner~\cite{kellton2025}.
+Tu peux la condenser ainsi :
 
-Au-delà de la croissance du marché, les enjeux stratégiques se déclinent en
-quatre dimensions :
+Au-delà de la croissance du marché, plusieurs enjeux stratégiques rendent la migration des données essentielle. Elle garantit la continuité d’activité en limitant les risques de perte de données, assure la conformité réglementaire face aux exigences croissantes de protection des données, et représente un enjeu majeur de maîtrise des coûts dans les projets de modernisation IT. Elle constitue également une base indispensable pour les initiatives d’IA et d’analytique avancée, qui reposent sur des données fiables et bien gouvernées. Enfin, une migration réussie procure un avantage concurrentiel, en permettant aux entreprises d’exploiter leurs données plus rapidement et d’améliorer leur retour sur investissement.
 
-\begin{itemize}
-    \item \textbf{Continuité d'activité} : toute interruption ou perte de
-    données durant une migration peut paralyser les opérations métier, avec
-    des conséquences financières et réputationnelles considérables.
-
-    \item \textbf{Conformité réglementaire} : les réglementations sur la
-    protection des données (RGPD, CCPA, HIPAA) imposent des exigences
-    strictes en matière de traçabilité, de sécurité et de gouvernance durant
-    le processus de migration~\cite{kaopiz2025}.
-
-    \item \textbf{Coût et time-to-market} : les coûts de migration
-    représentent typiquement \textbf{30 à 50\,\% du budget total d'un projet
-    de modernisation IT}. La capacité à migrer rapidement et efficacement
-    devient donc un avantage compétitif majeur~\cite{kaopiz2025}.
-
-    \item \textbf{Fondation pour l'IA} : les systèmes d'intelligence
-    artificielle modernes exigent des données de haute qualité. Une migration
-    mal exécutée peut compromettre l'ensemble des initiatives IA d'une
-    organisation avant même leur démarrage~\cite{kaopiz2025}.
-\end{itemize}
 
 % ------------------------------------------------------------
 \section{Anatomie d'un projet de migration : les défis}
 % ------------------------------------------------------------
 
 Malgré son importance stratégique, la migration de données reste l'un des
-processus les plus risqués et les plus complexes du paysage IT. Comme le
-souligne une analyse approfondie publiée en 2025, \textbf{83\,\% des projets
-de migration échouent ou dépassent leur budget et leurs délais}. Selon
-Gartner, près de \textbf{70\,\% des projets de migration n'atteignent pas
-leurs objectifs}, souvent en raison de risques sous-estimés, d'une
-planification insuffisante ou d'une validation inadéquate~\cite{kaopiz2025,
-kanerika2025}.
+processus les plus risqués du paysage IT. Les statistiques sont éloquentes :
+selon Gartner, \textbf{83\,\% des projets de migration échouent ou dépassent
+leur budget et leurs délais}~\cite{kaopiz2025, kanerika2025}. Le Bloor Group
+rapporte des dépassements moyens de \textbf{30\,\% en coût et de 41\,\% en
+délai}~\cite{vovance_medium}. Et selon les données Accenture les plus
+récentes, seules \textbf{65\,\% des migrations sont livrées dans les temps
+et le budget prévu}~\cite{medhacloud2026}. Six défis structurels expliquent
+ces résultats.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{img/graphe.png}
+    \caption{les défis d'un projet de migration}
+    \label{fig:market_growth}
+\end{figure}
 
 \subsection{Hétérogénéité des systèmes source et cible}
 
@@ -183,231 +154,236 @@ Le premier défi fondamental réside dans la disparité entre les systèmes
 d'origine et de destination. Les données sources peuvent provenir de bases
 relationnelles (Oracle, SQL Server, DB2), de fichiers plats (CSV, TXT), de
 systèmes mainframe (VSAM, IMS), ou d'applications métier propriétaires,
-chacun avec ses propres formats, encodages et conventions de nommage. Le
-système cible, quant à lui, impose son propre modèle de données, ses
-contraintes d'intégrité référentielle et ses règles de
-validation~\cite{admp_core}.
+chacun avec ses propres formats, encodages et conventions de
+nommage~\cite{admp_presentation}. Le système cible, quant à lui, impose
+son propre modèle de données, ses contraintes d'intégrité référentielle et
+ses règles de validation.
 
-Cette hétérogénéité génère des \textbf{incompatibilités de schéma} qui sont
-à l'origine de \textbf{45\,\% des échecs de migration} selon les analyses
-sectorielles. La réconciliation entre ces modèles divergents nécessite un
-travail minutieux de \textit{mapping} -- à la fois au niveau des tables
-(\textit{Table Mapping}) et des champs (\textit{Data Mapping}) -- qui
-constitue l'un des exercices les plus chronophages et les plus sujets à
-erreur du processus~\cite{cloudficient2025}.
+Cette hétérogénéité génère des incompatibilités de schéma à l'origine de
+\textbf{45\,\% des échecs de migration}~\cite{cloudficient2025}. La
+réconciliation entre ces modèles divergents nécessite un travail minutieux
+de mapping --- à la fois au niveau des tables (\textit{Table Mapping}) et
+des champs (\textit{Data Mapping}) --- qui constitue l'un des exercices les
+plus chronophages et les plus sujets à erreur. Un exemple révélateur : un
+assureur majeur a vu 127\,000 polices des années 1940 migrées avec une date
+d'émission en 2040, en raison d'un bug non documenté de format de dates dans
+le système legacy~\cite{vovance_medium}.
 
 \subsection{Volumétrie et performance}
+La part des workloads d’entreprise déployés dans des environnements cloud ou edge devrait connaître une forte progression au cours des prochaines années. Selon Gartner, cette proportion passera de 52  en 2024 à 75  en 2028, soit une augmentation de 23 points en quatre ans. Cette évolution traduit l’accélération de la transformation numérique et entraîne des migrations de données de plus en plus massives. Les entreprises doivent ainsi gérer des volumes croissants de données tout en faisant face à des contraintes de bande passante, de latence et de disponibilité, ce qui accroît considérablement la complexité de la planification et de l’exécution des migrations.
 
-L'explosion des volumes de données amplifie considérablement la complexité
-des migrations. La création mondiale de données devrait atteindre
-\textbf{181 zettaoctets en 2025}, et l'entreprise moyenne gère ses données à
-travers \textbf{14 systèmes distincts simultanément}. À cette échelle, les
-défis de performance deviennent critiques : les temps d'extraction
-s'allongent, les transformations consomment des ressources considérables, et
-les fenêtres de migration (souvent limitées à des week-ends ou des périodes
-de faible activité) deviennent insuffisantes~\cite{kaopiz2025}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{img/graphe1.png}
+    \caption{Evolution de la part des woekloads d'entreprise dans des environnements cloud ou edge}
+    \label{fig:market_growth}
+\end{figure}
 
-Les organisations traitent désormais des volumes allant du téraoctet au
-pétaoctet, avec une vélocité de données exigeant des migrations à temps
-d'arrêt quasi nul. Les risques ETL se multiplient de manière exponentielle
-avec l'augmentation de la taille des données, rendant la validation et la
-réconciliation de plus en plus complexes et chronophages~\cite{kanerika2025}.
+~\cite{kaopiz2025}
+~\cite{medhacloud2026}
 
 \subsection{Qualité et intégrité des données}
 
-La qualité des données sources constitue un facteur déterminant -- et souvent
-sous-estimé -- du succès d'une migration. Selon un rapport Gartner de 2023,
-la mauvaise qualité des données coûte aux organisations en moyenne
-\textbf{12,9 millions de dollars par an} en ressources gaspillées et en
-opportunités manquées~\cite{gartner_quality}. Un rapport IBM de 2025 confirme
-cette tendance : \textbf{43\,\% des directeurs des opérations} identifient la
-qualité des données comme leur priorité la plus critique, et plus d'un quart
-des organisations estiment perdre plus de \textbf{5 millions de dollars
-annuellement} en raison de données de mauvaise qualité~\cite{ibm2025}.
+La mauvaise qualité des données représente un risque financier et opérationnel majeur,
+dont l'impact est particulièrement exacerbé lors des phases de migration.Ce phénomène engendre des coûts micro et macroéconomiques colossaux, tout en altérant structurellement la réussite des projets.
 
-Dans le contexte spécifique de la migration, les problèmes de qualité se
-manifestent sous plusieurs formes :
+En contexte de migration, ces défaillances (données incomplètes, dupliquées ou corrompues) 
+deviennent le principal facteur de dérive des projets. Elles se traduisent par des retards 
+systématiques pour près de la moitié des organisations, provoquant par effet de cascade une explosion des budgets et un taux d'échec critique sur les délais de livraison.
 
-\begin{itemize}
-    \item \textbf{Données incomplètes} : champs obligatoires non renseignés,
-    enregistrements tronqués, historiques partiels.
+~\cite{gartner_quality}
+~\cite{forbes_bad_data}.
+~\cite{alation_migration}. 
+~\cite{montecarlo2025}.
 
-    \item \textbf{Données incohérentes} : doublons, formats hétérogènes
-    (dates, adresses, codes), valeurs contradictoires entre systèmes.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{img/impact_data_quality.png}
+    \caption{L'impact de la mauvaise qualité des données}
+    \label{fig:market_growth}
+\end{figure}
 
-    \item \textbf{Données obsolètes} : informations périmées qui ne reflètent
-    plus la réalité métier.
+\subsection{Complexité des règles de transformation}
 
-    \item \textbf{Données corrompues} : altérations dues à des bugs
-    applicatifs, des migrations antérieures mal exécutées, ou des problèmes
-    d'encodage.
-\end{itemize}
-
-Selon une étude Experian, \textbf{64\,\% des projets de migration analysés
-dépassent leur budget}, et seulement \textbf{46\,\% sont livrés dans les
-délais prévus}, en grande partie à cause de problèmes de qualité de données
-non anticipés~\cite{montecarlo2025}. Par ailleurs, \textbf{35\,\% des projets
-de migration cloud échouent directement à cause d'une qualité de données
-insuffisante}~\cite{wifitalents2025}.
-
-\subsection{Complexité des règles de transformation métier}
-
-Au-delà du simple transfert de données, la migration implique l'application
-de \textbf{règles de transformation métier} souvent complexes et spécifiques
-à chaque domaine fonctionnel. Ces règles déterminent comment les données
-sources doivent être restructurées, enrichies, filtrées ou agrégées pour
-correspondre au modèle cible.
-
-Les défis typiques incluent :
+La migration ne se limite pas à un simple transfert de données : elle
+implique l'application de règles métier souvent complexes et mal
+documentées. Parmi les défis typiques :
 
 \begin{itemize}
-    \item \textbf{Relations N:M (Many-to-Many)} : les associations complexes
-    entre entités (par exemple, entre compétences et ressources, ou entre
-    contrats et prestations) nécessitent des étapes intermédiaires de
-    regroupement et de dédoublonnage.
-
-    \item \textbf{Transcodification} : la correspondance entre les valeurs
-    codifiées du système source et celles du système cible (codes pays, types
-    de contrat, statuts) requiert des tables de correspondance exhaustives et
-    validées par le métier.
-
-    \item \textbf{Création conditionnelle d'enregistrements} : certains
-    enregistrements cibles n'existent pas dans le système source et doivent
-    être créés selon des règles métier spécifiques (par exemple, la création
-    automatique d'un enregistrement maître pour chaque groupe
-    d'enregistrements détail).
-
-    \item \textbf{Gestion des cas particuliers} : les exceptions, les cas
-    limites et les incohérences historiques nécessitent un traitement au cas
-    par cas, difficilement automatisable.
+    \item Relations \textbf{N:M} entre tables source et cible, nécessitant
+    des mécanismes de dédoublonnage et de réconciliation.
+    \item \textbf{Transcodification} entre référentiels source et cible
+    (codes produits, statuts, identifiants).
+    \item \textbf{Création conditionnelle} d'enregistrements selon des
+    critères métier (périmètre fonctionnel, scope de migration).
+    \item Gestion des \textbf{cas particuliers} et des données historiques
+    (polices résiliées, bénéficiaires décédés, dossiers archivés).
+    \item \textbf{Logique de fallback} lorsque des données source sont
+    absentes ou invalides.
 \end{itemize}
 
-La formalisation et l'implémentation de ces règles constituent l'un des
-postes les plus coûteux en temps et en expertise dans un projet de migration,
-et c'est souvent à ce niveau que se creuse le fossé entre les spécifications
-fonctionnelles et leur traduction technique.
+La formalisation de ces règles constitue l'un des postes les plus coûteux en
+temps et en expertise, creusant le fossé entre spécifications fonctionnelles
+et traduction technique. Comme le souligne Kanerika, les pipelines ETL
+\textbf{encodent de la logique métier} : une seule règle mal traduite peut
+corrompre des rapports financiers pendant des mois avant d'être
+détectée~\cite{kanerika_etl}.
 
-\subsection{Traçabilité et auditabilité du processus}
+\subsection{Traçabilité et auditabilité}
 
-Dans un environnement réglementaire de plus en plus exigeant, la capacité à
-\textbf{tracer l'ensemble du processus de migration} -- de l'extraction à la
-source jusqu'au chargement dans la cible -- est devenue une exigence non
-négociable. Les régulateurs et les auditeurs attendent des organisations
-qu'elles puissent démontrer :
+Dans un environnement réglementaire de plus en plus exigeant,
+\textbf{34\,\% des organisations rapportent des lacunes de conformité
+durant la migration} et \textbf{38\,\% déclarent que la préparation aux
+audits est difficile}~\cite{gitnux_cloud, admp_overview}. Les outils ETL
+traditionnels, souvent qualifiés de \textbf{boîtes noires} (\textit{black
+boxes}), rendent cette traçabilité particulièrement ardue : les
+transformations appliquées aux données sont opaques, les versions des règles
+difficiles à suivre, et la réconciliation entre données source et cible
+laborieuse.
 
-\begin{itemize}
-    \item \textbf{L'origine de chaque donnée migrée} (\textit{data lineage})
-    : d'où vient-elle, quelles transformations a-t-elle subies, qui les a
-    validées.
+Cette opacité est d'autant plus problématique que les organisations doivent
+aujourd'hui garantir une \textbf{traçabilité de bout en bout}
+(\textit{data lineage}) de chaque donnée migrée, depuis son extraction du
+système source jusqu'à son chargement dans le système cible, en passant par
+chaque transformation appliquée. Les régulateurs exigent de pouvoir auditer
+chaque étape du processus, ce qui impose des mécanismes de versionnement,
+de journalisation et de reporting que les approches traditionnelles peinent
+à fournir.
 
-    \item \textbf{L'intégrité du transfert} : aucune donnée n'a été perdue,
-    altérée ou dupliquée durant le processus.
+\subsection{Coordination IT / Business et gestion du changement}
 
-    \item \textbf{La conformité des transformations} : les règles appliquées
-    correspondent exactement aux spécifications validées par le métier.
-\end{itemize}
+La migration se situe à l'intersection des équipes techniques et métier,
+générant une véritable \textbf{barrière linguistique} entre ces deux
+mondes. Les spécificateurs fonctionnels décrivent des règles métier en
+langage naturel, tandis que les développeurs doivent les traduire en code
+technique --- un processus source d'erreurs d'interprétation, de cycles de
+validation longs et de frustrations mutuelles.
 
-Or, \textbf{34\,\% des organisations rapportent des lacunes de conformité
-durant la migration}, et \textbf{38\,\% déclarent que la préparation aux
-audits est difficile} dans ce contexte. Les outils ETL traditionnels, souvent
-qualifiés de boîtes noires, rendent cette traçabilité particulièrement ardue,
-car le lien entre les spécifications fonctionnelles et le code exécuté n'est
-ni direct ni transparent~\cite{gitnux_cloud, admp_overview}.
+Les statistiques confirment l'ampleur du problème : \textbf{70\,\% des
+migrations échouent en partie à cause d'une mauvaise gestion du changement},
+et \textbf{80\,\% des organisations citent le manque d'expertise interne
+comme principal frein}~\cite{worldmetrics2025, wifitalents2025}. La pénurie
+de talents IT est critique : selon les projections, jusqu'à \textbf{90\,\%
+des organisations feront face à des pénuries de compétences IT}, avec des
+pertes estimées à \textbf{5\,500 milliards USD d'ici 2026} liées à ces
+lacunes~\cite{integrate_io_stats}.
 
-\subsection{Coordination entre équipes IT et Business}
-
-La migration de données se situe à l'intersection de deux mondes : celui des
-\textbf{équipes techniques} (développeurs ETL, DBA, architectes) qui
-maîtrisent les outils et les systèmes, et celui des \textbf{équipes métier}
-(analystes fonctionnels, utilisateurs finaux, responsables qualité) qui
-détiennent la connaissance des règles de gestion et des cas d'usage. Cette
-dualité engendre des défis organisationnels majeurs :
-
-\begin{itemize}
-    \item \textbf{Barrière linguistique} : les équipes techniques raisonnent
-    en termes de tables, de requêtes et de schémas, tandis que les équipes
-    métier parlent de contrats, de clients et de polices. La traduction entre
-    ces deux langages est source de malentendus et d'erreurs.
-
-    \item \textbf{Cycle de validation long} : chaque itération de migration
-    nécessite une revue fonctionnelle par le métier, qui doit vérifier que
-    les données migrées correspondent à ses attentes. Ce cycle peut s'étendre
-    sur plusieurs semaines.
-
-    \item \textbf{Résistance au changement} : \textbf{70\,\% des migrations
-    échouent en partie à cause d'une mauvaise gestion du changement} et de la
-    résistance des utilisateurs~\cite{worldmetrics2025}.
-
-    \item \textbf{Pénurie de compétences} : \textbf{80\,\% des organisations
-    rapportent que le manque d'expertise interne est leur principal frein} à
-    la réussite des migrations, et \textbf{25\,\% citent le manque de
-    compétences} comme cause directe d'échec~\cite{wifitalents2025,
-    gitnux_cloud}.
-\end{itemize}
-
-Le tableau~\ref{tab:defis_migration} synthétise les six défis majeurs avec
-leur impact et leur fréquence :
+De plus, la résistance au changement des utilisateurs finaux, combinée à
+une formation insuffisante, compromet l'adoption du nouveau système même
+lorsque la migration technique est réussie. Dans le domaine des ERP, par
+exemple, \textbf{29\,\% des utilisateurs} déclarent ne pas comprendre
+comment utiliser le nouveau système après migration~\cite{godlan_erp}.
 
 \begin{table}[H]
 \centering
-
+\caption{Synthèse des principaux défis d'un projet de migration de données.}
+\label{tab:defis_migration}
 \begin{tabular}{lll}
 \hline
 \textbf{Défi} & \textbf{Impact principal} & \textbf{Statistique clé} \\
 \hline
-Hétérogénéité des systèmes   & Incompatibilités, corruption
-    & 45\,\% des échecs \\
-Volumétrie et performance    & Dépassements de délais
-    & Estimation erronée de 40--60\,\% \\
-Qualité des données          & Surcoûts, reprises
-    & 12,9 M\$/an en moyenne (Gartner) \\
-Complexité des transformations & Écart design--build
-    & 30--50\,\% du budget IT total \\
-Traçabilité et auditabilité  & Non-conformité
-    & 34\,\% de lacunes de conformité \\
-Coordination IT / Business   & Retards, malentendus
-    & 70\,\% d'échecs liés au change management \\
+Hétérogénéité des systèmes    & Incompatibilités, corruption   & 45\,\% des échecs \\
+Volumétrie et performance     & Dépassements de délais         & 181 ZB créés en 2025 \\
+Qualité des données           & Surcoûts, reprises             & 12,9 M\$/an (Gartner) \\
+Complexité des transformations & Écart design--build           & 30--50\,\% du budget IT \\
+Traçabilité et auditabilité   & Non-conformité                 & 34\,\% de lacunes \\
+Coordination IT / Business    & Retards, malentendus           & 70\,\% liés au change management \\
 \hline
 \end{tabular}
-\caption{Synthèse des principaux défis d'un projet de migration de données.}
-\label{tab:defis_migration}
 \end{table}
+
+% ------------------------------------------------------------
+\section{L'émergence de l'IA dans la migration de données}
+% ------------------------------------------------------------
+
+Face à ces défis, l'intelligence artificielle émerge comme un levier
+transformateur. Selon Business Research Insights: 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{img/graphe2.png}
+    \caption{Tendances clés dans les solutions de migration}
+    \label{fig:market_growth}
+\end{figure}
+
+~\cite{bri2026}.
+
+L'IA transforme la migration de données à plusieurs niveaux~\cite{buzzclan2026,
+ispirer_ai} :
+
+\begin{itemize}
+    \item \textbf{Data profiling intelligent} : Les algorithmes de ML
+    détectent automatiquement les anomalies, les valeurs nulles dans des
+    colonnes inattendues, les formats de dates non documentés et les
+    enregistrements orphelins, là où le profiling manuel procède par
+    échantillonnage statistique.
+
+    \item \textbf{Mapping automatisé} : L'IA analyse les systèmes source
+    et cible pour créer des correspondances de schéma sans intervention
+    manuelle, réduisant drastiquement le temps de mapping.
+
+    \item \textbf{Validation prédictive} : Les modèles de ML identifient
+    les goulots d'étranglement et les risques de défaillance avant qu'ils
+    ne surviennent, permettant une approche proactive plutôt que réactive.
+
+    \item \textbf{Génération de règles de transformation} : Les LLM
+    (\textit{Large Language Models}) peuvent générer des règles de
+    transformation à partir de spécifications en langage naturel, comblant
+    le fossé entre spécificateurs fonctionnels et développeurs.
+
+    \item \textbf{Optimisation des coûts} : L'IA identifie les données
+    redondantes ou non critiques, réduisant les volumes à migrer et les
+    coûts de stockage associés.
+\end{itemize}
+
+Selon les projections, l'IA augmentée en gestion de données pourrait
+\textbf{réduire de 45\,\% le besoin en spécialistes IT} pour les tâches
+routinières de migration~\cite{ispirer_ai}. Cependant, malgré ces promesses,
+l'adoption reste limitée : seulement \textbf{35\,\% des entreprises}
+utilisent actuellement des plateformes de migration augmentées par
+l'IA~\cite{reanin2025}, et \textbf{74\,\% des entreprises peinent à
+passer à l'échelle} avec leurs initiatives IA~\cite{integrate_io_stats}.
+Cet écart entre potentiel et adoption constitue une opportunité majeure
+pour les acteurs innovants du marché.
 
 % ------------------------------------------------------------
 \section{Formulation de la problématique}
 % ------------------------------------------------------------
 
-L'analyse des enjeux et des défis présentés dans les sections précédentes
-met en lumière un constat central : \textbf{la migration de données reste un
-processus à haut risque, coûteux et fortement dépendant de l'expertise
-humaine}, malgré l'existence d'outils ETL et de méthodologies établies.
-
-Trois lacunes structurelles émergent de cette analyse :
+L'analyse précédente fait émerger trois lacunes structurelles communes aux
+approches actuelles de migration, que nous synthétisons dans la figure
+ci-dessous :
 
 \begin{itemize}
-    \item \textbf{Le fossé Design--Build} : dans la plupart des approches
-    actuelles, il existe un décalage significatif entre la rédaction des
-    spécifications fonctionnelles (le \textit{design}) et leur implémentation
-    technique (le \textit{build}). Ce fossé est source d'erreurs, de retards
-    et de surcoûts, car il nécessite une traduction manuelle des règles métier
-    en code ETL exécutable~\cite{admp_overview}.
+ \item \textbf{Le fossé Design-Build} : un décalage significatif persiste
+entre la rédaction des spécifications fonctionnelles et leur implémentation
+technique. Les spécificateurs décrivent les règles métier en langage naturel,
+les développeurs les traduisent en code, et entre les deux, la perte de
+fidélité est inévitable~\cite{admp_overview}. Ce fossé ne se limite d'ailleurs
+pas au code applicatif : la traduction doit aboutir à des artefacts
+d'intégration réellement exécutables sur les plateformes cloud d'orchestration
+(par exemple des pipelines Azure Data Factory), ce qui ajoute une couche
+d'expertise technique et autant de sources d'erreur.
 
     \item \textbf{L'opacité des processus} : les outils ETL traditionnels
     fonctionnent comme des boîtes noires, rendant difficile la validation
-    fonctionnelle, l'auditabilité et la réconciliation des données par les
-    équipes non techniques.
+    fonctionnelle, l'auditabilité et la réconciliation par les équipes non
+    techniques. Dans un contexte réglementaire où 172 pays disposent de lois
+    sur la protection des données~\cite{stationx_privacy}, cette opacité
+    n'est plus acceptable.
 
-    \item \textbf{L'absence d'intelligence artificielle} : alors que l'IA
-    transforme de nombreux domaines de l'IT, les processus de migration de
-    données restent largement manuels -- de la rédaction des spécifications à
-    la détection des anomalies, en passant par la génération des programmes
-    de transformation. Les outils de migration pilotés par l'IA n'en sont
-    qu'à leurs débuts, avec seulement \textbf{35\,\% des entreprises utilisant
-    des plateformes augmentées par l'IA} pour leurs
-    migrations~\cite{reanin2025}.
+    \item \textbf{L'absence d'intelligence artificielle} : les processus de
+    migration restent largement manuels et réactifs, alors que l'IA offre
+    des possibilités transformatrices en matière d'automatisation, de
+    validation prédictive et de génération intelligente de règles.
+    Seulement \textbf{35\,\% des entreprises} utilisent des plateformes
+    augmentées par l'IA~\cite{reanin2025}, laissant un immense potentiel
+    inexploité.
 \end{itemize}
 
-Ces constats nous amènent à formuler la problématique suivante :
+Ces constats, croisés avec les réalités du terrain observées dans le cadre
+de ce stage au sein de l'équipe ADMP d'Accenture, amènent à formuler la
+problématique suivante :
 
 \begin{quote}
 \textit{Comment concevoir et implémenter une plateforme de migration de
@@ -418,108 +394,8 @@ traçabilité et l'efficience globale du processus de migration ?}
 \end{quote}
 
 Cette problématique sera explorée à travers l'état de l'art (chapitre
-suivant), qui examinera les solutions existantes -- y compris la plateforme
-ADMP -- et les avancées de l'IA dans le domaine de l'intégration de données,
-avant de présenter notre contribution visant à enrichir cette plateforme par
-des capacités d'intelligence artificielle.
-
-% ------------------------------------------------------------
-%  BIBLIOGRAPHIE -- à intégrer dans ton fichier references.bib
-% ------------------------------------------------------------
-%
-% @misc{microsoft_etl,
-%   author  = {{Microsoft}},
-%   title   = {Extract, transform, and load ({ETL})},
-%   year    = {2026},
-%   howpublished = {Azure Architecture Center, Microsoft Learn}
-% }
-% @misc{cloudficient2025,
-%   author  = {{Cloudficient}},
-%   title   = {10 Common Data Migration Challenges and How to Overcome Them},
-%   year    = {2025}
-% }
-% @misc{admp_core,
-%   author  = {{Accenture}},
-%   title   = {{ADMP} -- Core {ADMP} Design School},
-%   year    = {2024},
-%   howpublished = {Accenture Internal Documentation}
-% }
-% @misc{duplocloud2025,
-%   author  = {{DuploCloud}},
-%   title   = {Cloud Migration Statistics 2025},
-%   year    = {2025}
-% }
-% @misc{datamintel2026,
-%   author  = {{DataM Intelligence}},
-%   title   = {Data Migration Market -- Size, Share, Industry, Forecast
-%              and Outlook (2026--2033)},
-%   year    = {2026}
-% }
-% @misc{mam2025,
-%   author  = {{MarketsandMarkets}},
-%   title   = {Data Integration Market -- Global Forecast to 2030},
-%   year    = {2025}
-% }
-% @misc{mordor2025,
-%   author  = {{Mordor Intelligence}},
-%   title   = {{ETL} Software Market Size \& Share Analysis (2025--2033)},
-%   year    = {2025}
-% }
-% @misc{kellton2025,
-%   author  = {{Kellton}},
-%   title   = {Top Data Migration Trends},
-%   year    = {2025}
-% }
-% @misc{kaopiz2025,
-%   author  = {{Kaopiz Global}},
-%   title   = {The Hidden Complexity of Data Migration},
-%   year    = {2025},
-%   howpublished = {Medium}
-% }
-% @misc{kanerika2025,
-%   author  = {{Kanerika}},
-%   title   = {Top 10 Data Migration Risks and How to Avoid Them in 2025},
-%   year    = {2025},
-%   howpublished = {Medium}
-% }
-% @misc{gartner_quality,
-%   author  = {{Gartner}},
-%   title   = {How to Measure and Improve the Quality of Your Data},
-%   year    = {2023}
-% }
-% @misc{ibm2025,
-%   author  = {{IBM}},
-%   title   = {Cost of Poor Data Quality: Impact on Business Operations},
-%   year    = {2025}
-% }
-% @misc{montecarlo2025,
-%   author  = {{Monte Carlo Data}},
-%   title   = {Data Migration Risks Checklist},
-%   year    = {2025}
-% }
-% @misc{wifitalents2025,
-%   author  = {{WiFiTalents}},
-%   title   = {Cloud Migration Failure Statistics},
-%   year    = {2025}
-% }
-% @misc{gitnux_cloud,
-%   author  = {{Gitnux}},
-%   title   = {Cloud Migration Failure Statistics},
-%   year    = {2025}
-% }
-% @misc{admp_overview,
-%   author  = {{Accenture}},
-%   title   = {{ADMP} Overview 2026},
-%   year    = {2026},
-%   howpublished = {Accenture Internal Documentation}
-% }
-% @misc{worldmetrics2025,
-%   author  = {{WorldMetrics}},
-%   title   = {Cloud Migration Failure Statistics},
-%   year    = {2025}
-% }
-% @misc{reanin2025,
-%   author  = {{Reanin}},
-%   title   = {Data Migration Market Report},
-%   year    = {2025}
-% }
+suivant), qui examinera les solutions existantes  y compris la plateforme
+ADMP et son architecture actuelle  et les avancées de l'IA dans ce
+domaine, avant de présenter notre contribution : le développement d'un
+module de génération automatisée intégré à l'évolution IA de la plateforme
+ADMP.

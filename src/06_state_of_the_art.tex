@@ -1,37 +1,71 @@
 % =====================================================================
-% ÉTAT DE L'ART
+% ÉTAT DE L'ART (version finale corrigée)
 % =====================================================================
 \chapter{État de l'Art}
-\section{État de l'Art}
 \label{sec:etat-art}
 
-Le chapitre précédent a mis en lumière les défis structurels de la migration de données et formulé la problématique centrale de ce travail. Le présent chapitre explore l'état de l'art scientifique et technologique afin d'identifier les fondements, les solutions existantes, et les opportunités d'amélioration qui positionnent notre contribution. Nous commençons par les fondements théoriques, passons en revue les solutions du marché, décrivons en profondeur la plateforme ADMP dans son état actuel, explorons les avancées de l'intelligence artificielle appliquées au domaine, avant d'analyser les limites de l'existant et de formuler notre positionnement.
+Le chapitre précédent a mis en lumière les défis structurels de la migration
+de données et formulé la problématique de ce travail. Ce chapitre explore
+l'état de l'art scientifique et technologique afin d'identifier les fondements,
+les solutions existantes et les opportunités qui positionnent notre contribution.
+Nous parcourons successivement les fondements théoriques, les solutions du
+marché, la plateforme ADMP dans son état actuel, les avancées de l'intelligence
+artificielle appliquées au domaine, puis les limites de l'existant et notre
+positionnement.
 
 % =====================================================================
 \subsection{Fondements théoriques}
 \label{subsec:fondements}
 
 % ---------------------------------------------------------------------
-\subsubsection{Le paradigme ETL / ELT : principes et évolution}
+\subsubsection{Le paradigme ETL / ELT et l'architecture Lakehouse}
 \label{subsubsec:etl-elt}
 
-Le paradigme \textbf{ETL (Extract, Transform, Load)} constitue depuis plusieurs décennies le socle fondamental de toute opération d'intégration de données. Il décrit un processus en trois phases séquentielles : l'\textbf{extraction} des données depuis les systèmes sources, leur \textbf{transformation} dans une zone intermédiaire (staging) pour les adapter au modèle cible, puis leur \textbf{chargement} dans le système de destination. Ce paradigme a été le pilier de l'ère du data warehousing classique, où les ressources de calcul étaient limitées et coûteuses, imposant un pré-traitement rigoureux des données avant leur insertion dans l'entrepôt.
+Le paradigme \textbf{ETL (Extract, Transform, Load)} constitue depuis plusieurs
+décennies le socle de l'intégration de données. Il décrit trois phases
+séquentielles : l'\textbf{extraction} depuis les systèmes sources, la
+\textbf{transformation} dans une zone intermédiaire (staging) pour adapter les
+données au modèle cible, puis le \textbf{chargement} dans le système de
+destination. Ce modèle a dominé l'ère du data warehousing classique, lorsque
+des ressources de calcul limitées et coûteuses imposaient un pré-traitement
+rigoureux avant insertion dans l'entrepôt.
 
-Avec l'avènement du cloud computing et des entrepôts de données modernes (Snowflake, BigQuery, Amazon Redshift), un paradigme alternatif a émergé : l'\textbf{ELT (Extract, Load, Transform)}. Dans cette approche, les données brutes sont d'abord chargées dans le système cible, puis transformées directement en exploitant la puissance de calcul élastique de l'infrastructure cloud. L'ELT offre une flexibilité analytique accrue, une meilleure utilisation des ressources et un time-to-insight réduit, tout en posant de nouveaux défis en matière de gouvernance et de gestion technique.
+L'avènement du cloud et des entrepôts modernes (Snowflake, BigQuery, Amazon
+Redshift) a fait émerger l'\textbf{ELT (Extract, Load, Transform)}, où les
+données brutes sont d'abord chargées dans la cible, puis transformées en
+exploitant la puissance de calcul élastique du cloud. L'ELT offre une
+flexibilité analytique accrue et un time-to-insight réduit, au prix de nouveaux
+défis de gouvernance.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/ETL_VS_ELT.png}
+    \includegraphics[width=0.9\textwidth]{img/ETLandELTRedshift1.png}
     \caption{Comparaison des paradigmes ETL et ELT}
     \label{fig:etl-vs-elt}
 \end{figure}
 
-L'évolution de l'ETL vers l'ELT ne se résume pas à une simple réorganisation des étapes : elle reflète un changement fondamental dans la philosophie de gestion des données. Comme le souligne Vanga (2024) dans son étude publiée dans l'\textit{International Journal for Multidisciplinary Research}, cette transition est catalysée par la croissance exponentielle des volumes de données, la prolifération des sources hétérogènes, et les exigences d'analyse en temps réel. Les architectures modernes tendent vers des modèles hybrides combinant les forces des deux approches, avec l'émergence de concepts tels que le \textbf{zero-ETL} et le \textbf{data mesh} qui promettent de réduire encore la complexité des pipelines de données.
-Le Tableau~\ref{tab:etl-elt-comparison} présente une comparaison synthétique des deux paradigmes.
 
-\begin{table}[H]
+Comme le souligne Vanga (2024) dans l'\textit{International Journal for
+Multidisciplinary Research}, cette transition reflète un changement de
+philosophie plus qu'une simple réorganisation des étapes, catalysé par la
+croissance des volumes, la prolifération des sources hétérogènes et les
+exigences d'analyse en temps réel. Les architectures récentes tendent vers des
+modèles hybrides, avec l'émergence du \textbf{zero-ETL} et du \textbf{data
+mesh}.
+
+Cette évolution a également donné naissance au \textbf{data lakehouse},
+architecture hybride qui combine le faible coût et la flexibilité de stockage
+du \textit{data lake} avec les garanties transactionnelles (ACID) et les
+performances analytiques du \textit{data warehouse}. Popularisé par Databricks
+via le format \textbf{Delta Lake}, le lakehouse unifie sur une seule plateforme
+les charges analytiques (BI, reporting) et de data science (ML), supprimant la
+duplication entre lac et entrepôt. Il s'impose aujourd'hui comme socle de
+référence des plateformes de données modernes et constitue une cible d'exécution naturelle pour les artefacts de migration générés.
+
+
+
+\begin{table}[htbp]
 \centering
-
 \begin{tabularx}{\textwidth}{lXX}
 \toprule
 \textbf{Critère} & \textbf{ETL} & \textbf{ELT} \\
@@ -49,80 +83,110 @@ Gouvernance & Contrôle pré-chargement & Nécessite gouvernance SQL forte \\
 Outils typiques & Informatica, Talend, SSIS & dbt, Snowflake, BigQuery \\
 \bottomrule
 \end{tabularx}
-\caption{Comparaison entre ETL et ELT}
+\caption{Comparaison synthétique des paradigmes ETL et ELT}
 \label{tab:etl-elt-comparison}
 \end{table}
+
 
 % ---------------------------------------------------------------------
 \subsubsection{Modélisation des données}
 \label{subsubsec:modelisation}
 
-La réussite d'un projet de migration repose en grande partie sur la maîtrise des modèles de données source et cible. Trois approches principales de modélisation coexistent dans l'écosystème :
+La réussite d'une migration repose en grande partie sur la maîtrise des modèles
+source et cible. Trois approches coexistent dans l'écosystème :
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Le modèle relationnel}, fondé sur les travaux de Codd (1970), organise les données en tables liées par des clés primaires et étrangères. Il reste le standard dominant dans les systèmes transactionnels (OLTP) et les plateformes CRM comme Salesforce.
-    
-    \item \textbf{Le modèle dimensionnel}, popularisé par Kimball, structure les données autour de tables de faits et de dimensions, optimisées pour l'analyse (OLAP). Il est au cœur des entrepôts de données classiques.
-    
-    \item \textbf{Le modèle orienté objet}, qui encapsule données et comportements dans des objets liés par héritage et composition, est utilisé dans les systèmes modernes et les plateformes cloud-native. Comme le détaille la formation CIDS d'ADMP, \og~\textit{an object-oriented data model consists of basic concepts: Object, Object identifier, Attributes, Methods, Class, Class hierarchy, and Inheritance}~\fg{}.
+    \item \textbf{Le modèle relationnel} (Codd, 1970) organise les données en
+    tables liées par clés primaires et étrangères. Il reste le standard dominant
+    des systèmes transactionnels (OLTP) et des plateformes CRM comme Salesforce.
+    \item \textbf{Le modèle dimensionnel} (Kimball) structure les données autour
+    de tables de faits et de dimensions, optimisées pour l'analyse (OLAP), au
+    cœur des entrepôts classiques.
+    \item \textbf{Le modèle orienté objet} encapsule données et comportements
+    dans des objets liés par héritage et composition. Comme le détaille la
+    formation CIDS d'ADMP, \og~\textit{an object-oriented data model consists of
+    basic concepts: Object, Object identifier, Attributes, Methods, Class, Class
+    hierarchy, and Inheritance}~\fg{}.
 \end{itemize}
 
-La compréhension de ces modèles est essentielle pour le Data Analyst qui doit établir les correspondances (mappings) entre le système source et le système cible, en tenant compte des différences structurelles, des contraintes d'intégrité et des relations entre entités.
+La maîtrise de ces modèles est essentielle au Data Analyst, qui doit établir
+les correspondances (mappings) entre source et cible en tenant compte des
+différences structurelles, des contraintes d'intégrité et des relations entre
+entités.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/olap-vs-oltp.png}
+    \caption{OLAP vs OLTP}
+    \label{fig: OLAP vs OLTP}
+\end{figure}
+
 
 % ---------------------------------------------------------------------
 \subsubsection{Qualité des données : métriques et frameworks}
 \label{subsubsec:qualite-donnees}
 
-La qualité des données est un facteur déterminant du succès de toute migration. Le concept de dimensions de qualité des données a été formalisé en 1996 par les professeurs Richard Y. Wang et Diane M. Strong dans leur article fondateur \og~\textit{Beyond Accuracy: What Data Quality Means to Data Consumers}~\fg{}. Depuis, le framework DAMA-DMBOK a standardisé \textbf{six dimensions fondamentales} universellement adoptées, présentées dans le Tableau~\ref{tab:data-quality}.
+La qualité des données conditionne le succès de toute migration. Le concept de
+dimensions de qualité a été formalisé en 1996 par Richard Y. Wang et Diane M.
+Strong (\og~\textit{Beyond Accuracy: What Data Quality Means to Data
+Consumers}~\fg{}). Le framework DAMA-DMBOK a depuis standardisé \textbf{six
+dimensions fondamentales}, présentées dans le Tableau~\ref{tab:data-quality}.
 
-\begin{table}[H]
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/Qualité de data.png}
+    \caption{Les dimensions de la qualité des données}
+    \label{fig:data-quality}
+\end{figure}
+
+\begin{table}[htbp]
 \centering
-
 \begin{tabularx}{\textwidth}{lXX}
 \toprule
 \textbf{Dimension} & \textbf{Description} & \textbf{Exemple d'impact en migration} \\
 \midrule
-Exactitude & Les données reflètent-elles fidèlement la réalité ? & Adresse client erronée → livraison échouée \\
+Exactitude & Les données reflètent-elles la réalité ? & Adresse client erronée, livraison échouée \\
 \addlinespace
-Complétude & Tous les champs requis sont-ils renseignés ? & Champ obligatoire vide → rejet au chargement \\
+Complétude & Tous les champs requis sont-ils renseignés ? & Champ obligatoire vide, rejet au chargement \\
 \addlinespace
 Cohérence & Les données sont-elles uniformes entre systèmes ? & Prix différent entre web et mobile \\
 \addlinespace
-Fraîcheur & Les données sont-elles disponibles à temps ? & Données obsolètes → décisions erronées \\
+Fraîcheur & Les données sont-elles disponibles à temps ? & Données obsolètes, décisions erronées \\
 \addlinespace
-Validité & Les données respectent-elles les formats et règles ? & Date \og~30 février~\fg{} → rejet de validation \\
+Validité & Les formats et règles sont-ils respectés ? & Date \og~30 février~\fg{}, rejet de validation \\
 \addlinespace
-Unicité & Pas de doublons ? & Doublons clients → métriques faussées \\
+Unicité & Pas de doublons ? & Doublons clients, métriques faussées \\
 \bottomrule
 \end{tabularx}
 \caption{Dimensions de la qualité des données et impact en migration}
 \label{tab:data-quality}
 \end{table}
 
-Le coût de la non-qualité est considérable : selon Gartner (2023), la mauvaise qualité des données coûte en moyenne \textbf{12,9 millions de dollars par an} aux organisations. Dans le contexte spécifique de la migration, la mise en place de contrôles de qualité automatisés (profiling, validation pré-chargement, réconciliation post-chargement) est donc un prérequis incontournable.
+Le coût de la non-qualité est considérable (Gartner, 2023 : 12,9 millions de
+dollars par an en moyenne). En migration, la mise en place de contrôles
+automatisés (profiling, validation pré-chargement, réconciliation
+post-chargement) est donc un prérequis incontournable.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{img/Qualité de data.png}
-    \caption{Les dimensions de la qualité des données }
-    \label{fig:data-quality}
-\end{figure}
+
 
 % ---------------------------------------------------------------------
 \subsubsection{Gouvernance des données et conformité}
 \label{subsubsec:gouvernance}
 
-La gouvernance des données établit les politiques, processus et responsabilités qui encadrent la gestion des données tout au long de leur cycle de vie. Dans le contexte de la migration, elle revêt une importance critique pour trois raisons :
+La gouvernance établit les politiques, processus et responsabilités encadrant
+les données tout au long de leur cycle de vie. En migration, elle est critique
+pour trois raisons. D'abord, la \textbf{traçabilité} (\textit{data lineage}),
+capacité à retracer le parcours d'une donnée de son origine à sa destination en
+passant par chaque transformation, est devenue une exigence réglementaire
+explicite (RGPD, Article 30 : registres des activités de traitement). Ensuite,
+le \textbf{principe de responsabilité} (\textit{accountability}, Article 5(2)
+du RGPD) impose de \textbf{démontrer} la conformité, et non simplement de
+l'affirmer, via politiques documentées, rôles définis, contrôles techniques et
+traces d'audit. Enfin, les réglementations émergentes comme l'\textbf{EU AI
+Act} ajoutent une couche de complexité, avec des amendes pouvant atteindre 7,5
+à 35 millions d'euros en cas de non-conformité.
 
-Premièrement, la \textbf{traçabilité des données} (\textit{data lineage}), la capacité à retracer le parcours complet d'une donnée depuis son origine jusqu'à sa destination, en passant par chaque transformation, est devenue une exigence réglementaire explicite. Le RGPD (Article 30) impose aux organisations de maintenir des registres des activités de traitement, incluant la classification des données, le suivi de la qualité, et les politiques de rétention.
-
-Deuxièmement, le \textbf{principe de responsabilité} (\textit{accountability}, Article 5(2) du RGPD) exige que les organisations puissent \textbf{démontrer}, et non simplement affirmer, leur conformité, à travers des politiques documentées, des rôles définis, des contrôles techniques et des traces d'audit.
-
-Troisièmement, les réglementations émergentes comme l'\textbf{EU AI Act} ajoutent une couche supplémentaire de complexité : les organisations utilisant l'IA dans leurs processus de migration doivent documenter de manière exhaustive les flux de données, avec des amendes pouvant atteindre \textbf{7,5 à 35 millions d'euros} en cas de non-conformité.
-
-L'intégration du data lineage dans le cadre de gouvernance offre des avantages concrets : amélioration de la redevabilité, support au troubleshooting, analyse d'impact proactive lors des mises à jour, et simplification des audits de conformité.
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{img/data_lineage.png}
     \caption{Exemple de traçabilité des données (Data Lineage)}
@@ -137,17 +201,17 @@ L'intégration du data lineage dans le cadre de gouvernance offre des avantages 
 \subsubsection{Outils ETL traditionnels}
 \label{subsubsec:etl-traditionnels}
 
-Le marché des outils ETL traditionnels est dominé par trois acteurs majeurs, chacun avec ses forces et ses limites :
+Le marché des outils ETL traditionnels est dominé par trois acteurs.
+\textbf{Informatica PowerCenter}, référence enterprise-grade, offre une large
+connectivité et une gestion robuste des erreurs, mais souffre d'un coût de
+licence élevé et d'une courbe d'apprentissage abrupte. \textbf{Talend}, basé
+sur Java et proposé en open-source puis en édition enterprise, offre plus de
+900 connecteurs, un support natif du Big Data (Hadoop, Spark) et une interface
+accessible. \textbf{SSIS} de Microsoft, intégré à SQL Server sans licence
+additionnelle, est performant en environnement Microsoft mais limité pour les
+systèmes hétérogènes. Le Tableau~\ref{tab:etl-tools-comparison} les compare.
 
-\textbf{Informatica PowerCenter} est considéré comme la référence enterprise-grade. Il offre une large connectivité (Oracle, DB2, Teradata, NoSQL), un profilage automatique des données, et des mécanismes robustes de gestion des erreurs. Cependant, son coût de licence élevé, sa courbe d'apprentissage abrupte et son interface vieillissante limitent son accessibilité.
-
-\textbf{Talend} propose une approche open-source (Talend Open Studio) complétée par une édition enterprise. Basé sur Java, il offre plus de 900 connecteurs, un support natif du Big Data (Hadoop, Spark), et une interface drag-and-drop accessible. Il constitue un choix privilégié pour les organisations cherchant flexibilité et maîtrise des coûts.
-
-\textbf{SSIS (SQL Server Integration Services)} de Microsoft est intégré à SQL Server sans coût de licence additionnel. Performant dans les environnements Microsoft-centric, il souffre néanmoins d'un support limité pour les systèmes non-Microsoft et d'une scalabilité restreinte en environnements hétérogènes.
-
-Le Tableau~\ref{tab:etl-tools-comparison} présente une comparaison détaillée de ces trois outils.
-
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
 \caption{Comparaison des outils ETL traditionnels}
 \label{tab:etl-tools-comparison}
@@ -174,17 +238,44 @@ Courbe d'apprentissage & Raide & Modérée & Modérée \\
 \subsubsection{Services cloud natifs}
 \label{subsubsec:cloud-natifs}
 
-L'essor du cloud a donné naissance à des services d'intégration de données entièrement managés :
 
-\textbf{AWS Glue} est un service ETL serverless basé sur Apache Spark, intégré à l'écosystème AWS (S3, Redshift, Athena). Il propose un Data Catalog automatisé, le support batch et streaming, et un studio visuel de développement de pipelines.
 
-\textbf{Azure Data Factory (ADF)} de Microsoft offre plus de 90 connecteurs natifs, des Data Flows Spark pour les transformations no-code, et un runtime d'intégration hybride permettant de connecter données on-premise et cloud. Son intégration avec Azure Synapse, Databricks et Power BI en fait un choix naturel pour les organisations dans l'écosystème Microsoft.
+Le cloud a donné naissance à des services d'intégration entièrement managés,
+qui ont transformé la conception des pipelines de données. Contrairement aux
+outils ETL traditionnels nécessitant une infrastructure dédiée et des licences
+coûteuses, ces services adoptent un modèle \textbf{serverless} : les ressources
+de calcul sont provisionnées à la demande, la facturation s'effectue à l'usage,
+et la maintenance de l'infrastructure est déléguée au fournisseur cloud.
 
-\textbf{Google Cloud Dataflow}, basé sur Apache Beam, se distingue par son modèle unifié batch/streaming et sa facturation à la seconde. Il excelle dans le traitement en temps réel et les workloads analytiques avancés.
+\textbf{AWS Glue} est un service ETL serverless basé sur Apache Spark et intégré
+nativement à l'écosystème AWS (S3, Redshift, Athena). Il embarque un
+\textit{Data Catalog} automatisé qui référence et versionne les schémas, et
+supporte les traitements batch et streaming.
 
-Le Tableau~\ref{tab:cloud-services-comparison} compare ces trois services cloud.
+\textbf{Azure Data Factory (ADF)} se distingue par la richesse de sa
+connectivité (plus de 90 connecteurs natifs couvrant sources on-premise et
+services cloud) et par son \textit{Integration Runtime} hybride, qui permet de
+traiter des données situées derrière un pare-feu d'entreprise. Son intégration
+à l'écosystème Microsoft en fait le choix privilégié des organisations déjà
+engagées sur Azure.
 
-\begin{table}[H]
+\textbf{Google Cloud Dataflow}, basé sur Apache Beam, se positionne comme la
+solution la plus aboutie pour les architectures temps réel grâce à son modèle
+unifié batch/streaming, sa facturation à la seconde et son autoscaling natif.
+
+Ces trois services partagent un positionnement serverless et une intégration
+profonde à leur écosystème respectif, mais se différencient sur des critères
+décisifs selon le contexte : richesse de la connectivité, maturité du support
+streaming, performances sur les grands volumes et modèle de facturation. En
+pratique, le choix dépend moins d'une supériorité technique absolue que de
+l'alignement avec la stack cloud existante, de la volumétrie, de la latence
+cible et des compétences des équipes. Le
+Tableau~\ref{tab:cloud-services-comparison} synthétise ces différences.
+
+
+
+
+\begin{table}[htbp]
 \centering
 \caption{Comparaison des services cloud natifs}
 \label{tab:cloud-services-comparison}
@@ -207,29 +298,42 @@ Latence streaming p99 & $\sim$120ms & $\sim$148ms & $\sim$89ms \\
 \end{tabularx}
 \end{table}
 
+
 % ---------------------------------------------------------------------
 \subsubsection{Approches ad hoc / scripts custom}
 \label{subsubsec:scripts-custom}
 
-De nombreuses organisations développent encore des scripts ad hoc (SQL, Python, Shell) pour gérer leurs migrations. Cette approche offre une flexibilité maximale et un coût initial faible, mais présente des limites critiques : absence de standardisation, aucune traçabilité intrinsèque, dépendance aux développeurs individuels, maintenance difficile, et risque élevé d'erreurs sur les projets à grande échelle.
+De nombreuses organisations développent encore des scripts ad hoc (SQL, Python,
+Shell). Cette approche offre une flexibilité maximale et un coût initial faible,
+mais présente des limites critiques : absence de standardisation, aucune
+traçabilité intrinsèque, dépendance aux développeurs individuels, maintenance
+difficile et risque élevé d'erreurs à grande échelle.
 
 % ---------------------------------------------------------------------
 \subsubsection{Analyse comparative et limites communes}
 \label{subsubsec:limites-communes}
 
-Malgré leurs différences, toutes ces solutions partagent des limitations structurelles communes :
+Malgré leurs différences, ces solutions partagent des limitations structurelles
+communes :
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Le fossé Design-Build} : dans chaque cas, les spécifications fonctionnelles doivent être traduites manuellement en code exécutable par une équipe technique, créant un risque permanent de décalage entre le design et l'implémentation.
-    
-    \item \textbf{Effet boîte noire} : les moteurs ETL traditionnels ne permettent pas aux équipes fonctionnelles de vérifier directement que le code implémenté correspond aux spécifications validées.
-    
-    \item \textbf{Absence de couche métier} : les services cloud natifs sont performants pour le transport de données, mais manquent de la couche fonctionnelle nécessaire pour gérer les règles de transformation complexes, les Key Decisions, et la validation métier itérative.
-    
-    \item \textbf{Coûts cachés} : licences logicielles, infrastructure dédiée, main-d'œuvre technique spécialisée, et coûts de maintenance s'accumulent au fil du projet.
+    \item \textbf{Le fossé Design-Build} : les spécifications fonctionnelles
+    doivent être traduites manuellement en code exécutable, créant un risque
+    permanent de décalage entre design et implémentation.
+    \item \textbf{Effet boîte noire} : les moteurs ETL traditionnels ne
+    permettent pas aux équipes fonctionnelles de vérifier que le code implémenté
+    correspond aux spécifications validées.
+    \item \textbf{Absence de couche métier} : les services cloud natifs excellent
+    dans le transport de données mais manquent de la couche fonctionnelle
+    nécessaire aux règles complexes, aux Key Decisions et à la validation métier
+    itérative.
+    \item \textbf{Coûts cachés} : licences, infrastructure dédiée, main-d'œuvre
+    spécialisée et maintenance s'accumulent au fil du projet.
 \end{itemize}
 
-C'est dans ce contexte que la plateforme ADMP se positionne comme une réponse industrielle visant à combler ces lacunes.
+C'est dans ce contexte que la plateforme ADMP se positionne comme une réponse
+industrielle visant à combler ces lacunes.
+
 
 % =====================================================================
 \subsection{La plateforme ADMP : état actuel}
@@ -239,6 +343,15 @@ C'est dans ce contexte que la plateforme ADMP se positionne comme une réponse i
 \subsubsection{Envergure mondiale et chiffres clés}
 \label{subsubsec:admp-envergure}
 
+L'\textbf{Accenture Data Migration Platform (ADMP)} est une solution
+propriétaire d'Accenture dédiée à la migration de données d'entreprise à grande
+échelle. Forte de plus de \textbf{25 ans d'expérience}, elle a accompagné plus
+de \textbf{200 projets} de migration, avec plus de \textbf{75 millions d'objets
+métier migrés} par une équipe de plus de \textbf{55 spécialistes}. Elle
+intervient dans \textbf{3 géographies} (North America, APAC, EMEA), se
+positionnant comme \og~\textit{a powerhouse for data migration \&
+services}~\fg{}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{img/admp_worldwide.png}
@@ -246,11 +359,24 @@ C'est dans ce contexte que la plateforme ADMP se positionne comme une réponse i
     \label{fig:admp-worldwide}
 \end{figure}
 
-L'\textbf{Accenture Data Migration Platform (ADMP)} est une solution propriétaire d'Accenture dédiée à la migration de données d'entreprise à grande échelle. Forte de plus de \textbf{25 ans d'expérience}, la plateforme a accompagné plus de \textbf{200 projets de migration} à travers le monde, avec plus de \textbf{75 millions d'objets métier migrés} par une équipe de plus de \textbf{55 spécialistes} techniques et fonctionnels. La plateforme intervient dans \textbf{3 géographies} : North America, APAC et EMEA, positionnant ADMP comme \og~\textit{a powerhouse for data migration \& services}~\fg{}.
-
 % ---------------------------------------------------------------------
 \subsubsection{Quatre piliers de valeur}
 \label{subsubsec:admp-piliers}
+
+La valeur d'ADMP repose sur quatre piliers complémentaires :
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Advanced Tooling} : une suite d'outils et d'accélérateurs
+    rendant les activités de migration transparentes et efficaces.
+    \item \textbf{Skilled Resources} : la capacité à mobiliser rapidement une
+    équipe d'experts capable d'interagir avec toutes les parties prenantes.
+    \item \textbf{Strong Methodology} : des meilleures pratiques éprouvées, de
+    la découverte au déploiement, pour une livraison dans les délais à risque
+    réduit.
+    \item \textbf{Alignment with the Project Strategy} : la capacité à étendre
+    l'expérience acquise pour industrialiser la gestion de la qualité et de la
+    migration des données.
+\end{itemize}
 
 \begin{figure}[H]
     \centering
@@ -259,18 +385,20 @@ L'\textbf{Accenture Data Migration Platform (ADMP)} est une solution propriétai
     \label{fig:admp-pillars}
 \end{figure}
 
-La valeur d'ADMP repose sur quatre piliers complémentaires qui structurent l'offre de service :
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Advanced Tooling} : une suite d'outils et d'accélérateurs permettant de rendre les activités de migration transparentes et efficaces, et d'en réduire la charge additionnelle.
-    \item \textbf{Skilled Resources} : la capacité à mobiliser rapidement une équipe d'experts en migration de données, capable d'interagir avec l'ensemble des parties prenantes tout au long du projet.
-    \item \textbf{Strong Methodology} : un ensemble de meilleures pratiques éprouvées et validées, de la phase de découverte jusqu'au déploiement, garantissant une livraison dans les délais avec un risque réduit. \og~\textit{Experience gained on transformation projects of various complexities}~\fg{}.
-    \item \textbf{Alignment with the Project Strategy} : la capacité à étendre l'expérience acquise sur la plateforme pour aider à mettre en \oe uvre un processus industrialisé de gestion de la qualité et de la migration des données.
-\end{itemize}
-
 % ---------------------------------------------------------------------
 \subsubsection{Un service de migration sur mesure}
 \label{subsubsec:admp-service}
+
+ADMP propose un service global articulé autour de neuf dimensions :
+\textbf{Methodology} (méthodologie éprouvée et standardisée), \textbf{Agility}
+(compatible Agile, ressources scalables), \textbf{Data Load} (accélérateurs
+vers Duck Creek, Salesforce, Workday, SAP), \textbf{Transparency}
+(\og~\textit{No black box effect}~\fg{}, versioning des documents et
+exécutables), \textbf{Experience} (+25 ans, +200 projets), \textbf{Data
+Reconciliation} (deux niveaux de rapports, multiples KPIs), \textbf{Data
+Quality} (audit source, contrôles de non-régression, vérifications
+d'intégrité), \textbf{Infrastructure} (SaaS ou On-Premise, sans licence) et
+\textbf{Data Security} (normes de sécurité Accenture les plus strictes).
 
 \begin{figure}[H]
     \centering
@@ -279,62 +407,64 @@ La valeur d'ADMP repose sur quatre piliers complémentaires qui structurent l'of
     \label{fig:admp-service}
 \end{figure}
 
-ADMP propose un service de migration global articulé autour de neuf dimensions clés :
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Methodology} : méthodologie éprouvée et validée (de la découverte au déploiement), standardisée, s'appuyant sur des experts en migration.
-    \item \textbf{Agility} : compatible avec les méthodes Agile, avec des ressources ajustables et scalables.
-    \item \textbf{Data Load} : accélérateur de chargement vers des plateformes spécifiques (Duck Creek, Salesforce, Workday, SAP) avec validation du processus de chargement.
-    \item \textbf{Transparency} : \og~\textit{No black box effect}~\fg{}, avec versioning de tous les documents et exécutables.
-    \item \textbf{Experience} : +25 ans, +200 projets de migration, expertise fonctionnelle et technique.
-    \item \textbf{Data Reconciliation} : 2 niveaux de rapports de validation, multiples KPIs et monitoring.
-    \item \textbf{Data Quality} : audit technique des données source en amont, contrôles de non-régression continus, vérifications d'intégrité et gestion des exceptions.
-    \item \textbf{Infrastructure} : SaaS ou On-Premise, compatible avec de grands volumes de données, sans coût de licence.
-    \item \textbf{Data Security} : application des normes de sécurité des données les plus strictes d'Accenture.
-\end{itemize}
-
 % ---------------------------------------------------------------------
 \subsubsection{Architecture end-to-end : le flux ETL ADMP}
 \label{subsubsec:admp-etl}
 
+L'architecture ADMP s'inscrit dans le modèle classique
+\textbf{Extract-Transform-Load}, mais chaque phase est enrichie de composants
+propriétaires qui automatisent et sécurisent le processus
+(Figure~\ref{fig:admp-etl}). La plateforme distingue les \textbf{outils ADMP}
+(cœur de valeur, maîtrisés par Accenture) des \textbf{outils non-ADMP}
+(spécifiques aux systèmes source et cible du client).
+
+
+
+\paragraph{Phase 1, Extract.} L'extraction part des systèmes legacy (Oracle,
+SQL Server, DB2, Mainframe, fichiers Excel, Salesforce) via des programmes
+d'\textit{unload} non-ADMP propres à chaque système. Les fichiers obtenus (TXT,
+CSV) sont pris en charge par le composant ADMP \textbf{Data Ingestion}, qui les
+ingère via un transfert sécurisé (SFTP, VPN).
+
+\paragraph{Phase 2, Transform.} C'est le cœur de valeur d'ADMP, en deux
+couches. La première, dédiée à l'\textbf{audit et à la définition des règles},
+repose sur le \textbf{Source Data Audit} (audit automatique de chaque table,
+enregistrement et champ) puis sur les \textbf{Business Rules} (documents RC) et
+les \textbf{Smart Designs} (SDS, IDS, TDS, DS, DP, TT), source unique de vérité
+à partir de laquelle le moteur génère automatiquement les programmes de
+transformation sans développement ETL manuel. La seconde couche assure le
+\textbf{nettoyage et le contrôle qualité} via les \textbf{Technical Rules},
+l'\textbf{Automated Cleansing (TT)} (transcodification source vers cible) et les
+\textbf{Data Integrity Checks} (cohérence référentielle, doublons, complétude).
+
+\paragraph{Phase 3, Load.} La \textbf{Pre-load Validation} vérifie conformité,
+intégrité et volumétrie avant la sortie de la plateforme. Le chargement
+s'effectue via des composants non-ADMP propres à chaque cible (Target Data Load
+générique, Salesforce via Data Loader ou Bulk API, Guidewire via ses APIs),
+architecture ouverte permettant d'interfacer toute plateforme cible (Duck Creek,
+SAP, Vitech, Workday). Le cycle se clôt par la \textbf{Post-load Validation},
+qui réconcilie volumes source et cible et produit les rapports finaux.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/admp_etl_flow.png}
-    \caption{Architecture end-to-end du flux ETL ADMP (Extract → Transform → Load)}
+    \caption{Architecture end-to-end du flux ETL ADMP (Extract, Transform, Load)}
     \label{fig:admp-etl}
 \end{figure}
 
-Pour comprendre la valeur réelle d'ADMP, il convient de suivre le parcours d'une donnée depuis son système source jusqu'au système cible, en traversant chaque composant de la plateforme. Cette architecture, illustrée par la Figure~\ref{fig:admp-etl}, s'inscrit dans le modèle classique \textbf{Extract-Transform-Load (ETL)}, mais chaque phase est enrichie de composants propriétaires ADMP qui automatisent et sécurisent le processus. Il est important de noter que la plateforme distingue deux catégories de composants : les \textbf{outils ADMP} (développés et maîtrisés par Accenture) qui constituent le c\oe ur de la valeur ajoutée, et les \textbf{outils non-ADMP} (spécifiques aux systèmes source et cible du client) qui assurent les interfaces d'entrée et de sortie.
-
-\paragraph{Phase 1 : Extract --- La collecte sécurisée des données sources.}
-
-Le processus débute par l'extraction des données depuis les systèmes legacy du client. Ces données peuvent provenir de sources hétérogènes : bases de données relationnelles (Oracle, SQL Server, DB2, Mainframe), fichiers Excel fournis par les équipes métier, ou environnements Salesforce existants. À ce stade, les programmes d'\textit{unload} utilisés sont des outils \textbf{non-ADMP} : chaque système legacy dispose de son propre mécanisme d'export, que l'équipe adapte au contexte du projet.
-
-Une fois extraits, les fichiers (généralement au format TXT ou CSV) sont pris en charge par le composant \textbf{Data Ingestion}, premier composant \textbf{ADMP} du pipeline. Celui-ci ingère les données dans la plateforme via un protocole de transfert sécurisé (SFTP, VPN), garantissant la confidentialité et l'intégrité des données dès leur entrée dans le périmètre Accenture.
-
-\paragraph{Phase 2 : Transform --- Le c\oe ur de valeur d'ADMP.}
-
-La phase de transformation est celle où ADMP déploie l'essentiel de son intelligence. Elle s'articule en deux couches fonctionnelles complémentaires.
-
-La \textit{première couche} est dédiée à l'\textbf{audit et à la définition des règles}. Le composant \textbf{Source Data Audit} procède à un audit technique automatique et exhaustif de chaque table, enregistrement et champ source : il valide la complétude de l'extraction, détecte les anomalies de format et produit un état des lieux précis des données disponibles. C'est sur cette base que l'équipe de design commence son travail. Les \textbf{Business Rules} (règles métier fonctionnelles, correspondant aux documents RC --- \textit{Record Creation}) et les \textbf{Smart Designs} (l'ensemble des documents de spécification SDS, IDS, TDS, DS, DP, TT) constituent la \textit{source unique de vérité} du projet : le moteur ADMP lit ces documents et génère automatiquement les programmes de transformation, sans aucun développement ETL manuel. Chaque exécution produit un \textbf{Run Report}, rapport automatique de statistiques, d'erreurs et de volumétrie.
-
-La \textit{deuxième couche} assure le \textbf{nettoyage et le contrôle qualité}. Les \textbf{Technical Rules} appliquent les transformations techniques (formats, longueurs, types de données). Le composant \textbf{Automated Cleansing (TT)} exploite les Tables de Transcodification pour normaliser automatiquement les valeurs source vers les valeurs cibles (mappings de codes, constantes, règles de substitution). Enfin, les \textbf{Data Integrity Checks} vérifient la cohérence référentielle entre tables, l'absence de doublons et la complétude des relations, avant que les données ne soient présentées au chargement.
-
-\paragraph{Phase 3 : Load --- Le chargement encadré vers la cible.}
-
-La phase de chargement est délibérément encadrée par deux niveaux de validation. La \textbf{Pre-load Validation} constitue une ultime vérification de conformité, d'intégrité et de volumétrie avant que les données ne quittent la plateforme ADMP vers le système cible. Elle permet de détecter en amont tout écart susceptible de provoquer une erreur lors du chargement.
-
-Le chargement lui-même s'effectue via des composants \textbf{non-ADMP}, propres à chaque système cible : chargement vers des fichiers ou bases de données génériques (\textit{Target Data Load}), chargement spécifique vers Salesforce via Data Loader ou Bulk API, ou vers Guidewire via ses APIs d'import métier. Cette architecture intentionnellement ouverte permet à ADMP d'interfacer avec n'importe quelle plateforme cible du marché (Duck Creek, SAP, Vitech, Workday, etc.) sans dépendance technologique.
-
-Le cycle se clôt par la \textbf{Post-load Validation}, composant ADMP qui effectue la réconciliation entre les volumes de données sources et cibles, contrôle la complétude du chargement et produit les rapports de migration finaux. C'est ce dernier rapport qui constitue la preuve de bonne exécution présentée au client.
-
-\paragraph{Synthèse : quatre niveaux de validation intégrés.}
-
-L'une des forces distinctives de l'architecture ADMP réside dans l'intégration systématique de quatre niveaux de validation tout au long du pipeline : l'\textbf{audit source} (avant le design), les \textbf{contrôles d'intégrité} (durant la transformation), la \textbf{validation pré-chargement} et la \textbf{validation post-chargement}. Cette approche élimine l'\textit{effet boîte noire} des solutions ETL traditionnelles et garantit une traçabilité complète, de la donnée source jusqu'à la donnée migrée dans le système cible.
+\paragraph{Synthèse.} ADMP intègre systématiquement quatre niveaux de
+validation (audit source, contrôles d'intégrité, validation pré-chargement,
+validation post-chargement), éliminant l'\textit{effet boîte noire} des
+solutions ETL traditionnelles et garantissant une traçabilité complète de la
+donnée source à la donnée migrée.
 
 % ---------------------------------------------------------------------
 \subsubsection{Smart Designs vs ETL standard}
 \label{subsubsec:admp-vs-etl}
+
+La comparaison entre l'approche ADMP Smart Designs et l'ETL traditionnel met en
+évidence des avantages structurels, synthétisés dans le
+Tableau~\ref{tab:admp-vs-etl}.
 
 \begin{figure}[H]
     \centering
@@ -342,8 +472,6 @@ L'une des forces distinctives de l'architecture ADMP réside dans l'intégration
     \caption{Comparaison visuelle ADMP Smart Designs vs Standard ETL}
     \label{fig:admp-vs-etl}
 \end{figure}
-
-La comparaison entre l'approche ADMP Smart Designs et l'approche ETL traditionnelle met en évidence des avantages structurels significatifs, synthétisés dans le Tableau~\ref{tab:admp-vs-etl}.
 
 \begin{table}[H]
 \centering
@@ -357,13 +485,13 @@ Build & Équipe technique requise (Talend, Informatica, BODS) & Aucun développe
 \addlinespace
 Rapports & Développés en supplément de l'ETL & Générés automatiquement depuis les Smart Designs \\
 \addlinespace
-Scalabilité & Contrainte par l'équipe technique et les outils & Gérée par design, templates hautement distribués \\
+Scalabilité & Contrainte par l'équipe et les outils & Gérée par design, templates distribués \\
 \addlinespace
 Réutilisabilité & Compétences techniques avancées requises & Personnalisation facile (Word/Excel) \\
 \addlinespace
-Mises à jour des règles & Mise à jour simultanée des documents \textit{et} de l'ETL & Mise à jour du Smart Design uniquement \\
+Mises à jour des règles & Mise à jour des documents \textit{et} de l'ETL & Mise à jour du Smart Design uniquement \\
 \addlinespace
-Traçabilité & Impossible de valider design vs implémentation & Une seule source de vérité, traçabilité complète \\
+Traçabilité & Validation design vs implémentation impossible & Source de vérité unique, traçabilité complète \\
 \addlinespace
 Licence & Coût de licence requis & Aucun coût de licence \\
 \bottomrule
@@ -371,177 +499,147 @@ Licence & Coût de licence requis & Aucun coût de licence \\
 \end{table}
 
 % ---------------------------------------------------------------------
-\subsubsection{La méthodologie ADMP : notre approche détaillée}
+\subsubsection{La méthodologie ADMP en quatre phases}
 \label{subsubsec:admp-approche}
 
-La méthodologie ADMP structure la migration en quatre phases, chacune impliquant des rôles précis côté client et côté Accenture.
+La méthodologie ADMP structure la migration en quatre phases successives. La
+phase \textbf{Extract} définit le périmètre, extrait les données source vers
+des fichiers TXT/CSV sécurisés et procède à leur audit automatique par table,
+enregistrement et champ. La phase \textbf{Design} produit les Table Mapping,
+Data Mapping et Key Decisions, validés en workshops avec les équipes IT et
+Business, puis les Migration Steps, Transcodification Tables et Data Migration
+Units (Data Structure, Record Creation, Data Population). La phase
+\textbf{Build} génère intégralement les programmes de migration depuis les Smart
+Designs sans développement ETL manuel, puis les stabilise via des Assembly Tests
+itératifs. Enfin, la phase \textbf{Test et Déploiement} livre des releases test
+toutes les 2 à 4 semaines, supporte les tests fonctionnels (analyse des causes
+de défauts, affinement des règles) et orchestre les répétitions (\textit{rehearsals})
+et l'exécution du plan de bascule final (\textit{cutover}).
 
-\paragraph{Phase 1 --- Extraction des données.}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{img/admp_approach_extract.png}
-    \caption{Phase d'extraction -- Rôles et activités ADMP}
-    \label{fig:admp-extract}
-\end{figure}
 
-Cette phase comprend trois étapes : (1) la \textbf{définition du périmètre et chargement} des données source, incluant un dictionnaire de données détaillé (noms de champs, formats, descriptions, domaines et systèmes source) ; (2) l'\textbf{extraction} des données depuis le système source vers des fichiers TXT ou CSV, chiffrés et transmis via SFTP/VPN ; (3) l'\textbf{audit technique automatique} des données source par table, enregistrement et champ.
-
-\paragraph{Phase 2 --- Design (Analyse et Conception détaillée).}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{img/admp_approach_design.png}
-    \caption{Phase de design -- Analyse et conception détaillée ADMP}
-    \label{fig:admp-design}
-\end{figure}
-
-Organisée en deux volets : (1) l'\textbf{analyse de données} (Table Mapping, Data Mapping, Key Decisions pour les écarts majeurs), validée en workshops IT et Business ; (2) la \textbf{conception détaillée} comprenant les Migration Steps (workflows par domaine avec dépendances et stratégies de parallélisation), les Transcodification Tables, et les Data Migration Units (Data Structure, Record Creation, Data Population).
-
-\paragraph{Phase 3 --- Build.}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{img/admp_approach_build.png}
-    \caption{Phase de build -- Automatisation complète depuis les Smart Designs}
-    \label{fig:admp-build}
-\end{figure}
-
-ADMP automatise intégralement la création des programmes de migration depuis les documents de design : (1) \textbf{Full Build Automation} -- le moteur récupère et traite directement les documents depuis le dépôt de l'équipe design ; (2) \textbf{Assembly Test} -- tests rigoureux pour identifier et corriger les problèmes techniques avec un minimum d'intervention manuelle ; (3) \textbf{Stabilisation} -- raffinement continu du processus à l'aide des rapports, pour aligner les données migrées avec les standards métier et de conformité.
-
-\paragraph{Phase 4 --- Test et Déploiement.}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{img/admp_approach_test_deploy.png}
-    \caption{Phase de test et déploiement -- Cycle itératif ADMP}
-    \label{fig:admp-test-deploy}
-\end{figure}
-
-La phase suit un cycle itératif organisé autour de : (1) \textbf{Post-build issues reporting} -- identification des anomalies, distinguant les correctifs immédiats des sujets nécessitant l'input des équipes IT ou Business ; (2) \textbf{Livraisons itératives de releases test} -- une nouvelle version toutes les 2 à 4 semaines (refresh des données source, corrections, mises à jour des règles) ; (3) \textbf{Test support} -- analyse et support lors des tests, identification des causes de défauts et affinement des règles ; (4) \textbf{Rehearsal \& Rollout} -- gestion complète du processus lors des répétitions (\textit{rehearsals}) et exécution du plan de bascule (\textit{cutover}).
 
 % =====================================================================
 \subsection{Intelligence artificielle et intégration de données}
 \label{subsec:ia-integration}
 
 % ---------------------------------------------------------------------
-\subsubsection{LLM et génération de code (GPT, Mistral, fine-tuning, LoRA)}
-\label{subsubsec:llm}
+\subsubsection{Concepts mobilisés : LLM, RAG et agents}
+\label{subsubsec:fondements-ia}
 
-Les \textbf{Large Language Models (LLM)} ont révolutionné le domaine de la génération automatique de code et de la compréhension du langage naturel. Des modèles comme GPT-4, Llama 3, Claude et Mistral sont capables de générer du code SQL, Python ou PySpark à partir de spécifications en langage naturel, ouvrant des perspectives considérables pour l'automatisation des processus de migration.
+Les \textbf{Large Language Models (LLM)} comme GPT-4, Claude, Llama 3 ou
+Mistral génèrent du code (SQL, Python, PySpark) et interprètent des
+spécifications en langage naturel, ouvrant des perspectives directes pour
+l'automatisation de la migration. Notre contribution s'appuie sur des appels à
+une API LLM existante, sans entraînement ni adaptation de modèle.
 
-La technique de \textbf{LoRA (Low-Rank Adaptation)}, introduite par Hu et al. (2021), a transformé l'approche du fine-tuning en permettant d'adapter des modèles de plusieurs milliards de paramètres avec une fraction des ressources habituellement nécessaires. LoRA gèle les poids du modèle pré-entraîné et injecte des matrices de rang faible entraînables dans chaque couche, réduisant les paramètres entraînables de \textbf{99\%+} tout en atteignant \textbf{95-98\% de la performance} d'un fine-tuning complet.
+Le \textbf{RAG (Retrieval-Augmented Generation)} (Lewis et al., 2020) enrichit
+un LLM en lui fournissant, au moment de l'inférence, des passages pertinents
+extraits d'une base de connaissances externe. Requêtes et documents sont encodés
+en vecteurs denses puis comparés dans une base vectorielle (FAISS, pgvector,
+Pinecone) ; les passages récupérés sont injectés dans le contexte du modèle
+pour produire des réponses factuellement ancrées. En migration, le RAG permet
+d'exploiter la documentation existante (SDS, TDS, RC, DP) comme base de
+connaissances pour assister la rédaction de règles et la validation des designs.
 
-Concrètement, le fine-tuning d'un modèle Llama 3.1 70B passe de \textbf{8 GPU A100 pendant 48 heures ($\sim$15 000 \$)} en fine-tuning complet à \textbf{1 GPU A100 pendant 4 heures ($\sim$500 \$)} avec LoRA. Cette démocratisation rend le fine-tuning accessible pour des cas d'usage spécifiques à un domaine, comme la génération de règles de transformation de données.
-
-La variante \textbf{QLoRA} combine LoRA avec une quantification 4-bit, permettant le fine-tuning sur du matériel grand public, une avancée particulièrement pertinente pour les équipes ne disposant pas d'infrastructure GPU dédiée.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/LoRa.png}
-    \caption{Principe du fine-tuning avec LoRA (Low-Rank Adaptation)}
-    \label{fig:lora}
-\end{figure}
-
-% ---------------------------------------------------------------------
-\subsubsection{RAG (Retrieval-Augmented Generation)}
-\label{subsubsec:rag}
-
-Le \textbf{RAG (Retrieval-Augmented Generation)}, introduit par Lewis et al. (2020), est une architecture qui enrichit les LLM en les couplant avec des sources de connaissances externes au moment de l'inférence. Plutôt que de s'appuyer uniquement sur les connaissances intériorisées lors de l'entraînement, le RAG récupère dynamiquement des passages pertinents depuis une base documentaire et les injecte dans le contexte du modèle pour générer des réponses factuellement ancrées.
-
-L'architecture RAG se décompose en deux composants principaux :
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Le composant de récupération} : les requêtes sont encodées en vecteurs denses, puis comparées aux vecteurs de documents pré-encodés dans une base vectorielle (FAISS, pgvector, Pinecone). Les passages les plus pertinents sont extraits.
-    
-    \item \textbf{Le composant de génération} : les documents récupérés sont combinés avec la requête pour produire une réponse contextuelle et précise via le LLM.
-\end{itemize}
-
-Microsoft propose une architecture RAG de référence dans Azure Architecture Center, intégrant Azure AI Search, Semantic Kernel et des modèles de langage pour construire des applications d'entreprise robustes.
-
-Dans le contexte de la migration de données, le RAG permet d'exploiter la documentation existante (SDS, TDS, RC, DP) comme base de connaissances pour assister les spécificateurs dans la rédaction de règles, la résolution de questions fonctionnelles, et la validation des designs.
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{img/RAG.png}
     \caption{Architecture Retrieval-Augmented Generation (RAG)}
     \label{fig:rag-architecture}
 \end{figure}
 
-% ---------------------------------------------------------------------
-\subsubsection{Agents IA et automatisation de workflows}
-\label{subsubsec:agents-ia}
-
-Les \textbf{agents IA} représentent une évolution majeure par rapport à l'automatisation traditionnelle. Contrairement aux systèmes RPA (\textit{Robotic Process Automation}) qui suivent des scripts prédéfinis, les agents IA combinent perception, raisonnement et action pour accomplir des objectifs de manière autonome.
-
-Leurs caractéristiques distinctives incluent :
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Autonomie} : fonctionnement indépendant sans supervision constante.
-    \item \textbf{Conscience contextuelle} : compréhension des scénarios métier nuancés.
-    \item \textbf{Raisonnement multi-étapes} : décomposition de tâches complexes en sous-tâches exécutables.
-    \item \textbf{Auto-correction} : identification et rectification des erreurs en cours d'exécution.
-    \item \textbf{Intégration d'outils} : connexion transparente avec APIs, bases de données et systèmes d'entreprise.
-\end{itemize}
-
-Le marché mondial des agents IA est estimé à \textbf{5,1 milliards USD en 2024}, avec une projection à \textbf{47,1 milliards USD d'ici 2030} (CAGR de 44,8\%). Toutefois, selon Gartner (2025), moins de \textbf{5\% des applications d'entreprise intègrent de véritables agents IA} à ce stade, la majorité n'utilisant que des assistants basiques.
+Les \textbf{agents IA} dépassent l'automatisation par scripts (RPA) en
+combinant raisonnement, intégration d'outils (APIs, bases de données) et
+auto-correction pour atteindre un objectif de manière autonome. En migration,
+ces approches permettent le mapping automatique de schémas (réduction du temps
+de mapping de 30 à 60\% selon Blackburn, 2025), la détection d'anomalies
+invisibles aux règles statiques et le monitoring en production. La plateforme
+\textbf{MAiGRATE} (Compliance Group) en est une illustration, combinant ML et
+LLM pour automatiser l'ensemble du cycle avec apprentissage continu. Cette
+logique agentique est au cœur des architectures d'IA appliquées aux workflows
+métier complexes, dont ADMP AI Studio.
 
 % ---------------------------------------------------------------------
-\subsubsection{Applications de l'IA dans la migration de données}
-\label{subsubsec:ia-migration}
+\subsubsection{La couche IA d'ADMP AI Studio}
+\label{subsubsec:ai-layer}
 
-L'application de l'IA au domaine spécifique de la migration de données est un champ émergent mais prometteur, avec cinq cas d'usage à fort impact identifiés par Blackburn (2025) :
+L'évolution d'ADMP introduit une \textbf{couche IA transversale} qui intervient
+à chaque phase du cycle de migration. Elle repose sur une architecture
+\textbf{agnostique au fournisseur LLM} (OpenAI, Claude/Anthropic, Gemini,
+Mistral, AWS Bedrock), sélectionnable par configuration avec bascule automatique
+en cas d'indisponibilité d'un fournisseur, et sur un mécanisme \textbf{RAG}
+alimenté par les artefacts et les résultats des projets de migration passés, lui
+conférant une capacité d'amélioration continue. Elle se décline en cinq niveaux
+fonctionnels :
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Mapping automatique de schémas} : les modèles ML analysent la structure, le contenu et les métadonnées des sources pour suggérer des correspondances source-cible, réduisant le temps de mapping de \textbf{30-60\%}.
-    
-    \item \textbf{Évaluation et nettoyage de la qualité} : les LLM détectent les anomalies que les règles statiques ne capturent pas, et peuvent suggérer des actions de nettoyage automatiques.
-    
-    \item \textbf{Génération de données synthétiques de test} : les modèles génératifs produisent des jeux de test réalistes préservant les propriétés statistiques sans exposer de données réelles.
-    
-    \item \textbf{Planification intelligente de la migration} : le reinforcement learning optimise l'ordonnancement des lots de migration en fonction des dépendances et des contraintes de fenêtre.
-    
-    \item \textbf{Monitoring et détection d'anomalies en production} : des pipelines de détection identifient les écarts en temps réel et accélèrent le triage des erreurs.
+    \item \textbf{Spec Generation} : génération automatique des spécifications
+    RC, DS et DP à partir du contexte du projet.
+    \item \textbf{Intelligent Audit} : production d'un quality score, détection
+    des anomalies et suggestions de transcodification adaptées au profiling des
+    données.
+    \item \textbf{Smart Mapping} : orchestration du pipeline en 14 étapes de la
+    phase Transform.
+    \item \textbf{Monitoring} : génération d'alertes, de rapports automatiques
+    et d'une analyse des erreurs d'exécution.
+    \item \textbf{RAG Memory} : base de connaissances structurée (projets passés,
+    mappings validés, décisions architecturales, tables de transcodification) qui
+    affine progressivement la pertinence des suggestions proposées aux équipes.
 \end{itemize}
-
-La plateforme \textbf{MAiGRATE} de Compliance Group illustre cette tendance : elle combine IA, ML et LLM pour automatiser l'ingestion, la transformation, le mapping de champs, la déduplication, la détection d'anomalies et la validation, avec un apprentissage continu améliorant la précision à chaque cycle de migration.
 
 % =====================================================================
 \subsection{Limites de l'existant et opportunités}
 \label{subsec:limites-opportunites}
 
+Cette couche IA, intégrée à ADMP AI Studio, répond directement aux limites des
+outils legacy décrits ci-dessous.
+
 % ---------------------------------------------------------------------
 \subsubsection{Limites des outils de design actuels}
 \label{subsubsec:limites-design}
 
-Les Design Tools actuels d'ADMP reposent sur des \textbf{plugins VBA intégrés à Word et Excel}. Si cette approche a l'avantage d'utiliser des outils familiers aux équipes fonctionnelles, elle présente des limitations de plus en plus critiques :
-
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Technologie vieillissante} : VBA est un langage de macro datant des années 1990, dont le support et l'évolutivité sont limités.
-    \item \textbf{Pas de collaboration en temps réel} : contrairement aux outils web modernes, les documents Word/Excel ne permettent pas l'édition simultanée avec traçabilité fine.
-    \item \textbf{Intégration IA impossible} : l'architecture VBA ne permet pas d'intégrer nativement des appels à des API d'IA (OpenAI, Bedrock) pour assister la rédaction.
-    \item \textbf{Maintenance complexe} : les macros VBA sont fragiles, sensibles aux versions d'Office, et difficiles à déboguer.
-\end{itemize}
+Les Design Tools historiques d'ADMP reposent sur des \textbf{plugins VBA
+intégrés à Word et Excel}. Familiers aux équipes fonctionnelles, ils présentent
+des limites de plus en plus critiques : technologie vieillissante (VBA date des
+années 1990), absence de collaboration en temps réel avec traçabilité fine,
+intégration d'API d'IA impossible, et maintenance complexe (macros fragiles et
+sensibles aux versions d'Office).
 
 % ---------------------------------------------------------------------
 \subsubsection{Rédaction manuelle des spécifications}
 \label{subsubsec:redaction-manuelle}
 
-La rédaction des spécifications de migration (RC, DP, DS, TT) reste un processus \textbf{largement manuel et chronophage}. Chaque document nécessite une compréhension approfondie du modèle source, du modèle cible, et des règles métier spécifiques. Comme le souligne la présentation d'évolution ADMP, l'un des objectifs stratégiques de la modernisation est de \og~\textit{Optimize and accelerate the time needed to write specifications}~\fg{} et de \og~\textit{Create a true wizard for specifiers and reduce the overall burden}~\fg{}.
-
-Le rapport PFE de Abbad el andaloussi, Larbi estime que l'automatisation de la génération des livrables de migration permettrait une \textbf{réduction de 50 à 60\% du temps} nécessaire à leur production, tout en minimisant les risques d'erreurs humaines.
+La rédaction des spécifications (RC, DP, DS, TT) reste \textbf{largement
+manuelle et chronophage}, chaque document exigeant une compréhension approfondie
+des modèles source et cible et des règles métier. La présentation d'évolution
+ADMP fixe d'ailleurs comme objectifs d'\og~\textit{Optimize and accelerate the
+time needed to write specifications}~\fg{} et de \og~\textit{Create a true
+wizard for specifiers and reduce the overall burden}~\fg{}. Abbad El Andaloussi
+(2025) estime que l'automatisation de la génération des livrables permettrait
+une réduction de 50 à 60\% du temps de production, tout en minimisant les
+erreurs humaines.
 
 % ---------------------------------------------------------------------
-\subsubsection{Absence d'IA dans le processus de migration}
+\subsubsection{Absence d'IA dans les outils legacy}
 \label{subsubsec:absence-ia}
 
-Malgré les avancées considérables de l'IA dans d'autres domaines de l'IT, le processus de migration ADMP reste \textbf{dépourvu d'intelligence artificielle}. Aucun module IA n'assiste actuellement les spécificateurs dans la rédaction des règles, la détection des incohérences, ou la validation automatique des designs. Cette absence représente une opportunité majeure d'amélioration.
+Malgré les avancées de l'IA dans le reste du domaine IT, les outils de design
+\textbf{historiques} d'ADMP (plugins VBA Word/Excel) restent dépourvus
+d'intelligence artificielle : aucun module n'assiste la rédaction des règles,
+la détection des incohérences ou la validation automatique des designs. C'est
+précisément cette lacune qui a motivé le développement d'ADMP AI Studio et
+constitue l'opportunité dans laquelle s'inscrit notre contribution.
 
 % ---------------------------------------------------------------------
 \subsubsection{Dépendance à l'expertise humaine}
 \label{subsubsec:dependance-expertise}
 
-La qualité de la migration repose fortement sur l'expertise individuelle des Data Analysts. L'\textbf{onboarding} de nouveaux membres nécessite une formation intensive (la CIDS dure \textbf{2 semaines (80 heures)}) et l'acquisition de la maturité opérationnelle prend plusieurs mois supplémentaires. Cette dépendance crée un risque de perte de connaissances (\textit{knowledge drain}) lors des rotations d'équipe et limite la scalabilité des opérations.
+La qualité de la migration repose fortement sur l'expertise individuelle des
+Data Analysts. L'\textbf{onboarding} exige une formation intensive (la CIDS
+dure 2 semaines, soit 80 heures) et plusieurs mois pour atteindre la maturité
+opérationnelle. Cette dépendance crée un risque de perte de connaissances
+(\textit{knowledge drain}) lors des rotations d'équipe et limite la scalabilité.
 
 % =====================================================================
 \subsection{Synthèse et positionnement de la contribution}
@@ -551,9 +649,10 @@ La qualité de la migration repose fortement sur l'expertise individuelle des Da
 \subsubsection{Tableau de synthèse des gaps identifiés}
 \label{subsubsec:gaps}
 
-Le Tableau~\ref{tab:gaps-synthesis} synthétise les principaux gaps identifiés et les opportunités associées.
+Le Tableau~\ref{tab:gaps-synthesis} synthétise les principaux gaps et
+opportunités identifiés.
 
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
 \caption{Synthèse des gaps identifiés et opportunités}
 \label{tab:gaps-synthesis}
@@ -561,15 +660,15 @@ Le Tableau~\ref{tab:gaps-synthesis} synthétise les principaux gaps identifiés 
 \toprule
 \textbf{Gap identifié} & \textbf{Impact} & \textbf{Opportunité} \\
 \midrule
-Outils de design VBA obsolètes & Pas de collaboration, pas d'IA & → ADMP Studio (outil web moderne) \\
+Outils de design VBA obsolètes & Pas de collaboration, pas d'IA & ADMP Studio (outil web moderne) \\
 \addlinespace
-Rédaction manuelle des spécifications & Chronophage, risque d'erreur & → ADMP AI Engine (génération assistée) \\
+Rédaction manuelle des spécifications & Chronophage, risque d'erreur & ADMP AI Engine (génération assistée) \\
 \addlinespace
-Absence d'IA dans le processus & Aucune assistance intelligente & → Intégration LLM + RAG \\
+Absence d'IA dans les outils legacy & Aucune assistance intelligente & Intégration LLM dans AI Studio \\
 \addlinespace
-Dépendance à l'expertise humaine & Onboarding long, scalabilité limitée & → Assistant IA pour spécificateurs \\
+Dépendance à l'expertise humaine & Onboarding long, scalabilité limitée & Assistant IA pour spécificateurs \\
 \addlinespace
-Pas de génération automatique de code & Build manuel des programmes & → Bundle Databricks (notre contribution) \\
+Génération manuelle des artefacts ADF & Build manuel, risque d'erreur de déploiement & Générateur ADF (notre contribution) \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -578,10 +677,25 @@ Pas de génération automatique de code & Build manuel des programmes & → Bund
 \subsubsection{Positionnement du PFE}
 \label{subsubsec:positionnement-pfe}
 
-L'analyse de l'état de l'art révèle que la plateforme ADMP, malgré sa maturité et ses avantages concurrentiels significatifs, se trouve à un tournant stratégique. Les outils existants ont prouvé leur efficacité pendant plus de 25 ans, mais l'absence d'intelligence artificielle dans le processus constitue désormais un frein à l'innovation et à la compétitivité.
+L'analyse de l'état de l'art révèle que la plateforme ADMP, malgré sa maturité
+et ses avantages concurrentiels, se trouve à un tournant stratégique : ses
+outils historiques ont prouvé leur efficacité pendant plus de 25 ans, mais
+l'absence d'intelligence artificielle dans le processus freine désormais
+l'innovation et la compétitivité. Son programme d'évolution, articulé autour
+de l'\textbf{ADMP AI Engine} et de l'\textbf{ADMP AI Studio}, vise à combler
+ces gaps.
 
-Le programme d'évolution d'ADMP, articulé autour de l'\textbf{ADMP AI Engine}, de l'\textbf{ADMP Studio} et de l'amélioration des outils de design, vise à combler ces gaps.
-
-Notre contribution, le \textbf{développement du module de génération du bundle Databricks}, s'inscrit précisément dans cet axe d'industrialisation. Ce module vise à automatiser la création des artefacts de migration en s'appuyant sur des technologies de traitement distribué (Apache Spark / Databricks) et d'intelligence artificielle générative, transformant ainsi les Smart Designs en programmes exécutables sur des infrastructures cloud modernes.
-
-Ce positionnement se situe à l'intersection de trois tendances identifiées dans l'état de l'art : l'\textbf{automatisation du cycle Design-Build} (section~\ref{subsec:admp-actuel}), l'\textbf{application de l'IA à la migration} (section~\ref{subsec:ia-integration}), et le besoin de \textbf{modernisation des outils} (section~\ref{subsec:limites-opportunites}). Le chapitre suivant présentera le cadre méthodologique et organisationnel dans lequel ce travail a été réalisé.
+Notre contribution, la \textbf{fiabilisation du module de génération de packages
+Azure Data Factory}, s'inscrit précisément dans cet axe d'industrialisation. Ce
+module automatise la création des artefacts d'intégration ADF (pipelines,
+linked services, datasets) à partir des Smart Designs, transformant une
+conception fonctionnelle en artefacts déployables sur Azure. La correction des
+bugs critiques identifiés (schéma indéfini, authentification Managed Identity,
+datasets superflus) et la fiabilisation du script de déploiement constituent le
+cœur de cette contribution technique. Ce positionnement se situe à
+l'intersection de trois tendances de l'état de l'art : l'\textbf{automatisation
+du cycle Design-Build} (section~\ref{subsec:admp-actuel}), l'\textbf{application
+de l'IA à la migration} (section~\ref{subsec:ia-integration}) et le besoin de
+\textbf{modernisation des outils} (section~\ref{subsec:limites-opportunites}).
+Le chapitre suivant présentera le cadre méthodologique et organisationnel de ce
+travail.

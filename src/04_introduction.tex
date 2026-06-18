@@ -19,7 +19,7 @@
 \section{Introduction Générale}
 \label{chap:introduction}
 
-La transformation numérique des entreprises impose aujourd'hui des défis sans précédent en matière de gestion et d'intégration des données. Parmi ces défis, la migration de données, processus consistant à transférer de manière sécurisée et contrôlée les données d'un système source vers un système cible, constitue un enjeu stratégique majeur. C'est dans ce contexte que s'inscrit le présent Projet de Fin d'Études, réalisé au sein de l'équipe ADMP (Accenture Data Migration Platform) d'Accenture, et portant sur le développement d'une plateforme de migration de données basée sur l'intelligence artificielle pour l'amélioration et l'optimisation des processus d'intégration des données.
+La transformation numérique des entreprises impose aujourd'hui des défis sans précédent en matière de gestion et d'intégration des données. Parmi ces défis, la migration de données, processus consistant à transférer de manière sécurisée et contrôlée les données d'un système source vers un système cible, constitue un enjeu stratégique majeur. C'est dans ce contexte que s'inscrit le présent Projet de Fin d'Études (PFE), réalisé au sein de l'équipe ADMP (Accenture Data Migration Platform) d'Accenture, et portant sur le développement d'une plateforme de migration de données basée sur l'intelligence artificielle pour l'amélioration et l'optimisation des processus d'intégration des données.
 
 % =====================================================================
 \section{Organisme d'accueil}
@@ -33,7 +33,7 @@ La transformation numérique des entreprises impose aujourd'hui des défis sans 
 \label{subsec:accenture}
 
 Accenture plc est une entreprise multinationale de services professionnels, fondée en 1989 sous le nom d'Andersen Consulting avant de devenir Accenture en 2001, et dont le siège social est situé à Dublin, en Irlande. Cotée à la Bourse de New York (NYSE : ACN), Accenture figure parmi les plus grandes entreprises mondiales de conseil et de services technologiques.
-En termes de performance financière, l'exercice fiscal 2025 (clos le 31 août 2025) témoigne de la solidité et de l'envergure du groupe, comme l'illustre le Tableau~\ref{tab:accenture-fy25}.
+En termes de performance financière, l'exercice fiscal 2025 (clos le 31 août 2025) témoigne de la solidité et de l'envergure du groupe, comme l'illustre le Tableau.
 
 \begin{table}[h!]
 \centering
@@ -82,7 +82,7 @@ L'\textbf{Accenture Data Migration Platform (ADMP)} est une capacité de migrati
 
 L'équipe ADMP se positionne au sein de la practice \textbf{Technology, Data \& AI} et constitue un centre d'expertise spécialisé dans la migration de systèmes legacy vers des plateformes modernes. Son périmètre d'intervention est mondial et couvre trois géographies : North America, APAC et EMEA.
 
-Les chiffres clés de l'ADMP, présentés dans le Tableau~\ref{tab:admp-kpi}, illustrent sa maturité et son envergure.
+Les chiffres clés de l'ADMP, présentés dans le Tableau, illustrent sa maturité et son envergure.
 
 \begin{table}[h!]
 \centering
@@ -126,18 +126,13 @@ Fondée en \textbf{1998} par Jérôme Picard, \textbf{AFD.Tech} est une sociét�
 
 Avec une croissance annuelle soutenue, AFD.Tech intervient aujourd'hui sur des projets complexes auprès de clients majeurs des secteurs bancaire, assurance, énergie, transport, télécommunications et services publics. Son implantation géographique s'étend sur trois pays (France, Belgique et Maroc) et compte aujourd'hui une dizaine de bureaux répartis entre Paris, Bruxelles, Rabat, Lyon, Strasbourg, Lille, Nantes, Toulouse, Marseille et Rennes.
 
-Le tableau \ref{tab:afdtech-info} synthétise les principales informations relatives à l'entreprise.
+Le tableau synthétise les principales informations relatives à l'entreprise.
 
 \begin{figure}[h]
-    \makebox[\textwidth][c]{%
-        $\vcenter{\hbox{\includegraphics[height=18mm,keepaspectratio]{img/logoNoAcc.png}}}$
-        \hspace{12mm}
-        {\LARGE\textbf{X}}
-        \hspace{12mm}
-        $\vcenter{\hbox{\includegraphics[height=26mm,keepaspectratio]{img/logoaccenture.png}}}$
-    }
+    \centering
+    \includegraphics[width=0.35\textwidth]{img/logoafd.jpg}
     \caption{Logo d'AFD.Tech Part of Accenture}
-    \label{fig:logo-afdtech}
+    \label{fig:logo-afdtech.PNG}
 \end{figure}
 
 \begin{table}[h]
@@ -198,7 +193,7 @@ L'implantation marocaine d'AFD.Tech, démarrée en \textbf{2014} avec une équip
     \label{fig:meditech}
 \end{figure}
 
-L'équipe marocaine compte aujourd'hui \textbf{plus de 900 experts} et joue un rôle crucial dans l'évolution du groupe. Elle est dirigée par \textbf{Amine El Rhayour}, \textit{Director of the Service Delivery Center Morocco}, dont le parcours d'ingénieur incarne la trajectoire d'excellence technique portée par l'entreprise au Maroc. L'organisation interne s'articule autour de plusieurs pôles stratégiques, comme illustré par la figure \ref{fig:organigramme}.
+L'équipe marocaine compte aujourd'hui \textbf{plus de 900 experts} et joue un rôle crucial dans l'évolution du groupe. Elle est dirigée par \textbf{Amine El Rhayour}, \textit{Director of the Service Delivery Center Morocco}, dont le parcours d'ingénieur incarne la trajectoire d'excellence technique portée par l'entreprise au Maroc. L'organisation interne s'articule autour de plusieurs pôles stratégiques, comme illustré par la figure.
 
 \begin{figure}[h]
     \centering
@@ -245,23 +240,43 @@ L'ESIN est née d'un partenariat académique entre l'UIR et l'Université de Nan
 
 % =====================================================================
 \section{Cadrage du projet de stage}
-\label{sec:cadrage}
 
-% ---------------------------------------------------------------------
 \subsection{Sujet et périmètre de la mission}
-\label{subsec:sujet}
 
-Le sujet de ce PFE s'intitule : \og~\textbf{Développement d'une plateforme de migration de données basée sur l'IA pour l'amélioration et l'optimisation des processus d'intégration des données}~\fg{}.
+Le sujet de ce PFE s'intitule : \textit{« ADMP AI Studio : Modernisation et automatisation des pipelines ETL de migration de données via une architecture d'IA agentique »}.
 
 Il s'inscrit dans le programme d'évolution d'ADMP visant à intégrer l'intelligence artificielle au cœur de la plateforme. Les objectifs stratégiques de cette intégration sont triples :
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Rester un différenciateur réel} en matière de migration grâce à un moteur IA dédié (ADMP AI Engine).
-    \item \textbf{Optimiser et accélérer} le temps nécessaire à la rédaction des spécifications de migration, et automatiser l'analyse des audits de données.
-    \item \textbf{Créer un véritable assistant intelligent} pour les spécificateurs, réduisant la charge globale de travail.
+\begin{itemize}
+    \item Rester un différenciateur réel en matière de migration grâce à un moteur IA dédié (ADMP AI Engine).
+    \item Optimiser et accélérer le temps nécessaire à la rédaction des spécifications de migration, et automatiser l'analyse des audits de données.
+    \item Créer un véritable assistant intelligent pour les spécificateurs, réduisant la charge globale de travail.
 \end{itemize}
 
-Le périmètre de la mission couvre principalement la \textbf{génération du bundle Databricks}, un module central de la nouvelle architecture ADMP, dont les détails techniques seront présentés dans les chapitres~5 et~6. Ce module vise à automatiser la création des artefacts de migration en s'appuyant sur des technologies de traitement distribué (Apache Spark / Databricks) et d'intelligence artificielle générative.
+Le périmètre de la mission couvre trois axes de contribution complémentaires, tous intégrés au sein de la plateforme ADMP AI Studio :
+
+\begin{itemize}
+    \item \textbf{L'Agent de Validation} : un module agentique implémenté via LangGraph, chargé de vérifier la cohérence et la complétude des livrables produits par les agents amont (Data Mapping, Table Mapping, Options Structurantes), selon une logique de décision GO/NO-GO avec boucle d'auto-correction pouvant aller jusqu'à trois itérations.
+    \item \textbf{Les Load Reports et Dashboards} : des livrables de suivi générés automatiquement à l'issue de chaque cycle de validation, sous forme de rapports Excel détaillés et de tableaux de bord interactifs intégrés à l'interface de la plateforme.
+    \item \textbf{Le package de génération Azure Data Factory (ADF)} : l'audit et la refonte du compilateur ADF existant au sein de Data Migration Studio, visant à rendre le mode Stored Procedure production-ready, avec correction de trois catégories de défauts (schéma \texttt{undefined}, authentification Managed Identity absente, Datasets superflus).
+\end{itemize}
+
+Ces contributions s'appuient sur l'expérience opérationnelle acquise lors de la participation active au projet de migration client CREPSA, qui a fourni le contexte métier concret permettant d'identifier les besoins réels auxquels l'ADMP AI Studio répond.
+
+\subsection{Objectifs opérationnels et livrables attendus}
+
+Les objectifs opérationnels du PFE se déclinent comme suit :
+
+\begin{itemize}
+    \item Comprendre et maîtriser la méthodologie ADMP et ses livrables (SDS, IDS, TDS, DS, RC, DP, TT, MS) à travers la formation Core ADMP Design School (CIDS).
+    \item Contribuer opérationnellement au projet de migration CREPSA, notamment en matière d'analyse de données, de validation de tickets et de résolution d'anomalies.
+    \item Concevoir et implémenter l'Agent de Validation avec sa boucle d'auto-correction dans le cadre de l'évolution IA de la plateforme.
+    \item Produire les Load Reports et Dashboards permettant le pilotage de la qualité de migration.
+    \item Auditer et refondre le package de génération Azure Data Factory pour le rendre déployable en environnement de production Azure.
+    \item Tester et valider les solutions développées sur des cas réels ou simulés de migration.
+    \item Documenter l'ensemble du travail réalisé dans le présent rapport de PFE.
+\end{itemize}
+
 
 % ---------------------------------------------------------------------
 \subsection{Objectifs opérationnels et livrables attendus}
@@ -277,13 +292,13 @@ Les objectifs opérationnels du PFE se déclinent comme suit :
     \item \textbf{Documenter} l'ensemble du travail réalisé dans le présent rapport de PFE.
 \end{itemize}
 
-Ce travail s'inscrit dans la continuité des contributions précédentes de l'équipe : le PFE de Elharrioui Aymen portant sur la conception d'un agent intelligent basé sur RAG et l'architecture AppSync/GraphQL, et le PFE de Majbar Nizar portant sur le fine-tuning d'un LLM (Mistral 7B avec LoRA) pour la génération de règles de transformation.
+
 
 % ---------------------------------------------------------------------
 \subsection{Planning prévisionnel}
 \label{subsec:planning}
 
-Le stage se déroule sur une période de six mois, organisée en phases progressives, comme le résume le Tableau~\ref{tab:planning}.
+Le stage se déroule sur une période de six mois, organisée en phases progressives, comme le résume le Tableau.
 
 \begin{table}[h!]
 \centering

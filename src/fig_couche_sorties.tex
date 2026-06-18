@@ -1,0 +1,140 @@
+% Couche Sorties — Databricks official palette (minimalist)
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\fontfamily{Montserrat-LF}\selectfont, >=Latex]
+
+% === OUTER CONTAINER ===
+\draw[rounded corners=8pt, fill=dboatlight, draw=dbnavy, line width=2pt]
+  (-0.3,0.5) rectangle (17.3,-9.4);
+
+\node[fill=dbnavy, text=white, font=\bfseries\large,
+      rounded corners=4pt, inner sep=9pt, minimum width=17cm]
+  at (8.5,0.15) {COUCHE SORTIES \quad
+    \normalfont\small\color{white!65}
+    3 formats de déploiement — du POC à la production industrielle};
+
+% ============================================================
+% SOCLE COMMUN
+% ============================================================
+\draw[rounded corners=5pt, fill=white, draw=dboatmed, line width=0.8pt, dashed]
+  (0.0,-0.6) rectangle (17.1,-2.2);
+
+\node[font=\bfseries\scriptsize, text=dbnavy, anchor=west]
+  at (0.3,-1.05) {SOCLE COMMUN};
+\node[font=\scriptsize, text=dbnavy!55, anchor=west]
+  at (3.5,-1.05) {Partagé par les 3 formats — seule l'encapsulation diffère};
+
+\foreach \bx/\fname in {
+  0.3/units/mig\_\{code\}.py,
+  5.2/config/,
+  7.8/reports/,
+  10.4/framework/
+}{
+  \node[font=\scriptsize\ttfamily, text=dbnavy!70, anchor=west]
+    at (\bx,-1.67) {\fname};
+}
+
+% ============================================================
+% FORMAT 1 — NOTEBOOKS
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1.2pt]
+  (0.0,-2.4) rectangle (5.5,-9.1);
+
+\draw[rounded corners=5pt, fill=dbnavy]
+  (0.0,-2.4) rectangle (5.5,-3.25);
+\node[text=white, font=\bfseries\normalsize, anchor=west]
+  at (0.2,-2.825) {Notebooks};
+
+\foreach \i/\fname in {
+  1/run\_all.py,
+  2/units/mig\_\{code\}.py,
+  3/config/config.json
+}{
+  \draw[dboatmed, line width=0.4pt]
+    (0.2,{-3.5 - (\i-1)*0.78}) -- (5.3,{-3.5 - (\i-1)*0.78});
+  \node[font=\scriptsize\ttfamily, text=dbnavy, anchor=west]
+    at (0.35,{-3.35 - (\i-1)*0.78}) {\fname};
+}
+
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!55, italic,
+      anchor=west, text width=5.0cm]
+  at (0.3,-6.1) {Scripts Python exécutables directement dans un workspace Databricks.};
+
+\draw[dboatmed, line width=0.5pt] (0.2,-7.6) -- (5.3,-7.6);
+\node[fill=dboatmed, draw=dboatmed, rounded corners=4pt,
+      font=\bfseries\scriptsize, text=dbnavy,
+      inner sep=5pt, minimum width=4.8cm, anchor=south]
+  at (2.75,-8.95) {Phase~: Démonstration (POC)};
+
+% ============================================================
+% FORMAT 2 — PYTHON WHEEL
+% ============================================================
+\draw[rounded corners=6pt, fill=white, draw=dboatmed, line width=1.2pt]
+  (5.8,-2.4) rectangle (11.3,-9.1);
+
+\draw[rounded corners=5pt, fill=dbnavy]
+  (5.8,-2.4) rectangle (11.3,-3.25);
+\node[text=white, font=\bfseries\normalsize, anchor=west]
+  at (6.0,-2.825) {Python Wheel \texttt{.whl}};
+
+\foreach \i/\fname in {
+  1/\{pkg\}/\_\_init\_\_.py,
+  2/\{pkg\}/runner.py,
+  3/pyproject.toml,
+  4/README.md
+}{
+  \draw[dboatmed, line width=0.4pt]
+    (6.0,{-3.5 - (\i-1)*0.78}) -- (11.1,{-3.5 - (\i-1)*0.78});
+  \node[font=\scriptsize\ttfamily, text=dbnavy, anchor=west]
+    at (6.15,{-3.35 - (\i-1)*0.78}) {\fname};
+}
+
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!55, italic,
+      anchor=west, text width=5.0cm]
+  at (6.0,-6.4) {Package Python installable via \texttt{pip}. Semver, reproductible, prêt CI/CD.};
+
+\draw[dboatmed, line width=0.5pt] (6.0,-7.6) -- (11.1,-7.6);
+\node[fill=dboatmed, draw=dboatmed, rounded corners=4pt,
+      font=\bfseries\scriptsize, text=dbnavy,
+      inner sep=5pt, minimum width=4.8cm, anchor=south]
+  at (8.55,-8.95) {Phase~: Production};
+
+% ============================================================
+% FORMAT 3 — ASSET BUNDLE  (lava accent — flagship DevOps format)
+% ============================================================
+\draw[rounded corners=6pt, fill=dblava!6, draw=dblava, line width=2pt]
+  (11.6,-2.4) rectangle (17.1,-9.1);
+
+\draw[rounded corners=5pt, fill=dblava]
+  (11.6,-2.4) rectangle (17.1,-3.25);
+\node[text=white, font=\bfseries\normalsize, anchor=west]
+  at (11.8,-2.825) {Asset Bundle (DAB)};
+
+\foreach \i/\fname in {
+  1/databricks.yml,
+  2/bitbucket-pipelines.yml,
+  3/scripts/fetch\_reports.ps1,
+  4/+ tout le contenu Wheel
+}{
+  \draw[dblava!20, line width=0.4pt]
+    (11.8,{-3.5 - (\i-1)*0.78}) -- (16.9,{-3.5 - (\i-1)*0.78});
+  \node[font=\scriptsize\ttfamily, text=dbnavy, anchor=west]
+    at (11.95,{-3.35 - (\i-1)*0.78}) {\fname};
+}
+
+\node[font=\fontsize{7}{8}\selectfont, text=dbnavy!55, italic,
+      anchor=west, text width=5.0cm]
+  at (11.8,-6.4) {Bundle complet avec orchestration CI/CD Bitbucket et déploiement Databricks CLI.};
+
+\draw[dblava!25, line width=0.5pt] (11.8,-7.6) -- (16.9,-7.6);
+\node[fill=dblava, draw=dblava, rounded corners=4pt,
+      font=\bfseries\scriptsize, text=white,
+      inner sep=5pt, minimum width=4.8cm, anchor=south]
+  at (14.35,-8.95) {Phase~: DevOps (CI/CD)};
+
+\end{tikzpicture}%
+}
+\caption{Couche Sorties~: trois formats de déploiement générés par le compilateur}
+\label{fig:archi-sorties}
+\end{figure}
